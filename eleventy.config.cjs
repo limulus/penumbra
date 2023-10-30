@@ -1,3 +1,4 @@
+const { EleventyHtmlBasePlugin } = require('@11ty/eleventy')
 const pluginWebc = require('@11ty/eleventy-plugin-webc')
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
@@ -8,6 +9,7 @@ module.exports = function (eleventyConfig) {
   const components = `${input}/_include/components`
 
   eleventyConfig.addPlugin(pluginWebc, { components })
+  eleventyConfig.addPlugin(EleventyHtmlBasePlugin)
 
   return { dir: { input, output, layouts }, pathPrefix: '/penumbra/' }
 }
