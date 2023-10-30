@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [ '18' ]
+        node: ['18']
     name: verify using node v${{ matrix.node }}
     steps:
       - uses: actions/checkout@v4
@@ -15,10 +15,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
-      - run: bash .github/workflows/set-up-ci.sh
       - run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GPR_READ_TOKEN }}
       - run: npm run verify
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -26,7 +23,7 @@ jobs:
           name: coverage (node v${{ matrix.node }})
           path: coverage/
 
-  publish:
+  publish-npm:
     needs: verify
     runs-on: ubuntu-latest
     name: publish package if needed
@@ -36,11 +33,43 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-      - run: bash .github/workflows/set-up-ci.sh
       - run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GPR_READ_TOKEN }}
       - run: npx semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  build-www:
+    needs: verify
+    runs-on: ubuntu-latest
+    name: build website
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run www
+      - uses: actions/upload-pages-artifact@v1
+        with:
+          path: dist/www
+
+  deploy-www:
+    needs: build-www
+    name: deploy website
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/deploy-pages@v2
+        with:
+          token: ${{ github.token }}
