@@ -12,24 +12,29 @@
     }
   },
   "files": [
-    "dist",
+    "dist/cjs",
+    "dist/esm",
+    "dist/types",
     "src"
   ],
   "type": "module",
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "concurrently -c auto 'npm:build:*'",
+    "build": "concurrently -c auto 'npm:build:*' && npm run www",
     "build:cjs": "tsc --incremental false --module commonjs --outDir dist/cjs",
     "build:dts": "tsc --incremental false --declaration --declarationMap --emitDeclarationOnly --outDir dist/types",
     "build:esm": "tsc --incremental false --outDir dist/esm",
     "build:cjs:pkg": "mkdirp dist/cjs && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
     "clean": "del *.tsbuildinfo coverage dist",
-    "lint": "eslint *.js src",
+    "dev": "eleventy --serve",
+    "lint": "eslint *.cjs src",
     "prepack": "npm run build",
     "prepare": "is-ci || husky install",
     "test": "echo 'No tests yet'",
     "tscc": "tsc --noEmit",
-    "verify": "concurrently -c cyan,magenta,blue npm:lint npm:test npm:tscc"
+    "verify": "concurrently -c auto npm:lint npm:test npm:tscc npm:wwwc",
+    "www": "eleventy",
+    "wwwc": "eleventy --dryrun"
   },
   "repository": {
     "type": "git",
@@ -49,11 +54,12 @@
     "tslib": "^2.6.2"
   },
   "devDependencies": {
+    "@11ty/eleventy": "^2.0.1",
+    "@11ty/eleventy-plugin-webc": "^0.11.1",
     "@commitlint/cli": "^18.2.0",
     "@commitlint/config-conventional": "^18.1.0",
     "@limulus/eslint-config": "^5.0.0",
     "concurrently": "^8.2.2",
-    "cross-env": "^7.0.3",
     "del-cli": "^5.1.0",
     "eslint": "^8.52.0",
     "husky": "^8.0.3",
