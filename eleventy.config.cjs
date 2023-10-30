@@ -9,5 +9,5 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addPlugin(pluginWebc, { components })
 
-  return { dir: { input, output, layouts } }
+  return { dir: { input, output, layouts }, pathPrefix: '/penumbra/' }
 }
