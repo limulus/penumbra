@@ -1,0 +1,14 @@
+---
+layout: penumbra-page
+---
+
+<article>
+  <header>
+    <h1 class="title" @text="title"></h2>
+    <p>
+      Posted on <time @text="page.date.toDateString()"></time>
+    </p>
+  </header>
+
+  <div @html="content" webc:nokeep></div>
+</article>

@@ -1,10 +1,11 @@
 ---
-layout: base.html
+layout: penumbra-base.webc
 ---
 
 <link rel="stylesheet" href="../css/normalize.css" />
 
 <style>
+  html,
   body {
     background-color: #f5f5f5;
     color: #333;
@@ -12,14 +13,76 @@ layout: base.html
     font-size: 1rem;
     line-height: 1.5;
   }
-
-  main {
+  html {
+    overflow-y: scroll;
+  }
+  body {
     margin: 0 auto;
     max-width: 800px;
     padding: 0 1rem;
   }
 
+  a {
+    color: #333;
+  }
+  a:active {
+    color: #338;
+  }
+  a:visited {
+    color: #555;
+  }
+
+  /* https://www.a11yproject.com/posts/how-to-hide-content/ */
+  .visually-hidden:not(:focus):not(:active) {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  body > header {
+    display: flex;
+    gap: 1em 0.5em;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 1em 0;
+  }
+  body > header .home-link {
+    font-size: 1em; /* 16px /16 */
+    font-weight: 700;
+    margin-right: 2em;
+  }
+  body > header .home-link:link:not(:hover) {
+    text-decoration: none;
+  }
+
+  body > header nav {
+    display: flex;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  body > header nav li {
+    display: inline-block;
+    margin-right: 1em;
+  }
+  body > header a[href]:not(:hover) {
+    text-decoration: none;
+  }
+
+  body > header a:visited {
+    color: #333;
+  }
+
+  h1.title {
+    margin-top: 0;
+  }
+
   @media (prefers-color-scheme: dark) {
+    html,
     body {
       background-color: rgb(13, 17, 23);
       color: rgb(201, 209, 217);
@@ -29,10 +92,30 @@ layout: base.html
       filter: grayscale(20%);
     }
 
-    a:active {
-      color: rgb(88, 166, 255);
+    a,
+    header a {
+      color: rgb(201, 209, 217);
+    }
+    a:visited,
+    header a:visited {
+      color: #bbb;
     }
   }
 </style>
 
-<main @html="content"></main>
+<a href="#skip" class="visually-hidden">Skip to main content</a>
+
+<header>
+  <a class="home-link" href="/">Penumbra</a>
+
+  <nav>
+    <h2 class="visually-hidden">Top level navigation menu</h2>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="https://github.com/limulus/penumbra">Source</a></li>
+      <li><a href="http://limulus.net" rel="me">limulus.net</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="skip" @html="content"></main>

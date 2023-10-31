@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@11ty/eleventy": "^2.0.1",
+    "@11ty/eleventy-plugin-rss": "^1.2.0",
     "@11ty/eleventy-plugin-webc": "^0.11.1",
     "@commitlint/cli": "^18.2.0",
     "@commitlint/config-conventional": "^18.1.0",
@@ -64,6 +65,8 @@
     "eslint": "^8.52.0",
     "husky": "^8.0.3",
     "is-ci": "^3.0.1",
+    "markdown-it": "^13.0.2",
+    "markdown-it-footnote": "^3.0.3",
     "mkdirp": "^3.0.1",
     "semantic-release": "^22.0.5",
     "typescript": "^5.2.2"
