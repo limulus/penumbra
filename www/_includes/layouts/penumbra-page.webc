@@ -19,7 +19,7 @@ layout: penumbra-base.webc
   body {
     margin: 0 auto;
     max-width: 800px;
-    padding: 0 1rem;
+    padding: 0 2rem;
   }
 
   a {
@@ -97,7 +97,7 @@ layout: penumbra-base.webc
       color: rgb(201, 209, 217);
     }
     a:visited,
-    header a:visited {
+    body > header a:visited {
       color: #bbb;
     }
   }
