@@ -1,8 +1,8 @@
 ---
 tags: journal
-title: Getting Nerd Sniped
-date: git Created
 layout: penumbra-journal-entry
+date: git Created
+title: Getting Nerd Sniped
 teaser: |-
   I just want to start this challenge, but there’s a bunch of things I need to figure out
   first.
