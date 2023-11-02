@@ -16,7 +16,7 @@ layout: penumbra-page
 <h2>Development Journal</h2>
 
 <ol class="journal">
-  <li webc:for="entry of collections.journal">
+  <li webc:for="entry of collections.journal.reverse()">
     <article>
       <time @text="entry.date.toDateString()"></time>
       <h1><a :href="entry.url" @text="entry.data.title"></a><br /></h1>
