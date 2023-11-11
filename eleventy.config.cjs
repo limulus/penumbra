@@ -21,5 +21,10 @@ module.exports = function (eleventyConfig) {
   const md = markdownIt({ html: true, linkify: true })
   eleventyConfig.addFilter('markdownify', (mdString) => md.render(mdString))
 
+  eleventyConfig.setServerOptions({
+    domDiff: false,
+    watch: ['dist/www/tests/mocha/*'],
+  })
+
   return { dir: { input, output, layouts }, pathPrefix: '/penumbra/' }
 }
