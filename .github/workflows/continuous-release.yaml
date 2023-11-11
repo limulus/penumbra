@@ -52,7 +52,7 @@ jobs:
           node-version: 18
           cache: 'npm'
       - run: npm ci
-      - run: npm run www
+      - run: npm run build
       - uses: actions/upload-pages-artifact@v1
         with:
           path: dist/www
