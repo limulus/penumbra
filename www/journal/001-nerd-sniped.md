@@ -1,7 +1,7 @@
 ---
 tags: journal
 layout: penumbra-journal-entry
-date: git Created
+date: 2023-10-31 15:52:00 -07:00
 title: Getting Nerd Sniped
 teaser: |-
   I just want to start this challenge, but there’s a bunch of things I need to figure out
