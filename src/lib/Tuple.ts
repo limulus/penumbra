@@ -71,4 +71,8 @@ export class Tuple {
   sub(other: Tuple) {
     return new Tuple(this.x - other.x, this.y - other.y, this.z - other.z, this.w - other.w)
   }
+
+  toString() {
+    return `Tuple(${this.x}, ${this.y}, ${this.z}, ${this.w})`
+  }
 }
