@@ -94,7 +94,7 @@ Feature('Tuple', () => {
       const p = Tuple.point(4, -4, 3)
 
       Then('p = tuple(4, -4, 3, 1)', () => {
-        expect(p).to.deep.equal(new Tuple(4, -4, 3, 1))
+        expect(p.equals(new Tuple(4, -4, 3, 1))).to.be.true
       })
     })
   })
@@ -109,7 +109,7 @@ Feature('Tuple', () => {
       const v = Tuple.vector(4, -4, 3)
 
       Then('v = tuple(4, -4, 3, 0)', () => {
-        expect(v).to.deep.equal(new Tuple(4, -4, 3, 0))
+        expect(v.equals(new Tuple(4, -4, 3, 0))).to.be.true
       })
     })
   })
