@@ -68,6 +68,10 @@ export class Tuple {
     return new Tuple(0, 0, 0, 0).sub(this)
   }
 
+  normalize() {
+    return this.div(this.magnitude())
+  }
+
   sub(other: Tuple) {
     return new Tuple(this.x - other.x, this.y - other.y, this.z - other.z, this.w - other.w)
   }

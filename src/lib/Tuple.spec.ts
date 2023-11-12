@@ -348,4 +348,35 @@ Feature('Tuple', () => {
       })
     })
   })
+
+  /*
+  Scenario: Normalizing vector(4, 0, 0) gives (1, 0, 0)
+    Given v ← vector(4, 0, 0)
+    Then normalize(v) = vector(1, 0, 0)
+  */
+  Scenario('Normalizing vector(4, 0, 0) gives (1, 0, 0)', () => {
+    Given('v ← vector(4, 0, 0)', () => {
+      const v = Tuple.vector(4, 0, 0)
+
+      Then('normalize(v) = vector(1, 0, 0)', () => {
+        expect(v.normalize().equals(Tuple.vector(1, 0, 0))).to.be.true
+      })
+    })
+  })
+
+  /*
+  Scenario: Normalizing vector(1, 2, 3)
+  Given v ← vector(1, 2, 3)
+    # vector(1/√14, 2/√14, 3/√14)
+    Then normalize(v) = approximately vector(0.26726, 0.53452, 0.80178)
+  */
+  Scenario('Normalizing vector(1, 2, 3)', () => {
+    Given('v ← vector(1, 2, 3)', () => {
+      const v = Tuple.vector(1, 2, 3)
+
+      Then('normalize(v) = approximately vector(1/√14, 2/√14, 3/√14)', () => {
+        expect(v.normalize()).to.equal(Tuple.vector(0.26726, 0.53452, 0.80178))
+      })
+    })
+  })
 })
