@@ -136,9 +136,9 @@ Feature('Tuple', () => {
 
   /*
   Scenario: Subtracting two points
-  Given p1 ← point(3, 2, 1)
-    And p2 ← point(5, 6, 7)
-  Then p1 - p2 = vector(-2, -4, -6)
+    Given p1 ← point(3, 2, 1)
+      And p2 ← point(5, 6, 7)
+    Then p1 - p2 = vector(-2, -4, -6)
   */
   Scenario('Subtracting two points', () => {
     Given('p1 ← point(3, 2, 1)', () => {
@@ -156,9 +156,9 @@ Feature('Tuple', () => {
 
   /*
   Scenario: Subtracting a vector from a point
-  Given p ← point(3, 2, 1)
-    And v ← vector(5, 6, 7)
-  Then p - v = point(-2, -4, -6)
+    Given p ← point(3, 2, 1)
+      And v ← vector(5, 6, 7)
+    Then p - v = point(-2, -4, -6)
   */
   Scenario('Subtracting a vector from a point', () => {
     Given('p ← point(3, 2, 1)', () => {
@@ -176,9 +176,9 @@ Feature('Tuple', () => {
 
   /*
   Scenario: Subtracting two vectors
-  Given v1 ← vector(3, 2, 1)
-    And v2 ← vector(5, 6, 7)
-  Then v1 - v2 = vector(-2, -4, -6)
+    Given v1 ← vector(3, 2, 1)
+      And v2 ← vector(5, 6, 7)
+    Then v1 - v2 = vector(-2, -4, -6)
   */
   Scenario('Subtracting two vectors', () => {
     Given('v1 ← vector(3, 2, 1)', () => {
@@ -196,9 +196,9 @@ Feature('Tuple', () => {
 
   /*
   Scenario: Subtracting a vector from the zero vector
-  Given zero ← vector(0, 0, 0)
-    And v ← vector(1, -2, 3)
-  Then zero - v = vector(-1, 2, -3)
+    Given zero ← vector(0, 0, 0)
+      And v ← vector(1, -2, 3)
+    Then zero - v = vector(-1, 2, -3)
   */
   Scenario('Subtracting a vector from the zero vector', () => {
     Given('zero ← vector(0, 0, 0)', () => {
@@ -216,8 +216,8 @@ Feature('Tuple', () => {
 
   /*
   Scenario: Negating a tuple
-  Given a ← tuple(1, -2, 3, -4)
-  Then -a = tuple(-1, 2, -3, 4)
+    Given a ← tuple(1, -2, 3, -4)
+    Then -a = tuple(-1, 2, -3, 4)
   */
   Scenario('Negating a tuple', () => {
     Given('a ← tuple(1, -2, 3, -4)', () => {
@@ -225,6 +225,51 @@ Feature('Tuple', () => {
 
       Then('-a = tuple(-1, 2, -3, 4)', () => {
         expect(a.negate().equals(new Tuple(-1, 2, -3, 4))).to.be.true
+      })
+    })
+  })
+
+  /*
+  Scenario: Multiplying a tuple by a scalar
+    Given a ← tuple(1, -2, 3, -4)
+    Then a * 3.5 = tuple(3.5, -7, 10.5, -14)
+  */
+  Scenario('Multiplying a tuple by a scalar', () => {
+    Given('a ← tuple(1, -2, 3, -4)', () => {
+      const a = new Tuple(1, -2, 3, -4)
+
+      Then('a * 3.5 = tuple(3.5, -7, 10.5, -14)', () => {
+        expect(a.mul(3.5).equals(new Tuple(3.5, -7, 10.5, -14))).to.be.true
+      })
+    })
+  })
+
+  /*
+  Scenario: Multiplying a tuple by a fraction
+    Given a ← tuple(1, -2, 3, -4)
+    Then a * 0.5 = tuple(0.5, -1, 1.5, -2)
+  */
+  Scenario('Multiplying a tuple by a fraction', () => {
+    Given('a ← tuple(1, -2, 3, -4)', () => {
+      const a = new Tuple(1, -2, 3, -4)
+
+      Then('a * 0.5 = tuple(0.5, -1, 1.5, -2)', () => {
+        expect(a.mul(0.5).equals(new Tuple(0.5, -1, 1.5, -2))).to.be.true
+      })
+    })
+  })
+
+  /*
+  Scenario: Dividing a tuple by a scalar
+    Given a ← tuple(1, -2, 3, -4)
+    Then a / 2 = tuple(0.5, -1, 1.5, -2)
+  */
+  Scenario('Dividing a tuple by a scalar', () => {
+    Given('a ← tuple(1, -2, 3, -4)', () => {
+      const a = new Tuple(1, -2, 3, -4)
+
+      Then('a / 2 = tuple(0.5, -1, 1.5, -2)', () => {
+        expect(a.div(2).equals(new Tuple(0.5, -1, 1.5, -2))).to.be.true
       })
     })
   })

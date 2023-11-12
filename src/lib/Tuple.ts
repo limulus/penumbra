@@ -35,6 +35,10 @@ export class Tuple {
     return new Tuple(this.x + other.x, this.y + other.y, this.z + other.z, this.w + other.w)
   }
 
+  div(divisor: number) {
+    return this.mul(1 / divisor)
+  }
+
   equals(other: Tuple) {
     return (
       equal(this.x, other.x) &&
@@ -50,6 +54,10 @@ export class Tuple {
 
   isVector(): this is { w: 0.0 } {
     return this.w === 0.0
+  }
+
+  mul(factor: number) {
+    return new Tuple(this.x * factor, this.y * factor, this.z * factor, this.w * factor)
   }
 
   negate() {
