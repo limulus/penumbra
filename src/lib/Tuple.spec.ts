@@ -273,4 +273,79 @@ Feature('Tuple', () => {
       })
     })
   })
+
+  /*
+  Scenario: Computing the magnitude of vector(1, 0, 0)
+    Given v ← vector(1, 0, 0)
+    Then magnitude(v) = 1
+  */
+  Scenario('Computing the magnitude of vector(1, 0, 0)', () => {
+    Given('v ← vector(1, 0, 0)', () => {
+      const v = Tuple.vector(1, 0, 0)
+
+      Then('magnitude(v) = 1', () => {
+        expect(v.magnitude()).to.equal(1)
+      })
+    })
+  })
+
+  /*
+  Scenario: Computing the magnitude of vector(0, 1, 0)
+    Given v ← vector(0, 1, 0)
+    Then magnitude(v) = 1
+  */
+  Scenario('Computing the magnitude of vector(0, 1, 0)', () => {
+    Given('v ← vector(0, 1, 0)', () => {
+      const v = Tuple.vector(0, 1, 0)
+
+      Then('magnitude(v) = 1', () => {
+        expect(v.magnitude()).to.equal(1)
+      })
+    })
+  })
+
+  /*
+  Scenario: Computing the magnitude of vector(0, 0, 1)
+    Given v ← vector(0, 0, 1)
+    Then magnitude(v) = 1
+  */
+  Scenario('Computing the magnitude of vector(0, 0, 1)', () => {
+    Given('v ← vector(0, 0, 1)', () => {
+      const v = Tuple.vector(0, 0, 1)
+
+      Then('magnitude(v) = 1', () => {
+        expect(v.magnitude()).to.equal(1)
+      })
+    })
+  })
+
+  /*
+  Scenario: Computing the magnitude of vector(1, 2, 3)
+    Given v ← vector(1, 2, 3)
+    Then magnitude(v) = √14
+  */
+  Scenario('Computing the magnitude of vector(1, 2, 3)', () => {
+    Given('v ← vector(1, 2, 3)', () => {
+      const v = Tuple.vector(1, 2, 3)
+
+      Then('magnitude(v) = √14', () => {
+        expect(v.magnitude()).to.equal(Math.sqrt(14))
+      })
+    })
+  })
+
+  /*
+  Scenario: Computing the magnitude of vector(-1, -2, -3)
+    Given v ← vector(-1, -2, -3)
+    Then magnitude(v) = √14
+  */
+  Scenario('Computing the magnitude of vector(-1, -2, -3)', () => {
+    Given('v ← vector(-1, -2, -3)', () => {
+      const v = Tuple.vector(-1, -2, -3)
+
+      Then('magnitude(v) = √14', () => {
+        expect(v.magnitude()).to.equal(Math.sqrt(14))
+      })
+    })
+  })
 })

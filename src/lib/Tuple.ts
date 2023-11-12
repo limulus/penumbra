@@ -56,6 +56,10 @@ export class Tuple {
     return this.w === 0.0
   }
 
+  magnitude() {
+    return Math.sqrt(this.x ** 2 + this.y ** 2 + this.z ** 2 + this.w ** 2)
+  }
+
   mul(factor: number) {
     return new Tuple(this.x * factor, this.y * factor, this.z * factor, this.w * factor)
   }
