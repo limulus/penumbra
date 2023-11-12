@@ -379,4 +379,24 @@ Feature('Tuple', () => {
       })
     })
   })
+
+  /*
+  Scenario: The dot product of two tuples
+    Given a ← vector(1, 2, 3)
+      And b ← vector(2, 3, 4)
+    Then dot(a, b) = 20
+  */
+  Scenario('The dot product of two tuples', () => {
+    Given('a ← vector(1, 2, 3)', () => {
+      const a = Tuple.vector(1, 2, 3)
+
+      And('b ← vector(2, 3, 4)', () => {
+        const b = Tuple.vector(2, 3, 4)
+
+        Then('dot(a, b) = 20', () => {
+          expect(a.dot(b)).to.equal(20)
+        })
+      })
+    })
+  })
 })

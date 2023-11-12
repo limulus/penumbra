@@ -39,6 +39,10 @@ export class Tuple {
     return this.mul(1 / divisor)
   }
 
+  dot(other: Tuple) {
+    return this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w
+  }
+
   equals(other: Tuple) {
     return (
       equal(this.x, other.x) &&
