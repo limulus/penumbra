@@ -23,7 +23,7 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.setServerOptions({
     domDiff: false,
-    watch: ['dist/www/tests/mocha/*'],
+    watch: ['dist/www/js/**/*.{css,js}'],
   })
 
   return { dir: { input, output, layouts }, pathPrefix: '/penumbra/' }
