@@ -1,5 +1,7 @@
+import equal from './equal'
+
 export class Tuple {
-  readonly #values: [number, number, number, 0.0 | 1.0]
+  readonly #values: [number, number, number, number]
 
   static point(x: number, y: number, z: number) {
     return new Tuple(x, y, z, 1.0)
@@ -9,7 +11,7 @@ export class Tuple {
     return new Tuple(x, y, z, 0.0)
   }
 
-  constructor(x: number, y: number, z: number, w: 0.0 | 1.0) {
+  constructor(x: number, y: number, z: number, w: number) {
     this.#values = [x, y, z, w]
   }
 
@@ -29,11 +31,32 @@ export class Tuple {
     return this.#values[3]
   }
 
-  isPoint() {
+  add(other: Tuple) {
+    return new Tuple(this.x + other.x, this.y + other.y, this.z + other.z, this.w + other.w)
+  }
+
+  equals(other: Tuple) {
+    return (
+      equal(this.x, other.x) &&
+      equal(this.y, other.y) &&
+      equal(this.z, other.z) &&
+      equal(this.w, other.w)
+    )
+  }
+
+  isPoint(): this is { w: 1.0 } {
     return this.w === 1.0
   }
 
-  isVector() {
+  isVector(): this is { w: 0.0 } {
     return this.w === 0.0
+  }
+
+  negate() {
+    return new Tuple(0, 0, 0, 0).sub(this)
+  }
+
+  sub(other: Tuple) {
+    return new Tuple(this.x - other.x, this.y - other.y, this.z - other.z, this.w - other.w)
   }
 }

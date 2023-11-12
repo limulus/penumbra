@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import { Tuple } from './Tuple.js'
 import { Feature, Scenario, Then, And, Given } from '../gherkin'
 
-Feature('tuples', () => {
+Feature('Tuple', () => {
   /*
   Scenario: A tuple with w=1.0 is a point
     Given a ← tuple(4.3, -4.2, 3.1, 1.0)
@@ -110,6 +110,121 @@ Feature('tuples', () => {
 
       Then('v = tuple(4, -4, 3, 0)', () => {
         expect(v).to.deep.equal(new Tuple(4, -4, 3, 0))
+      })
+    })
+  })
+
+  /*
+  Scenario: Adding two tuples
+  Given a1 ← tuple(3, -2, 5, 1)
+    And a2 ← tuple(-2, 3, 1, 0)
+   Then a1 + a2 = tuple(1, 1, 6, 1)
+  */
+  Scenario('Adding two tuples', () => {
+    Given('a1 ← tuple(3, -2, 5, 1)', () => {
+      const a1 = new Tuple(3, -2, 5, 1)
+
+      And('a2 ← tuple(-2, 3, 1, 0)', () => {
+        const a2 = new Tuple(-2, 3, 1, 0)
+
+        Then('a1 + a2 = tuple(1, 1, 6, 1)', () => {
+          expect(a1.add(a2).equals(new Tuple(1, 1, 6, 1))).to.be.true
+        })
+      })
+    })
+  })
+
+  /*
+  Scenario: Subtracting two points
+  Given p1 ← point(3, 2, 1)
+    And p2 ← point(5, 6, 7)
+  Then p1 - p2 = vector(-2, -4, -6)
+  */
+  Scenario('Subtracting two points', () => {
+    Given('p1 ← point(3, 2, 1)', () => {
+      const p1 = Tuple.point(3, 2, 1)
+
+      And('p2 ← point(5, 6, 7)', () => {
+        const p2 = Tuple.point(5, 6, 7)
+
+        Then('p1 - p2 = vector(-2, -4, -6)', () => {
+          expect(p1.sub(p2).equals(Tuple.vector(-2, -4, -6))).to.be.true
+        })
+      })
+    })
+  })
+
+  /*
+  Scenario: Subtracting a vector from a point
+  Given p ← point(3, 2, 1)
+    And v ← vector(5, 6, 7)
+  Then p - v = point(-2, -4, -6)
+  */
+  Scenario('Subtracting a vector from a point', () => {
+    Given('p ← point(3, 2, 1)', () => {
+      const p = Tuple.point(3, 2, 1)
+
+      And('v ← vector(5, 6, 7)', () => {
+        const v = Tuple.vector(5, 6, 7)
+
+        Then('p - v = point(-2, -4, -6)', () => {
+          expect(p.sub(v).equals(Tuple.point(-2, -4, -6))).to.be.true
+        })
+      })
+    })
+  })
+
+  /*
+  Scenario: Subtracting two vectors
+  Given v1 ← vector(3, 2, 1)
+    And v2 ← vector(5, 6, 7)
+  Then v1 - v2 = vector(-2, -4, -6)
+  */
+  Scenario('Subtracting two vectors', () => {
+    Given('v1 ← vector(3, 2, 1)', () => {
+      const v1 = Tuple.vector(3, 2, 1)
+
+      And('v2 ← vector(5, 6, 7)', () => {
+        const v2 = Tuple.vector(5, 6, 7)
+
+        Then('v1 - v2 = vector(-2, -4, -6)', () => {
+          expect(v1.sub(v2).equals(Tuple.vector(-2, -4, -6))).to.be.true
+        })
+      })
+    })
+  })
+
+  /*
+  Scenario: Subtracting a vector from the zero vector
+  Given zero ← vector(0, 0, 0)
+    And v ← vector(1, -2, 3)
+  Then zero - v = vector(-1, 2, -3)
+  */
+  Scenario('Subtracting a vector from the zero vector', () => {
+    Given('zero ← vector(0, 0, 0)', () => {
+      const zero = Tuple.vector(0, 0, 0)
+
+      And('v ← vector(1, -2, 3)', () => {
+        const v = Tuple.vector(1, -2, 3)
+
+        Then('zero - v = vector(-1, 2, -3)', () => {
+          expect(zero.sub(v).equals(Tuple.vector(-1, 2, -3))).to.be.true
+        })
+      })
+    })
+  })
+
+  /*
+  Scenario: Negating a tuple
+  Given a ← tuple(1, -2, 3, -4)
+  Then -a = tuple(-1, 2, -3, 4)
+  */
+  Scenario('Negating a tuple', () => {
+    Given('a ← tuple(1, -2, 3, -4)', () => {
+      const a = new Tuple(1, -2, 3, -4)
+
+      Then('-a = tuple(-1, 2, -3, 4)', () => {
+        expect(a.negate().equals(new Tuple(-1, 2, -3, 4))).to.be.true
       })
     })
   })
