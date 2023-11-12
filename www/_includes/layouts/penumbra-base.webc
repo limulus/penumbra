@@ -7,5 +7,5 @@
 
     <link rel="stylesheet" :href="getBundleFileUrl('css')" webc:keep />
   </head>
-  <body @html="content"></body>
+  <body @raw="content"></body>
 </html>

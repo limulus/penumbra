@@ -119,4 +119,4 @@ layout: penumbra-base.webc
   </nav>
 </header>
 
-<main id="skip" @html="content"></main>
+<main id="skip" @raw="content"></main>
