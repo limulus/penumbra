@@ -35,6 +35,14 @@ export class Tuple {
     return new Tuple(this.x + other.x, this.y + other.y, this.z + other.z, this.w + other.w)
   }
 
+  cross(other: Tuple) {
+    return Tuple.vector(
+      this.y * other.z - this.z * other.y,
+      this.z * other.x - this.x * other.z,
+      this.x * other.y - this.y * other.x
+    )
+  }
+
   div(divisor: number) {
     return this.mul(1 / divisor)
   }

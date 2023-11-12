@@ -399,4 +399,29 @@ Feature('Tuple', () => {
       })
     })
   })
+
+  /*
+  Scenario: The cross product of two vectors
+    Given a ← vector(1, 2, 3)
+      And b ← vector(2, 3, 4)
+    Then cross(a, b) = vector(-1, 2, -1)
+      And cross(b, a) = vector(1, -2, 1)
+  */
+  Scenario('The cross product of two vectors', () => {
+    Given('a ← vector(1, 2, 3)', () => {
+      const a = Tuple.vector(1, 2, 3)
+
+      And('b ← vector(2, 3, 4)', () => {
+        const b = Tuple.vector(2, 3, 4)
+
+        Then('cross(a, b) = vector(-1, 2, -1)', () => {
+          expect(a.cross(b)).to.equal(Tuple.vector(-1, 2, -1))
+        })
+
+        And('cross(b, a) = vector(1, -2, 1)', () => {
+          expect(b.cross(a)).to.equal(Tuple.vector(1, -2, 1))
+        })
+      })
+    })
+  })
 })
