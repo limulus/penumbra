@@ -1,5 +1,6 @@
 import { Assertion } from 'chai'
 
+import '../../lib/canvas.spec.js'
 import '../../lib/tuple.spec.js'
 import '../../lib/equal.spec.js'
 import { Tuple } from '../../lib/tuple.js'
