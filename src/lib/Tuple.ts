@@ -89,6 +89,6 @@ export class Tuple {
   }
 
   toString() {
-    return `Tuple(${this.x}, ${this.y}, ${this.z}, ${this.w})`
+    return `Tuple(${this.#values.map((n) => n.toFixed(5)).join(', ')})`
   }
 }
