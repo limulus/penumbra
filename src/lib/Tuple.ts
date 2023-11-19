@@ -3,6 +3,10 @@ import equal from './equal'
 export class Tuple {
   readonly #values: [number, number, number, number]
 
+  static color(red: number, green: number, blue: number) {
+    return new Tuple(red, green, blue, 0.0)
+  }
+
   static point(x: number, y: number, z: number) {
     return new Tuple(x, y, z, 1.0)
   }
@@ -29,6 +33,18 @@ export class Tuple {
 
   get w() {
     return this.#values[3]
+  }
+
+  get red() {
+    return this.#values[0]
+  }
+
+  get green() {
+    return this.#values[1]
+  }
+
+  get blue() {
+    return this.#values[2]
   }
 
   add(other: Tuple) {
@@ -72,8 +88,19 @@ export class Tuple {
     return Math.sqrt(this.x ** 2 + this.y ** 2 + this.z ** 2 + this.w ** 2)
   }
 
-  mul(factor: number) {
-    return new Tuple(this.x * factor, this.y * factor, this.z * factor, this.w * factor)
+  mul(factor: number | Tuple): Tuple {
+    if (typeof factor === 'number') {
+      return new Tuple(this.x * factor, this.y * factor, this.z * factor, this.w * factor)
+    } else if (factor instanceof Tuple) {
+      return new Tuple(
+        this.x * factor.x,
+        this.y * factor.y,
+        this.z * factor.z,
+        this.w * factor.w
+      )
+    } else {
+      throw new Error(`Invalid factor: ${factor}`)
+    }
   }
 
   negate() {
