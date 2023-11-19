@@ -193,7 +193,6 @@ Feature('Canvas', () => {
 
     And('ppm ← canvas_to_ppm(c)', () => {
       ppm = c.toPPM()
-      console.log(ppm)
     })
 
     Then('lines 4-7 of ppm have the expected pixel data', () => {
