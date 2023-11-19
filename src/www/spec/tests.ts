@@ -1,8 +1,8 @@
 import { Assertion } from 'chai'
 
-import '../../lib/Tuple.spec.js'
+import '../../lib/tuple.spec.js'
 import '../../lib/equal.spec.js'
-import { Tuple } from '../../lib/Tuple.js'
+import { Tuple } from '../../lib/tuple.js'
 
 Assertion.overwriteMethod('equal', (_super) => {
   return function (this: typeof Assertion, ...args: unknown[]) {

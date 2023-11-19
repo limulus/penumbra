@@ -1,1 +1,1 @@
-export * from './lib/Tuple.js'
+export * from './lib/tuple.js'

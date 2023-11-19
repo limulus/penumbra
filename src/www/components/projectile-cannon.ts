@@ -1,4 +1,4 @@
-import { Tuple } from '../../lib/Tuple.js'
+import { Tuple } from '../../lib/tuple.js'
 
 export class ProjectileCannon extends HTMLElement {
   private sceneAnimator: ProjectileCannonSceneAnimator | null = null

@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 
-import { Tuple } from './Tuple.js'
-import { Feature, Scenario, Then, And, Given } from '../gherkin'
+import { Tuple } from './tuple.js'
+import { Feature, Scenario, Then, And, Given } from '../gherkin.js'
 
 Feature('Tuple', () => {
   /*
