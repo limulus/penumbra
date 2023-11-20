@@ -25,6 +25,19 @@ export class Canvas {
     data[++offset] = color.blue
   }
 
+  toImageData(): ImageData {
+    const image = new ImageData(this.width, this.height)
+
+    for (let i = 0, j = 0; i < this.data.length; i += 3, j += 4) {
+      image.data[j] = floatToByte(this.data[i])
+      image.data[j + 1] = floatToByte(this.data[i + 1])
+      image.data[j + 2] = floatToByte(this.data[i + 2])
+      image.data[j + 3] = 255
+    }
+
+    return image
+  }
+
   toPPM() {
     let buffer =
       outdent`
@@ -34,11 +47,7 @@ export class Canvas {
       ` + '\n'
 
     for (let i = 0; i < this.data.length; i++) {
-      let value = Math.round(this.data[i] * 255)
-      value = Math.min(value, 255)
-      value = Math.max(value, 0)
-      buffer += `${value} `
-
+      buffer += `${floatToByte(this.data[i])} `
       if (i % 15 === 14) {
         buffer = buffer.trimEnd() + '\n'
       }
@@ -46,4 +55,11 @@ export class Canvas {
 
     return buffer.trimEnd() + '\n'
   }
+}
+
+const floatToByte = (value: number) => {
+  value = Math.round(value * 255)
+  value = Math.min(value, 255)
+  value = Math.max(value, 0)
+  return value
 }

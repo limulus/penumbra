@@ -208,6 +208,68 @@ Feature('Canvas', () => {
     })
   })
 
+  /*
+  Scenario: Constructing an ImageData object
+    Given c ← canvas(5, 3)
+      And c1 ← color(1.5, 0, 0)
+      And c2 ← color(0, 0.5, 0)
+      And c3 ← color(-0.5, 0, 1)
+    When write_pixel(c, 0, 0, c1)
+      And write_pixel(c, 2, 1, c2)
+      And write_pixel(c, 4, 2, c3)
+      And imageData ← canvas_to_ppm(c)
+    Then imageData contains the following data:
+      """
+      255 0 0 255 0 0 0 255 0 0 0 255 0 0 0 255 0 0 0 255
+      0 0 0 255 0 0 0 255 0 128 0 255 0 0 0 255 0 0 0 255
+      0 0 0 255 0 0 0 255 0 0 0 255 0 0 0 255 0 0 255 255
+      """
+  */
+  Scenario('Constructing an ImageData object', () => {
+    Given('c ← canvas(5, 3)', () => {
+      const c = new Canvas(5, 3)
+
+      And('c1 ← color(1.5, 0, 0)', () => {
+        const c1 = Tuple.color(1.5, 0, 0)
+
+        And('c2 ← color(0, 0.5, 0)', () => {
+          const c2 = Tuple.color(0, 0.5, 0)
+
+          And('c3 ← color(-0.5, 0, 1)', () => {
+            const c3 = Tuple.color(-0.5, 0, 1)
+
+            When('write_pixel(c, 0, 0, c1)', () => {
+              c.writePixel(0, 0, c1)
+
+              And('write_pixel(c, 2, 1, c2)', () => {
+                c.writePixel(2, 1, c2)
+
+                And('write_pixel(c, 4, 2, c3)', () => {
+                  c.writePixel(4, 2, c3)
+
+                  And('imageData ← canvas_to_ppm(c)', () => {
+                    const imageData = c.toImageData()
+
+                    Then('imageData contains the expected pixel data', () => {
+                      const expectedData = new Uint8ClampedArray(
+                        `
+                          255 0 0 255 0 0 0 255 0 0 0 255 0 0 0 255 0 0 0 255
+                          0 0 0 255 0 0 0 255 0 128 0 255 0 0 0 255 0 0 0 255
+                          0 0 0 255 0 0 0 255 0 0 0 255 0 0 0 255 0 0 255 255
+                        `
+                          .trim()
+                          .split(/\s+/m)
+                          .map(Number)
+                      )
+                      expect(imageData.data).to.deep.equal(expectedData)
+                    })
+                  })
+                })
+              })
+            })
+          })
+        })
+      })
     })
   })
 })
