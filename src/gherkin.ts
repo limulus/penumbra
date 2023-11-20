@@ -13,8 +13,10 @@ declare global {
 export const Feature = (message: string, fn: SuiteFunction) =>
   describe(`Feature: ${message}`, fn)
 
-export const Scenario = (message: string, fn: SuiteFunction) =>
+export const Scenario = (message: string, fn: SuiteFunction) => {
   describe(`Scenario: ${message}`, fn)
+  mocha[prevKeywordSym] = 'Given'
+}
 
 export const Given = (message: string, fn: SuiteFunction) => {
   describe(`Given ${message}`, fn)
