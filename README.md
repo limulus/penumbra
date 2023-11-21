@@ -5,4 +5,4 @@ implementation using web technologies
 
 ## Development Blog
 
-https://limulus.github.io/penumbra/
+https://limulus.net/penumbra/
