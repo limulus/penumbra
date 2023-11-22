@@ -23,6 +23,13 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.setServerOptions({
     domDiff: false,
+    middleware: [
+      (_req, res, next) => {
+        res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+        res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
+        next()
+      },
+    ],
     watch: ['dist/www/js/**/*.{css,js}'],
   })
 
