@@ -114,6 +114,7 @@ layout: penumbra-base.webc
       <li><a href="/">Home</a></li>
       <li><a href="/tests/">Tests</a></li>
       <li><a href="https://github.com/limulus/penumbra">Source</a></li>
+      <li><a href="/feed.xml">RSS</a></li>
       <li><a href="http://limulus.net" rel="me">limulus.net</a></li>
     </ul>
   </nav>
