@@ -1,5 +1,6 @@
 import { expect } from 'chai'
 
+import { float32 } from './float32.js'
 import { Tuple } from './tuple.js'
 import { Feature, Scenario, Then, And, Given } from '../gherkin.js'
 
@@ -19,15 +20,15 @@ Feature('Tuple', () => {
       const a = new Tuple(4.3, -4.2, 3.1, 1.0)
 
       Then('a.x = 4.3', () => {
-        expect(a).to.have.property('x', 4.3)
+        expect(a).to.have.property('x', float32(4.3))
       })
 
       And('a.y = -4.2', () => {
-        expect(a).to.have.property('y', -4.2)
+        expect(a).to.have.property('y', float32(-4.2))
       })
 
       And('a.z = 3.1', () => {
-        expect(a).to.have.property('z', 3.1)
+        expect(a).to.have.property('z', float32(3.1))
       })
 
       And('a.w = 1.0', () => {
@@ -59,15 +60,15 @@ Feature('Tuple', () => {
       const a = new Tuple(4.3, -4.2, 3.1, 0.0)
 
       Then('a.x = 4.3', () => {
-        expect(a).to.have.property('x', 4.3)
+        expect(a).to.have.property('x', float32(4.3))
       })
 
       And('a.y = -4.2', () => {
-        expect(a).to.have.property('y', -4.2)
+        expect(a).to.have.property('y', float32(-4.2))
       })
 
       And('a.z = 3.1', () => {
-        expect(a).to.have.property('z', 3.1)
+        expect(a).to.have.property('z', float32(3.1))
       })
 
       And('a.w = 0.0', () => {
@@ -437,15 +438,15 @@ Feature('Tuple', () => {
       const c = Tuple.color(-0.5, 0.4, 1.7)
 
       Then('c.red = -0.5', () => {
-        expect(c).to.have.property('red', -0.5)
+        expect(c).to.have.property('red', float32(-0.5))
       })
 
       And('c.green = 0.4', () => {
-        expect(c).to.have.property('green', 0.4)
+        expect(c).to.have.property('green', float32(0.4))
       })
 
       And('c.blue = 1.7', () => {
-        expect(c).to.have.property('blue', 1.7)
+        expect(c).to.have.property('blue', float32(1.7))
       })
     })
   })

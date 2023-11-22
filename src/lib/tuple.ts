@@ -1,7 +1,7 @@
 import equal from './equal'
 
 export class Tuple {
-  readonly #values: [number, number, number, number]
+  readonly #values: Float32Array
 
   static color(red: number, green: number, blue: number) {
     return new Tuple(red, green, blue, 0.0)
@@ -16,7 +16,7 @@ export class Tuple {
   }
 
   constructor(x: number, y: number, z: number, w: number) {
-    this.#values = [x, y, z, w]
+    this.#values = new Float32Array([x, y, z, w])
   }
 
   get x() {
@@ -116,6 +116,10 @@ export class Tuple {
   }
 
   toString() {
-    return `Tuple(${this.#values.map((n) => n.toFixed(5)).join(', ')})`
+    const strValues: string[] = []
+    for (const value of this.#values) {
+      strValues.push(value.toFixed(5))
+    }
+    return `Tuple(${strValues.join(', ')})`
   }
 }
