@@ -272,4 +272,40 @@ Feature('Canvas', () => {
       })
     })
   })
+
+  /*
+  Scenario: Does not modify the canvas when writing to out-of-bounds pixels
+    Given c ← canvas(2, 2)
+      And red ← color(1, 0, 0)
+    When write_pixel(c, -1, 0, red)
+    And write_pixel(c, 2, 2, red)
+    Then every pixel of c is color(0, 0, 0)
+  */
+  Scenario('Does not modify the canvas when writing to out-of-bounds pixels', () => {
+    Given('c ← canvas(2, 2)', () => {
+      const c = new Canvas(2, 2)
+
+      And('red ← color(1, 0, 0)', () => {
+        const red = Tuple.color(1, 0, 0)
+
+        When('write_pixel(c, -1, 0, red)', () => {
+          c.writePixel(-1, 0, red)
+
+          And('write_pixel(c, 2, 2, red)', () => {
+            c.writePixel(2, 2, red)
+
+            Then('every pixel of c is color(0, 0, 0)', () => {
+              const black = Tuple.color(0, 0, 0)
+
+              for (let x = 0; x < c.width; x++) {
+                for (let y = 0; y < c.height; y++) {
+                  expect(c.pixelAt(x, y)).to.equal(black)
+                }
+              }
+            })
+          })
+        })
+      })
+    })
+  })
 })
