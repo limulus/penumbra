@@ -1,4 +1,4 @@
-import equal from './equal'
+import equal from './util/equal'
 
 export class Tuple {
   readonly #values: Float32Array

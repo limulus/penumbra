@@ -2,7 +2,7 @@ import { Assertion } from 'chai'
 
 import '../../lib/canvas.spec.js'
 import '../../lib/tuple.spec.js'
-import '../../lib/equal.spec.js'
+import '../../lib/util/equal.spec.js'
 import { Tuple } from '../../lib/tuple.js'
 
 Assertion.overwriteMethod('equal', (_super) => {

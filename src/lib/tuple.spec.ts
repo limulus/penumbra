@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 
-import { float32 } from './float32.js'
 import { Tuple } from './tuple.js'
+import { float32 } from './util/float32.js'
 import { Feature, Scenario, Then, And, Given } from '../gherkin.js'
 
 Feature('Tuple', () => {
