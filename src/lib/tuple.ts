@@ -1,8 +1,6 @@
-import equal from './util/equal'
+import { TwoDimensionalArray } from './two-dimenisonal-array'
 
-export class Tuple {
-  readonly #values: Float32Array
-
+export class Tuple extends TwoDimensionalArray {
   static color(red: number, green: number, blue: number) {
     return new Tuple(red, green, blue, 0.0)
   }
@@ -16,39 +14,48 @@ export class Tuple {
   }
 
   constructor(x: number, y: number, z: number, w: number) {
-    this.#values = new Float32Array([x, y, z, w])
+    super(4, 1)
+    this.set(0, 0, x)
+    this.set(1, 0, y)
+    this.set(2, 0, z)
+    this.set(3, 0, w)
   }
 
   get x() {
-    return this.#values[0]
+    return this.at(0)
   }
 
   get y() {
-    return this.#values[1]
+    return this.at(1)
   }
 
   get z() {
-    return this.#values[2]
+    return this.at(2)
   }
 
   get w() {
-    return this.#values[3]
+    return this.at(3)
   }
 
   get red() {
-    return this.#values[0]
+    return this.at(0)
   }
 
   get green() {
-    return this.#values[1]
+    return this.at(1)
   }
 
   get blue() {
-    return this.#values[2]
+    return this.at(2)
   }
 
   add(other: Tuple) {
     return new Tuple(this.x + other.x, this.y + other.y, this.z + other.z, this.w + other.w)
+  }
+
+  at(row: number, column: number = 0) {
+    if (column !== 0) throw new Error(`Invalid column: ${column}`)
+    return super.at(row, column)
   }
 
   cross(other: Tuple) {
@@ -65,15 +72,6 @@ export class Tuple {
 
   dot(other: Tuple) {
     return this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w
-  }
-
-  equals(other: Tuple) {
-    return (
-      equal(this.x, other.x) &&
-      equal(this.y, other.y) &&
-      equal(this.z, other.z) &&
-      equal(this.w, other.w)
-    )
   }
 
   isPoint(): this is { w: 1.0 } {
@@ -117,7 +115,7 @@ export class Tuple {
 
   toString() {
     const strValues: string[] = []
-    for (const value of this.#values) {
+    for (const value of this.values) {
       strValues.push(value.toFixed(5))
     }
     return `Tuple(${strValues.join(', ')})`

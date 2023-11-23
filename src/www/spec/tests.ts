@@ -4,25 +4,21 @@ import '../../lib/matrix.spec.js'
 import '../../lib/canvas.spec.js'
 import '../../lib/tuple.spec.js'
 import '../../lib/util/equal.spec.js'
-import { Matrix } from '../../lib/matrix.js'
-import { Tuple } from '../../lib/tuple.js'
+import { TwoDimensionalArray } from '../../lib/two-dimenisonal-array.js'
 import equal from '../../lib/util/equal.js'
 
 Assertion.overwriteMethod('equal', (_super) => {
   return function (this: typeof Assertion, ...args: unknown[]) {
-    let obj = this._obj
+    const obj = this._obj
 
-    if (
-      (obj instanceof Tuple && args[0] instanceof Tuple) ||
-      (obj instanceof Matrix && args[0] instanceof Matrix)
-    ) {
-      obj = obj as { equals(other: Tuple | Matrix): boolean }
+    if (obj instanceof TwoDimensionalArray && args[0] instanceof TwoDimensionalArray) {
+      const other = args[0]
       this.assert(
-        obj.equals(args[0]),
-        `expected ${obj} to equal ${args[0]}`,
-        `expected ${obj} to not equal ${args[0]}`,
+        obj.equals(other),
+        `expected ${obj} to equal ${other}`,
+        `expected ${obj} to not equal ${other}`,
         obj,
-        args[0],
+        other,
         true
       )
     } else {

@@ -1,3 +1,33 @@
+import { Tuple } from './tuple.js'
+import { TwoDimensionalArray } from './two-dimenisonal-array.js'
+
+export class Matrix extends TwoDimensionalArray {
+  constructor(rows: number, columns: number)
+  constructor(values: number[][])
+  constructor(arg1: number[][] | number, columns?: number) {
+    let rows: number
+
+    if (Array.isArray(arg1)) {
+      const values = arg1
+      rows = values[0].length
+      columns = values.length
+    } else if (typeof arg1 === 'number' && typeof columns === 'number') {
+      rows = arg1
+    } else {
+      throw new TypeError(`Unexpected arguments to Matrix constructor: ${arg1}, ${columns}`)
+    }
+
+    super(rows, columns)
+
+    if (Array.isArray(arg1)) {
+      const values = arg1
+      for (let row = 0; row < this.rows; row++) {
+        for (let col = 0; col < this.columns; col++) {
+          this.set(row, col, values[row][col])
+        }
+      }
+    }
+  }
 export class Matrix {
   readonly rows: number
   readonly columns: number
