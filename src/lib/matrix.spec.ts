@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 
 import { Matrix } from './matrix.js'
+import { Tuple } from './tuple.js'
 
 describe('Matrix', () => {
   /*
@@ -234,6 +235,89 @@ describe('Matrix', () => {
     describe('when comparing A to B', () => {
       it('should return false', () => {
         expect(a).to.not.equal(b)
+      })
+    })
+  })
+
+  /*
+  Scenario: Multiplying two matrices
+    Given the following matrix A:
+        | 1 | 2 | 3 | 4 |
+        | 5 | 6 | 7 | 8 |
+        | 9 | 8 | 7 | 6 |
+        | 5 | 4 | 3 | 2 |
+      And the following matrix B:
+        | -2 | 1 | 2 |  3 |
+        |  3 | 2 | 1 | -1 |
+        |  4 | 3 | 6 |  5 |
+        |  1 | 2 | 7 |  8 |
+    Then A * B is the following 4x4 matrix:
+        | 20|  22 |  50 |  48 |
+        | 44|  54 | 114 | 108 |
+        | 40|  58 | 110 | 102 |
+        | 16|  26 |  46 |  42 |
+  */
+  describe('given two matrices', () => {
+    let a: Matrix
+    let b: Matrix
+
+    beforeEach(() => {
+      a = new Matrix([
+        [1, 2, 3, 4],
+        [5, 6, 7, 8],
+        [9, 8, 7, 6],
+        [5, 4, 3, 2],
+      ])
+      b = new Matrix([
+        [-2, 1, 2, 3],
+        [3, 2, 1, -1],
+        [4, 3, 6, 5],
+        [1, 2, 7, 8],
+      ])
+    })
+
+    describe('when multiplying A by B', () => {
+      it('should return the expected matrix', () => {
+        expect(a.mul(b)).to.equal(
+          new Matrix([
+            [20, 22, 50, 48],
+            [44, 54, 114, 108],
+            [40, 58, 110, 102],
+            [16, 26, 46, 42],
+          ])
+        )
+      })
+    })
+  })
+
+  /*
+  Scenario: A matrix multiplied by a tuple
+    Given the following matrix A:
+        | 1 | 2 | 3 | 4 |
+        | 2 | 4 | 4 | 2 |
+        | 8 | 6 | 4 | 1 |
+        | 0 | 0 | 0 | 1 |
+      And b ← tuple(1, 2, 3, 1)
+    Then A * b = tuple(18, 24, 33, 1)
+  */
+  describe('given a matrix and a tuple', () => {
+    let A: Matrix
+    let b: Tuple
+
+    beforeEach(() => {
+      A = new Matrix([
+        [1, 2, 3, 4],
+        [2, 4, 4, 2],
+        [8, 6, 4, 1],
+        [0, 0, 0, 1],
+      ])
+      b = new Tuple(1, 2, 3, 1)
+      console.log(b.toString())
+    })
+
+    describe('when multiplying A by b', () => {
+      it('should return the expected tuple', () => {
+        expect(A.mul(b)).to.equal(new Tuple(18, 24, 33, 1))
       })
     })
   })
