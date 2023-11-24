@@ -2,6 +2,14 @@ import { Tuple } from './tuple.js'
 import { TwoDimensionalArray } from './two-dimenisonal-array.js'
 
 export class Matrix extends TwoDimensionalArray {
+  static identity(size: number) {
+    const matrix = new Matrix(size, size)
+    for (let i = 0; i < size; i++) {
+      matrix.set(i, i, 1)
+    }
+    return matrix
+  }
+
   constructor(rows: number, columns: number)
   constructor(values: number[][])
   constructor(arg1: number[][] | number, columns?: number) {
@@ -29,6 +37,47 @@ export class Matrix extends TwoDimensionalArray {
     }
   }
 
+  cofactor(row: number, column: number): number {
+    return this.minor(row, column) * ((row + column) % 2 === 0 ? 1 : -1)
+  }
+
+  determinant(): number {
+    if (this.rows === 2 && this.columns === 2) {
+      return this.at(0, 0) * this.at(1, 1) - this.at(0, 1) * this.at(1, 0)
+    }
+
+    let determinant = 0
+    for (let j = 0; j < this.columns; j++) {
+      determinant += this.at(0, j) * this.cofactor(0, j)
+    }
+    return determinant
+  }
+
+  inverse(): Matrix {
+    if (!this.isInvertible()) {
+      throw new Error('Attempted to invert non-invertable matrix')
+    }
+
+    const determinant = this.determinant()
+
+    const inverse = new Matrix(this.rows, this.columns)
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        const cofactor = this.cofactor(i, j)
+        inverse.set(j, i, cofactor / determinant)
+      }
+    }
+    return inverse
+  }
+
+  isInvertible(): boolean {
+    return this.determinant() !== 0
+  }
+
+  minor(row: number, column: number): number {
+    return this.submatrix(row, column).determinant()
+  }
+
   mul(other: Tuple): Tuple
   mul(other: Matrix): Matrix
   mul(other: TwoDimensionalArray): TwoDimensionalArray {
@@ -46,6 +95,30 @@ export class Matrix extends TwoDimensionalArray {
     }
 
     return result
+  }
+
+  submatrix(rowToRemove: number, columnToRemove: number): Matrix {
+    const submatrix = new Matrix(this.rows - 1, this.columns - 1)
+    for (let i = 0, si = 0; i < this.rows; i++) {
+      if (i === rowToRemove) continue
+      for (let j = 0, sj = 0; j < this.columns; j++) {
+        if (j === columnToRemove) continue
+        submatrix.set(si, sj, this.at(i, j))
+        ++sj
+      }
+      ++si
+    }
+    return submatrix
+  }
+
+  transpose(): Matrix {
+    const transposition = new Matrix(this.columns, this.rows)
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        transposition.set(j, i, this.at(i, j))
+      }
+    }
+    return transposition
   }
 
   toString() {
