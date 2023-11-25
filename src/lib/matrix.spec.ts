@@ -312,7 +312,6 @@ describe('Matrix', () => {
         [0, 0, 0, 1],
       ])
       b = new Tuple(1, 2, 3, 1)
-      console.log(b.toString())
     })
 
     describe('when multiplying A by b', () => {
