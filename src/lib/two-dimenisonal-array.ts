@@ -1,13 +1,21 @@
 import equal from './util/equal.js'
 
 export class TwoDimensionalArray {
-  protected values: Float32Array
+  #values: Float32Array
 
   constructor(
     readonly rows: number,
     readonly columns: number
   ) {
-    this.values = new Float32Array(rows * columns)
+    this.#values = new Float32Array(rows * columns)
+  }
+
+  protected get values() {
+    return this.#values
+  }
+
+  protected set values(values: Float32Array) {
+    this.#values = values
   }
 
   at(row: number, column: number) {
