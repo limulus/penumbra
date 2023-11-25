@@ -1034,4 +1034,455 @@ describe('Matrix', () => {
       expect(A.transpose().inverse()).to.equal(B)
     })
   })
+
+  /*
+    Scenario: Multiplying by a translation matrix
+      Given transform ← translation(5, -3, 2)
+        And p ← point(-3, 4, 5)
+      Then transform * p = point(2, 1, 7)
+  */
+  describe('given a translation matrix and a point', () => {
+    let transform: Matrix
+    let p: Tuple
+
+    beforeEach(() => {
+      transform = Matrix.translation(5, -3, 2)
+      p = Tuple.point(-3, 4, 5)
+    })
+
+    describe('when multiplying transform by p', () => {
+      it('should return the expected point', () => {
+        expect(transform.mul(p)).to.equal(Tuple.point(2, 1, 7))
+      })
+    })
+  })
+
+  /*
+    Scenario: Multiplying by the inverse of a translation matrix
+      Given transform ← translation(5, -3, 2)
+        And inv ← inverse(transform)
+        And p ← point(-3, 4, 5)
+      Then inv * p = point(-8, 7, 3)
+  */
+  describe('given a translation matrix and a point', () => {
+    let transform: Matrix
+    let inv: Matrix
+    let p: Tuple
+
+    beforeEach(() => {
+      transform = Matrix.translation(5, -3, 2)
+      inv = transform.inverse()
+      p = Tuple.point(-3, 4, 5)
+    })
+
+    describe('when multiplying inv by p', () => {
+      it('should return the expected point', () => {
+        expect(inv.mul(p)).to.equal(Tuple.point(-8, 7, 3))
+      })
+    })
+  })
+
+  /*
+    Scenario: Translation does not affect vectors
+      Given transform ← translation(5, -3, 2)
+        And v ← vector(-3, 4, 5)
+      Then transform * v = v
+  */
+  describe('given a translation matrix and a vector', () => {
+    let transform: Matrix
+    let v: Tuple
+
+    beforeEach(() => {
+      transform = Matrix.translation(5, -3, 2)
+      v = Tuple.vector(-3, 4, 5)
+    })
+
+    describe('when multiplying transform by v', () => {
+      it('should return v', () => {
+        expect(transform.mul(v)).to.equal(v)
+      })
+    })
+  })
+
+  /*
+    Scenario: A scaling matrix applied to a point
+      Given transform ← scaling(2, 3, 4)
+        And p ← point(-4, 6, 8)
+      Then transform * p = point(-8, 18, 32)
+  */
+  describe('given a scaling matrix and a point', () => {
+    let transform: Matrix
+    let p: Tuple
+
+    beforeEach(() => {
+      transform = Matrix.scaling(2, 3, 4)
+      p = Tuple.point(-4, 6, 8)
+    })
+
+    describe('when multiplying transform by p', () => {
+      it('should return the expected point', () => {
+        expect(transform.mul(p)).to.equal(Tuple.point(-8, 18, 32))
+      })
+    })
+  })
+
+  /*
+    Scenario: A scaling matrix applied to a vector
+      Given transform ← scaling(2, 3, 4)
+        And v ← vector(-4, 6, 8)
+      Then transform * v = vector(-8, 18, 32)
+  */
+  describe('given a scaling matrix and a vector', () => {
+    let transform: Matrix
+    let v: Tuple
+
+    beforeEach(() => {
+      transform = Matrix.scaling(2, 3, 4)
+      v = Tuple.vector(-4, 6, 8)
+    })
+
+    describe('when multiplying transform by v', () => {
+      it('should return the expected vector', () => {
+        expect(transform.mul(v)).to.equal(Tuple.vector(-8, 18, 32))
+      })
+    })
+  })
+
+  /*
+  Scenario: Multiplying by the inverse of a scaling matrix
+    Given transform ← scaling(2, 3, 4)
+      And inv ← inverse(transform)
+      And v ← vector(-4, 6, 8)
+    Then inv * v = vector(-2, 2, 2)
+  */
+  describe('given a scaling matrix and a vector', () => {
+    let transform: Matrix
+    let inv: Matrix
+    let v: Tuple
+
+    beforeEach(() => {
+      transform = Matrix.scaling(2, 3, 4)
+      inv = transform.inverse()
+      v = Tuple.vector(-4, 6, 8)
+    })
+
+    describe('when multiplying inv by v', () => {
+      it('should return the expected vector', () => {
+        expect(inv.mul(v)).to.equal(Tuple.vector(-2, 2, 2))
+      })
+    })
+  })
+
+  /*
+    Scenario: Reflection is scaling by a negative value
+      Given transform ← scaling(-1, 1, 1)
+        And p ← point(2, 3, 4)
+      Then transform * p = point(-2, 3, 4)
+  */
+  describe('given a scaling matrix and a point', () => {
+    let transform: Matrix
+    let p: Tuple
+
+    beforeEach(() => {
+      transform = Matrix.scaling(-1, 1, 1)
+      p = Tuple.point(2, 3, 4)
+    })
+
+    describe('when multiplying transform by p', () => {
+      it('should return the expected point', () => {
+        expect(transform.mul(p)).to.equal(Tuple.point(-2, 3, 4))
+      })
+    })
+  })
+
+  /*
+    Scenario: Rotating a point around the x axis
+      Given p ← point(0, 1, 0)
+        And half_quarter ← rotation_x(π / 4)
+        And full_quarter ← rotation_x(π / 2)
+      Then half_quarter * p = point(0, √2/2, √2/2)
+        And full_quarter * p = point(0, 0, 1)
+  */
+  describe('given a point and two x rotation matrices', () => {
+    let p: Tuple
+    let halfQuarter: Matrix
+    let fullQuarter: Matrix
+
+    beforeEach(() => {
+      p = Tuple.point(0, 1, 0)
+      halfQuarter = Matrix.rotationX(Math.PI / 4)
+      fullQuarter = Matrix.rotationX(Math.PI / 2)
+    })
+
+    describe('when multiplying halfQuarter by p', () => {
+      it('should return the expected point', () => {
+        expect(halfQuarter.mul(p)).to.equal(
+          Tuple.point(0, Math.sqrt(2) / 2, Math.sqrt(2) / 2)
+        )
+      })
+    })
+
+    describe('when multiplying fullQuarter by p', () => {
+      it('should return the expected point', () => {
+        expect(fullQuarter.mul(p)).to.equal(Tuple.point(0, 0, 1))
+      })
+    })
+  })
+
+  /*
+    Scenario: The inverse of an x-rotation rotates in the opposite direction
+      Given p ← point(0, 1, 0)
+        And half_quarter ← rotation_x(π / 4)
+        And inv ← inverse(half_quarter)
+      Then inv * p = point(0, √2/2, -√2/2)
+  */
+  describe('given a point and an x rotation matrix', () => {
+    let p: Tuple
+    let halfQuarter: Matrix
+    let inv: Matrix
+
+    beforeEach(() => {
+      p = Tuple.point(0, 1, 0)
+      halfQuarter = Matrix.rotationX(Math.PI / 4)
+      inv = halfQuarter.inverse()
+    })
+
+    describe('when multiplying inv by p', () => {
+      it('should return the expected point', () => {
+        expect(inv.mul(p)).to.equal(Tuple.point(0, Math.sqrt(2) / 2, -Math.sqrt(2) / 2))
+      })
+    })
+  })
+
+  /*
+    Scenario: Rotating a point around the y axis
+      Given p ← point(0, 0, 1)
+        And half_quarter ← rotation_y(π / 4)
+        And full_quarter ← rotation_y(π / 2)
+      Then half_quarter * p = point(√2/2, 0, √2/2)
+        And full_quarter * p = point(1, 0, 0)
+  */
+  describe('given a point and two y rotation matrices', () => {
+    let p: Tuple
+    let halfQuarter: Matrix
+    let fullQuarter: Matrix
+
+    beforeEach(() => {
+      p = Tuple.point(0, 0, 1)
+      halfQuarter = Matrix.rotationY(Math.PI / 4)
+      fullQuarter = Matrix.rotationY(Math.PI / 2)
+    })
+
+    describe('when multiplying halfQuarter by p', () => {
+      it('should return the expected point', () => {
+        expect(halfQuarter.mul(p)).to.equal(
+          Tuple.point(Math.sqrt(2) / 2, 0, Math.sqrt(2) / 2)
+        )
+      })
+    })
+
+    describe('when multiplying fullQuarter by p', () => {
+      it('should return the expected point', () => {
+        expect(fullQuarter.mul(p)).to.equal(Tuple.point(1, 0, 0))
+      })
+    })
+  })
+
+  /*
+  Scenario: Rotating a point around the z axis
+    Given p ← point(0, 1, 0)
+      And half_quarter ← rotation_z(π / 4)
+      And full_quarter ← rotation_z(π / 2)
+    Then half_quarter * p = point(-√2/2, √2/2, 0)
+      And full_quarter * p = point(-1, 0, 0)
+  */
+  describe('given a point and two z rotation matrices', () => {
+    let p: Tuple
+    let halfQuarter: Matrix
+    let fullQuarter: Matrix
+
+    beforeEach(() => {
+      p = Tuple.point(0, 1, 0)
+      halfQuarter = Matrix.rotationZ(Math.PI / 4)
+      fullQuarter = Matrix.rotationZ(Math.PI / 2)
+    })
+
+    describe('when multiplying halfQuarter by p', () => {
+      it('should return the expected point', () => {
+        expect(halfQuarter.mul(p)).to.equal(
+          Tuple.point(-Math.sqrt(2) / 2, Math.sqrt(2) / 2, 0)
+        )
+      })
+    })
+
+    describe('when multiplying fullQuarter by p', () => {
+      it('should return the expected point', () => {
+        expect(fullQuarter.mul(p)).to.equal(Tuple.point(-1, 0, 0))
+      })
+    })
+  })
+
+  describe('given a shearing matrix and a point', () => {
+    let transform: Matrix
+    let p: Tuple
+
+    beforeEach(() => {
+      p = Tuple.point(2, 3, 4)
+    })
+
+    /*
+    Scenario: A shearing transformation moves x in proportion to y
+      Given transform ← shearing(1, 0, 0, 0, 0, 0)
+        And p ← point(2, 3, 4)
+      Then transform * p = point(5, 3, 4)
+    */
+    describe('when shearing x in proportion to y', () => {
+      beforeEach(() => {
+        transform = Matrix.shearing(1, 0, 0, 0, 0, 0)
+      })
+
+      it('should return the expected point', () => {
+        expect(transform.mul(p)).to.equal(Tuple.point(5, 3, 4))
+      })
+    })
+
+    /*
+      Scenario: A shearing transformation moves x in proportion to z
+        Given transform ← shearing(0, 1, 0, 0, 0, 0)
+          And p ← point(2, 3, 4)
+        Then transform * p = point(6, 3, 4)
+    */
+    describe('when shearing x in proportion to z', () => {
+      beforeEach(() => {
+        transform = Matrix.shearing(0, 1, 0, 0, 0, 0)
+      })
+
+      it('should return the expected point', () => {
+        expect(transform.mul(p)).to.equal(Tuple.point(6, 3, 4))
+      })
+    })
+
+    /*
+      Scenario: A shearing transformation moves y in proportion to x
+        Given transform ← shearing(0, 0, 1, 0, 0, 0)
+          And p ← point(2, 3, 4)
+        Then transform * p = point(2, 5, 4)
+    */
+    describe('when shearing y in proportion to x', () => {
+      beforeEach(() => {
+        transform = Matrix.shearing(0, 0, 1, 0, 0, 0)
+      })
+
+      it('should return the expected point', () => {
+        expect(transform.mul(p)).to.equal(Tuple.point(2, 5, 4))
+      })
+    })
+
+    /*
+      Scenario: A shearing transformation moves y in proportion to z
+        Given transform ← shearing(0, 0, 0, 1, 0, 0)
+          And p ← point(2, 3, 4)
+        Then transform * p = point(2, 7, 4)
+    */
+    describe('when shearing y in proportion to z', () => {
+      beforeEach(() => {
+        transform = Matrix.shearing(0, 0, 0, 1, 0, 0)
+      })
+
+      it('should return the expected point', () => {
+        expect(transform.mul(p)).to.equal(Tuple.point(2, 7, 4))
+      })
+    })
+
+    /*
+      Scenario: A shearing transformation moves z in proportion to x
+        Given transform ← shearing(0, 0, 0, 0, 1, 0)
+          And p ← point(2, 3, 4)
+        Then transform * p = point(2, 3, 6)
+    */
+    describe('when shearing z in proportion to x', () => {
+      beforeEach(() => {
+        transform = Matrix.shearing(0, 0, 0, 0, 1, 0)
+      })
+
+      it('should return the expected point', () => {
+        expect(transform.mul(p)).to.equal(Tuple.point(2, 3, 6))
+      })
+    })
+
+    /*
+      Scenario: A shearing transformation moves z in proportion to y
+        Given transform ← shearing(0, 0, 0, 0, 0, 1)
+          And p ← point(2, 3, 4)
+        Then transform * p = point(2, 3, 7)
+    */
+    describe('when shearing z in proportion to y', () => {
+      beforeEach(() => {
+        transform = Matrix.shearing(0, 0, 0, 0, 0, 1)
+      })
+
+      it('should return the expected point', () => {
+        expect(transform.mul(p)).to.equal(Tuple.point(2, 3, 7))
+      })
+    })
+  })
+
+  /*
+    Scenario: Individual transformations are applied in sequence
+      Given p ← point(1, 0, 1)
+        And A ← rotation_x(π / 2)
+        And B ← scaling(5, 5, 5)
+        And C ← translation(10, 5, 7)
+      # apply rotation first
+      When p2 ← A * p
+      Then p2 = point(1, -1, 0)
+      # then apply scaling
+      When p3 ← B * p2
+      Then p3 = point(5, -5, 0)
+      # then apply translation
+      When p4 ← C * p3
+      Then p4 = point(15, 0, 7)
+  */
+  describe('given a point and three matrices', () => {
+    let p: Tuple
+    let A: Matrix
+    let B: Matrix
+    let C: Matrix
+
+    beforeEach(() => {
+      p = Tuple.point(1, 0, 1)
+      A = Matrix.rotationX(Math.PI / 2)
+      B = Matrix.scaling(5, 5, 5)
+      C = Matrix.translation(10, 5, 7)
+    })
+
+    describe('when applying the transformations in sequence', () => {
+      let p2: Tuple
+      let p3: Tuple
+      let p4: Tuple
+
+      beforeEach(() => {
+        p2 = A.mul(p)
+        p3 = B.mul(p2)
+        p4 = C.mul(p3)
+      })
+
+      it('should return the expected point', () => {
+        expect(p2).to.equal(Tuple.point(1, -1, 0))
+        expect(p3).to.equal(Tuple.point(5, -5, 0))
+        expect(p4).to.equal(Tuple.point(15, 0, 7))
+      })
+    })
+  })
+
+  describe('chainable transformations', () => {
+    it('should be applied in reverse order', () => {
+      const p = Tuple.point(1, 0, 1)
+      const T = Matrix.transformation()
+        .rotateX(Math.PI / 2)
+        .scale(5, 5, 5)
+        .translate(10, 5, 7)
+      expect(T.mul(p)).to.equal(Tuple.point(15, 0, 7))
+    })
+  })
 })

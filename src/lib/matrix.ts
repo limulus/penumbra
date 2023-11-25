@@ -10,6 +10,75 @@ export class Matrix extends TwoDimensionalArray {
     return matrix
   }
 
+  static rotationX(radians: number) {
+    const transform = new Matrix(4, 4)
+    transform.set(0, 0, 1)
+    transform.set(1, 1, Math.cos(radians))
+    transform.set(1, 2, -Math.sin(radians))
+    transform.set(2, 1, Math.sin(radians))
+    transform.set(2, 2, Math.cos(radians))
+    transform.set(3, 3, 1)
+    return transform
+  }
+
+  static rotationY(radians: number) {
+    const transform = new Matrix(4, 4)
+    transform.set(0, 0, Math.cos(radians))
+    transform.set(1, 1, 1)
+    transform.set(0, 2, Math.sin(radians))
+    transform.set(2, 0, -Math.sin(radians))
+    transform.set(2, 2, Math.cos(radians))
+    transform.set(3, 3, 1)
+    return transform
+  }
+
+  static rotationZ(radians: number) {
+    const transform = new Matrix(4, 4)
+    transform.set(0, 0, Math.cos(radians))
+    transform.set(0, 1, -Math.sin(radians))
+    transform.set(1, 0, Math.sin(radians))
+    transform.set(1, 1, Math.cos(radians))
+    transform.set(2, 2, 1)
+    transform.set(3, 3, 1)
+    return transform
+  }
+
+  static scaling(x: number, y: number, z: number) {
+    const transform = new Matrix(4, 4)
+    transform.set(0, 0, x)
+    transform.set(1, 1, y)
+    transform.set(2, 2, z)
+    transform.set(3, 3, 1)
+    return transform
+  }
+
+  static shearing(xy: number, xz: number, yx: number, yz: number, zx: number, zy: number) {
+    const transform = Matrix.identity(4)
+    transform.set(0, 1, xy)
+    transform.set(0, 2, xz)
+    transform.set(1, 0, yx)
+    transform.set(1, 2, yz)
+    transform.set(2, 0, zx)
+    transform.set(2, 1, zy)
+    return transform
+  }
+
+  static transformation() {
+    const chainable = Matrix.identity(4)
+    chainable.#operationStack = []
+    return chainable
+  }
+
+  static translation(x: number, y: number, z: number) {
+    const transform = Matrix.identity(4)
+    transform.set(0, 3, x)
+    transform.set(1, 3, y)
+    transform.set(2, 3, z)
+    return transform
+  }
+
+  #operationStack?: Matrix[]
+
   constructor(rows: number, columns: number)
   constructor(values: number[][])
   constructor(arg1: number[][] | number, columns?: number) {
@@ -35,6 +104,19 @@ export class Matrix extends TwoDimensionalArray {
         }
       }
     }
+  }
+
+  protected override get values() {
+    if (this.#operationStack) {
+      const operationStack = this.#operationStack
+      this.#operationStack = undefined
+      const result = operationStack.reduceRight(
+        (result, operation) => result.mul(operation),
+        this
+      )
+      super.values = result.values
+    }
+    return super.values
   }
 
   cofactor(row: number, column: number): number {
@@ -97,6 +179,34 @@ export class Matrix extends TwoDimensionalArray {
     return result
   }
 
+  #pushOperation(operation: Matrix): this {
+    if (!this.#operationStack) {
+      throw new Error('Attempted to push operation to non-chainable matrix')
+    }
+    this.#operationStack.push(operation)
+    return this
+  }
+
+  rotateX(radians: number) {
+    return this.#pushOperation(Matrix.rotationX(radians))
+  }
+
+  rotateY(radians: number) {
+    return this.#pushOperation(Matrix.rotationY(radians))
+  }
+
+  rotateZ(radians: number) {
+    return this.#pushOperation(Matrix.rotationZ(radians))
+  }
+
+  scale(x: number, y: number, z: number) {
+    return this.#pushOperation(Matrix.scaling(x, y, z))
+  }
+
+  shear(xy: number, xz: number, yx: number, yz: number, zx: number, zy: number) {
+    return this.#pushOperation(Matrix.shearing(xy, xz, yx, yz, zx, zy))
+  }
+
   submatrix(rowToRemove: number, columnToRemove: number): Matrix {
     const submatrix = new Matrix(this.rows - 1, this.columns - 1)
     for (let i = 0, si = 0; i < this.rows; i++) {
@@ -109,6 +219,10 @@ export class Matrix extends TwoDimensionalArray {
       ++si
     }
     return submatrix
+  }
+
+  translate(x: number, y: number, z: number) {
+    return this.#pushOperation(Matrix.translation(x, y, z))
   }
 
   transpose(): Matrix {
