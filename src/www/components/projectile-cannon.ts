@@ -84,18 +84,13 @@ class SceneAnimator {
   constructor(ctx: CanvasRenderingContext2D) {
     this.scene = new Scene()
     this.renderer = new Renderer(ctx)
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      this.start()
-    })
   }
 
   onAnimationFrameRequest(time: number) {
     const deltaTime = this.lastRenderTime === -Infinity ? 0 : time - this.lastRenderTime
     this.lastRenderTime = time
-    if (deltaTime === 0 || this.scene.advance(deltaTime)) {
-      this.renderer.render(this.scene)
-    }
+    this.scene = this.scene.advance(deltaTime)
+    this.renderer.render(this.scene)
     this.requestAnimationFrame()
   }
 
@@ -142,7 +137,7 @@ class SceneObject {
 class Projectile extends SceneObject {}
 
 class Scene {
-  readonly environment = {
+  static readonly environment = {
     gravity: Tuple.vector(0, -0.1, 0),
     wind: Tuple.vector(-0.01, -0.01, -0.01),
   }
@@ -153,30 +148,43 @@ class Scene {
     this.objects.push(projectile)
   }
 
-  advance(deltaTime: number): boolean {
+  advance(deltaTime: number): Scene | this {
+    if (this.objects.length === 0) return this
+    if (this.objects.every((projectile) => projectile.position.y <= 0)) return this
+
     deltaTime /= 10
-    let changed = false
+
+    const scene = new Scene()
     this.objects.forEach((projectile) => {
-      if (projectile.position.y <= 0) return
-      changed = true
-      projectile.position = projectile.position.add(projectile.velocity.mul(deltaTime))
-      projectile.velocity = projectile.velocity
-        .add(this.environment.gravity.mul(deltaTime))
-        .add(this.environment.wind.mul(deltaTime))
+      if (projectile.position.y > 0) {
+        projectile = new Projectile(
+          projectile.position.add(projectile.velocity.mul(deltaTime)),
+          projectile.velocity
+            .add(Scene.environment.gravity.mul(deltaTime))
+            .add(Scene.environment.wind.mul(deltaTime))
+        )
+      }
+      scene.addObject(projectile)
     })
-    return changed
+
+    return scene
   }
 }
 
 class Renderer {
   private darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  private renderDependencyCache: any[] = []
 
   constructor(private ctx: CanvasRenderingContext2D) {}
 
   render(scene: Scene) {
-    this.clear()
-    this.drawObjects(scene.objects)
-    this.drawSceneInfo(scene)
+    const deps = [this.primaryColor, scene]
+    if (!deps.every((dep, index) => dep === this.renderDependencyCache[index])) {
+      this.clear()
+      this.drawObjects(scene.objects)
+      this.drawSceneInfo(scene)
+      this.renderDependencyCache = deps
+    }
   }
 
   private clear() {
