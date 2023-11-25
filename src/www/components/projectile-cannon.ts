@@ -92,7 +92,7 @@ class SceneAnimator {
 
   onAnimationFrameRequest(time: number) {
     this.rafHandle = requestAnimationFrame(this.onAnimationFrameRequest.bind(this))
-    const deltaTime = time - this.lastRenderTime
+    const deltaTime = this.lastRenderTime === 0 ? 0 : time - this.lastRenderTime
     this.lastRenderTime = time
     this.scene.advance(deltaTime)
     this.renderer.render(this.scene)
@@ -105,9 +105,7 @@ class SceneAnimator {
 
   start() {
     if (this.rafHandle !== 0) return
-    const now = performance.now()
-    this.lastRenderTime = now
-    this.onAnimationFrameRequest(now)
+    this.rafHandle = requestAnimationFrame(this.onAnimationFrameRequest.bind(this))
   }
 
   stop() {
