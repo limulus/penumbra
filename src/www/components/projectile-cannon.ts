@@ -76,7 +76,7 @@ export class ProjectileCannon extends HTMLElement {
 }
 
 class SceneAnimator {
-  private lastRenderTime = 0
+  private lastRenderTime = -Infinity
   private rafHandle = 0
   private renderer: Renderer
   protected scene: Scene
@@ -91,21 +91,28 @@ class SceneAnimator {
   }
 
   onAnimationFrameRequest(time: number) {
-    this.rafHandle = requestAnimationFrame(this.onAnimationFrameRequest.bind(this))
-    const deltaTime = this.lastRenderTime === 0 ? 0 : time - this.lastRenderTime
+    const deltaTime = this.lastRenderTime === -Infinity ? 0 : time - this.lastRenderTime
     this.lastRenderTime = time
-    this.scene.advance(deltaTime)
-    this.renderer.render(this.scene)
+    if (deltaTime === 0 || this.scene.advance(deltaTime)) {
+      this.renderer.render(this.scene)
+    }
+    this.requestAnimationFrame()
+  }
+
+  requestAnimationFrame() {
+    this.rafHandle = requestAnimationFrame((time) => {
+      this.onAnimationFrameRequest(time)
+    })
   }
 
   reset() {
     this.scene = new Scene()
-    this.start()
+    this.lastRenderTime = -Infinity
   }
 
   start() {
     if (this.rafHandle !== 0) return
-    this.rafHandle = requestAnimationFrame(this.onAnimationFrameRequest.bind(this))
+    this.requestAnimationFrame()
   }
 
   stop() {
@@ -116,16 +123,6 @@ class SceneAnimator {
 }
 
 class ProjectileCannonSceneAnimator extends SceneAnimator {
-  onAnimationFrameRequest(time: number): void {
-    super.onAnimationFrameRequest(time)
-    if (
-      this.scene.objects.length === 0 ||
-      this.scene.objects.every((projectile) => projectile.position.y <= 0)
-    ) {
-      this.stop()
-    }
-  }
-
   fireProjectile(projectile: Projectile) {
     this.scene.addObject(projectile)
     this.start()
@@ -156,15 +153,18 @@ class Scene {
     this.objects.push(projectile)
   }
 
-  advance(deltaTime: number) {
+  advance(deltaTime: number): boolean {
     deltaTime /= 10
+    let changed = false
     this.objects.forEach((projectile) => {
       if (projectile.position.y <= 0) return
+      changed = true
       projectile.position = projectile.position.add(projectile.velocity.mul(deltaTime))
       projectile.velocity = projectile.velocity
         .add(this.environment.gravity.mul(deltaTime))
         .add(this.environment.wind.mul(deltaTime))
     })
+    return changed
   }
 }
 
