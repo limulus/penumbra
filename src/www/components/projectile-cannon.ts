@@ -16,8 +16,8 @@ export class ProjectileCannon extends HTMLElement {
       <button name="clear">Clear</button>
     `
 
-    const sheet = new CSSStyleSheet()
-    sheet.replaceSync(/* CSS */ `
+    const style = document.createElement('style')
+    style.textContent = /* CSS */ `
       label {
         display: block;
       }
@@ -37,8 +37,8 @@ export class ProjectileCannon extends HTMLElement {
           filter: invert(.92);
         }
       }
-    `)
-    this.shadowRoot.adoptedStyleSheets = [sheet]
+    `
+    this.shadowRoot.appendChild(style)
 
     const canvas = this.shadowRoot.querySelector('canvas') as HTMLCanvasElement
     const ctx = canvas.getContext('2d')
@@ -58,7 +58,7 @@ export class ProjectileCannon extends HTMLElement {
         (this.shadowRoot!.querySelector('input[name="z"]') as HTMLInputElement).value
       )
       this.sceneAnimator!.fireProjectile(
-        new Projectile(Tuple.point(0, 1, 0), Tuple.vector(x, y, z))
+        new Projectile(Tuple.point(0, 3, 0), Tuple.vector(x, y, z))
       )
     })
 
