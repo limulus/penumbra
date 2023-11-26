@@ -25,7 +25,7 @@
     "build:dts": "tsc --incremental false --declaration --declarationMap --emitDeclarationOnly --outDir dist/types",
     "build:esm": "tsc --incremental false --outDir dist/esm",
     "build:cjs:pkg": "mkdirp dist/cjs && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
-    "build:www": "esbuild src/www/**/*.ts --bundle --sourcemap --format=esm --outdir=dist/www/js",
+    "build:www": "esbuild src/www/**/*.ts --bundle --minify --sourcemap --format=esm --outdir=dist/www/js",
     "postbuild": "eleventy",
     "clean": "del *.tsbuildinfo coverage dist",
     "predev": "npm run clean",
