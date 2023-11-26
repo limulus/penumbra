@@ -3,7 +3,7 @@ import { outdent } from 'outdent'
 
 import { Canvas } from './canvas.js'
 import { Tuple } from './tuple.js'
-import { Feature, Scenario, Then, And, Given, When } from '../gherkin.js'
+import { Feature, Scenario, Then, And, Given, When } from '../spec/gherkin.js'
 
 Feature('Canvas', () => {
   /*

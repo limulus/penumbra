@@ -1,11 +1,11 @@
 import { Assertion } from 'chai'
 
-import '../../lib/matrix.spec.js'
-import '../../lib/canvas.spec.js'
-import '../../lib/tuple.spec.js'
-import '../../lib/util/equal.spec.js'
-import { TwoDimensionalArray } from '../../lib/two-dimenisonal-array.js'
-import equal from '../../lib/util/equal.js'
+import '../lib/matrix.spec.js'
+import '../lib/canvas.spec.js'
+import '../lib/tuple.spec.js'
+import '../lib/util/equal.spec.js'
+import { TwoDimensionalArray } from '../lib/two-dimenisonal-array.js'
+import equal from '../lib/util/equal.js'
 
 Assertion.overwriteMethod('equal', (_super) => {
   return function (this: typeof Assertion, ...args: unknown[]) {
