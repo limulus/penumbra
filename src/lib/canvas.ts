@@ -13,13 +13,13 @@ export class Canvas {
   }
 
   pixelAt(x: number, y: number) {
-    let offset = (y * this.width + x) * 3
+    let offset = (Math.floor(y) * this.width + Math.floor(x)) * 3
     return Tuple.color(this.data[offset], this.data[++offset], this.data[++offset])
   }
 
   writePixel(x: number, y: number, color: Tuple) {
     const { data } = this
-    let offset = (y * this.width + x) * 3
+    let offset = (Math.floor(y) * this.width + Math.floor(x)) * 3
     data[offset] = color.red
     data[++offset] = color.green
     data[++offset] = color.blue
