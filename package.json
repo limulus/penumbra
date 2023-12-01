@@ -31,7 +31,7 @@
     "clean": "del *.tsbuildinfo coverage dist",
     "predev": "npm run clean",
     "dev": "concurrently -c auto 'npm:dev:*'",
-    "dev:esbuild": "concurrently -c auto -P 'npm:build:www:* -- {@}' -- --watch",
+    "dev:esbuild": "concurrently -c auto -P 'npm:build:www:* -- {@}' -- --watch --minify=false",
     "dev:eleventy": "eleventy --serve",
     "lint": "eslint *.cjs src",
     "prepack": "npm run build",
