@@ -308,4 +308,15 @@ Feature('Canvas', () => {
       })
     })
   })
+
+  describe('writePixel()', () => {
+    describe('when called with color values instead of a Tuple', () => {
+      it('should write those color values to the canvas', () => {
+        const c = new Canvas(1, 1)
+        expect(c.pixelAt(0, 0)).to.equal(Tuple.color(0, 0, 0))
+        c.writePixel(0, 0, 1, 0, 0)
+        expect(c.pixelAt(0, 0)).to.equal(Tuple.color(1, 0, 0))
+      })
+    })
+  })
 })

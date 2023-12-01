@@ -13,16 +13,29 @@ export class Canvas {
   }
 
   pixelAt(x: number, y: number) {
-    let offset = (Math.floor(y) * this.width + Math.floor(x)) * 3
-    return Tuple.color(this.data[offset], this.data[++offset], this.data[++offset])
+    const offset = this.pixelOffset(x, y)
+    return Tuple.color(this.data[offset + 0], this.data[offset + 1], this.data[offset + 2])
   }
 
-  writePixel(x: number, y: number, color: Tuple) {
-    const { data } = this
-    let offset = (Math.floor(y) * this.width + Math.floor(x)) * 3
-    data[offset] = color.red
-    data[++offset] = color.green
-    data[++offset] = color.blue
+  private pixelOffset(x: number, y: number): number {
+    return (Math.floor(y) * this.width + Math.floor(x)) * 3
+  }
+
+  writePixel(x: number, y: number, color: Tuple): void
+  writePixel(x: number, y: number, red: number, green: number, blue: number): void
+  writePixel(
+    x: number,
+    y: number,
+    colorOrRed: number | Tuple,
+    green?: number,
+    blue?: number
+  ): void {
+    if (colorOrRed instanceof Tuple)
+      return this.writePixel(x, y, colorOrRed.red, colorOrRed.green, colorOrRed.blue)
+    const offset = this.pixelOffset(x, y)
+    this.data[offset + 0] = colorOrRed
+    this.data[offset + 1] = green!
+    this.data[offset + 2] = blue!
   }
 
   toImageData(): ImageData {
