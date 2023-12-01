@@ -29,9 +29,9 @@ export class Canvas {
     const image = new ImageData(this.width, this.height)
 
     for (let i = 0, j = 0; i < this.data.length; i += 3, j += 4) {
-      image.data[j] = floatToByte(this.data[i])
-      image.data[j + 1] = floatToByte(this.data[i + 1])
-      image.data[j + 2] = floatToByte(this.data[i + 2])
+      image.data[j] = this.data[i] * 255
+      image.data[j + 1] = this.data[i + 1] * 255
+      image.data[j + 2] = this.data[i + 2] * 255
       image.data[j + 3] = 255
     }
 
