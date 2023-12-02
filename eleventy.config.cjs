@@ -30,7 +30,7 @@ module.exports = function (eleventyConfig) {
         next()
       },
     ],
-    watch: ['dist/www/js/**/*.{css,js}'],
+    watch: ['dist/www/demo/**/*.{css,js}'],
   })
 
   return { dir: { input, output, layouts }, pathPrefix: '/penumbra/' }

@@ -18,9 +18,7 @@ projectile on a canvas. Here it is in action:
 
 <figure>
   <figcaption>
-    <a href="https://github.com/limulus/penumbra/blob/main/src/www/components/projectile-cannon.ts">
-      Source code
-    </a>
+    <a href="https://github.com/limulus/penumbra/blob/main/src/demo/projectile-cannon/index.ts">&lt;projectile-cannon&gt;</a>
   </figcaption>
   <projectile-cannon>
     Loading…
@@ -28,7 +26,7 @@ projectile on a canvas. Here it is in action:
 </figure>
 
 <script type="module" async>
-  import { ProjectileCannon } from '../../js/components/projectile-cannon.js'
+  import { ProjectileCannon } from '../../demo/projectile-cannon/index.js'
   customElements.define('projectile-cannon', ProjectileCannon)
 </script>
 
