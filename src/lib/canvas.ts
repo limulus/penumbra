@@ -18,7 +18,7 @@ export class Canvas {
   }
 
   private pixelOffset(x: number, y: number): number {
-    return (Math.floor(y) * this.width + Math.floor(x)) * 3
+    return (Math.round(y) * this.width + Math.round(x)) * 3
   }
 
   writePixel(x: number, y: number, color: Tuple): void
