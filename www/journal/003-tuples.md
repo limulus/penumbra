@@ -21,7 +21,8 @@ projectile on a canvas. Here it is in action:
     <a href="https://github.com/limulus/penumbra/blob/main/src/demo/projectile-cannon/index.ts">&lt;projectile-cannon&gt;</a>
   </figcaption>
   <projectile-cannon>
-    Loading…
+    <script>document.write('Loading…')</script>
+    <noscript>Enable JavaScript to view the &lt;projectile-cannon&gt; demo.</noscript>
   </projectile-cannon>
 </figure>
 
