@@ -2,6 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+
+    <link
+      rel="preload"
+      href="/assets/fonts/mona-sans.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/assets/fonts/monaspace-neon.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title webc:type="11ty" @11ty:type="liquid" webc:keep>Penumbra | {{ title }}</title>
 

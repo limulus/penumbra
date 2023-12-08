@@ -1,6 +1,17 @@
 @font-face {
+  font-family: 'Mona Sans';
+  src:
+    url('../assets/fonts/mona-sans.woff2') format('woff2 supports variations'),
+    url('../assets/fonts/mona-sans.woff2') format('woff2-variations');
+  font-weight: 200 900;
+  font-stretch: 75% 125%;
+}
+
+@font-face {
   font-family: 'Monaspace Neon';
-  src: url('/penumbra/assets/fonts/monaspace-neon.woff2') format('woff2');
+  src:
+    url('../assets/fonts/monaspace-neon.woff2') format('woff2 supports variations'),
+    url('../assets/fonts/monaspace-neon.woff2') format('woff2-variations');
   font-weight: 200 800;
   font-display: swap;
   font-style: oblique -11deg 0deg;
@@ -12,7 +23,7 @@ html,
 body {
   background-color: #f5f5f5;
   color: #333;
-  font-family: sans-serif;
+  font-family: 'Mona Sans', sans-serif;
   font-size: 1rem;
   line-height: 1.5;
 }
@@ -22,7 +33,7 @@ html {
 body {
   margin: 0 auto;
   max-width: 800px;
-  padding: 0 2rem;
+  padding: 0 2rem 2rem 2rem;
 }
 
 a {
