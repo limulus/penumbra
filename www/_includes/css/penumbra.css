@@ -51,6 +51,9 @@ a:visited {
   white-space: nowrap;
   width: 1px;
 }
+.visually-hidden:focus {
+  position: absolute;
+}
 
 body > header {
   display: flex;
