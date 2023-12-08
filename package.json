@@ -74,6 +74,7 @@
     "del-cli": "^5.1.0",
     "esbuild": "^0.19.5",
     "eslint": "^8.52.0",
+    "highlight.js": "^11.9.0",
     "husky": "^8.0.3",
     "is-ci": "^3.0.1",
     "markdown-it": "^13.0.2",

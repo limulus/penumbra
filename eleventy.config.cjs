@@ -1,6 +1,7 @@
 const { EleventyHtmlBasePlugin } = require('@11ty/eleventy')
 const pluginRss = require('@11ty/eleventy-plugin-rss')
 const pluginWebc = require('@11ty/eleventy-plugin-webc')
+const hljs = require('highlight.js')
 const markdownIt = require('markdown-it')
 const markdownItFootnote = require('markdown-it-footnote')
 
@@ -15,10 +16,23 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(pluginRss)
   eleventyConfig.addPlugin(pluginWebc, { components })
 
-  eleventyConfig.amendLibrary('md', (mdLib) => mdLib.use(markdownItFootnote))
+  const md = markdownIt({
+    html: true,
+    linkify: true,
+    highlight: (str, language) => {
+      if (language && hljs.getLanguage(language)) {
+        return (
+          '<pre><code class="hljs">' +
+          hljs.highlight(str, { language, ignoreIllegals: true }).value +
+          '</code></pre>'
+        )
+      }
+      return '' // use external default escaping
+    },
+  })
+  md.use(markdownItFootnote)
+  eleventyConfig.setLibrary('md', md)
 
-  // Markdownify filter
-  const md = markdownIt({ html: true, linkify: true })
   eleventyConfig.addFilter('markdownify', (mdString) => md.render(mdString))
 
   eleventyConfig.setServerOptions({
