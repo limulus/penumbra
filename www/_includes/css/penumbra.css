@@ -22,12 +22,12 @@ html {
   color: #333;
   font-size: 16px;
   font-family: 'Mona Sans', sans-serif;
-  line-height: 1.5;
+  line-height: 1.7;
   overflow-y: scroll;
 }
 body {
   margin: 0 auto;
-  max-width: 800px;
+  max-width: 45rem;
   padding: 0 2rem 2rem 2rem;
 }
 
@@ -101,15 +101,17 @@ code {
    */
   font-feature-settings: 'calt', 'dlig', 'ss01', 'ss02', 'ss03', 'ss04', 'ss05', 'ss06',
     'ss07', 'ss08';
-  font-size: 0.95em;
+  font-size: 0.95rem;
 }
 
 pre > code.hljs {
   display: block;
   overflow-x: auto;
-  padding: 0.85em 1em;
-  border-radius: 0.66666em;
+  padding: 0.75rem 1rem;
+  border-radius: 0.66666rem;
   background-color: #ebebf0;
+  line-height: 1.5;
+  font-size: 0.9rem;
 }
 
 @media (prefers-color-scheme: dark) {
