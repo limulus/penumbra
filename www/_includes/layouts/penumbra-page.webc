@@ -4,7 +4,7 @@ layout: penumbra-base.webc
 
 <link rel="stylesheet" href="../css/normalize.css" />
 <link rel="stylesheet" href="../css/penumbra.css" />
-<link rel="stylesheet" href="../css/tokyo-night.css" />
+<link rel="stylesheet" href="../css/hljs-github.css" />
 
 <a href="#skip" class="visually-hidden">Skip to main content</a>
 
