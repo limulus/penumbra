@@ -1,3 +1,13 @@
+@font-face {
+  font-family: 'Monaspace Neon';
+  src: url('/penumbra/assets/fonts/monaspace-neon.woff2') format('woff2');
+  font-weight: 200 800;
+  font-display: swap;
+  font-style: oblique -11deg 0deg;
+  font-feature-settings: 'calt', 'dlig', 'ss01', 'ss02', 'ss03', 'ss04', 'ss05', 'ss06',
+    'ss07', 'ss08';
+}
+
 html,
 body {
   background-color: #f5f5f5;
@@ -72,6 +82,18 @@ body > header a:visited {
 
 h1.title {
   margin-top: 0;
+}
+
+code {
+  font-family: 'Monaspace Neon', monospace;
+  font-size: 0.9em;
+}
+
+pre > code {
+  display: block;
+  overflow-x: auto;
+  padding: 1em;
+  border-radius: 0.5em;
 }
 
 @media (prefers-color-scheme: dark) {

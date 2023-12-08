@@ -12,6 +12,8 @@ module.exports = function (eleventyConfig) {
   const layouts = '_includes/layouts'
   const components = `${input}/_includes/components/**/*.webc`
 
+  eleventyConfig.addPassthroughCopy(`${input}/assets`)
+
   eleventyConfig.addPlugin(EleventyHtmlBasePlugin)
   eleventyConfig.addPlugin(pluginRss)
   eleventyConfig.addPlugin(pluginWebc, { components })
