@@ -15,7 +15,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addGlobalData('site', { url: 'https://limulus.net/penumbra' })
 
   eleventyConfig.addPassthroughCopy(`${input}/assets`)
-  eleventyConfig.addPassthroughCopy('**/*.{png,svg,jpg,jpeg}')
+  eleventyConfig.addPassthroughCopy(`${input}/**/*.{png,svg,jpg,jpeg}`)
 
   eleventyConfig.addPlugin(EleventyHtmlBasePlugin)
   eleventyConfig.addPlugin(pluginRss)
