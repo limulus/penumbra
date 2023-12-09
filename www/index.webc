@@ -22,7 +22,7 @@ layout: penumbra-page
     <article>
       <time @text="entry.date.toDateString()"></time>
       <h1><a :href="entry.url" @text="entry.data.title"></a><br /></h1>
-      <div class="teaser" @html="markdownify(entry.data.teaser)"></div>
+      <p class="teaser" @html="entry.data.teaser"></p>
     </article>
   </li>
 </ol>

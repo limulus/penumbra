@@ -12,6 +12,8 @@ module.exports = function (eleventyConfig) {
   const layouts = '_includes/layouts'
   const components = `${input}/_includes/components/**/*.webc`
 
+  eleventyConfig.addGlobalData('site', { url: 'https://limulus.net/penumbra' })
+
   eleventyConfig.addPassthroughCopy(`${input}/assets`)
 
   eleventyConfig.addPlugin(EleventyHtmlBasePlugin)
@@ -34,8 +36,6 @@ module.exports = function (eleventyConfig) {
   })
   md.use(markdownItFootnote)
   eleventyConfig.setLibrary('md', md)
-
-  eleventyConfig.addFilter('markdownify', (mdString) => md.render(mdString))
 
   eleventyConfig.setServerOptions({
     domDiff: false,

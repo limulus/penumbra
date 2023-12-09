@@ -3,7 +3,7 @@ tags: journal
 layout: penumbra-journal-entry
 title: One More Yak to Shave
 date: 2023-11-11 15:20:00 -07:00
-teaser: |-
+teaser: >-
   Just one more yak to shave before I can get started on the first test.
 ---
 

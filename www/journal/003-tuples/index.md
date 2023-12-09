@@ -3,7 +3,8 @@ tags: journal
 layout: penumbra-journal-entry
 title: 'Chapter 1: Tuples'
 date: 2023-11-18 19:51:00 -07:00
-teaser: |-
+image: projectile-cannon.png
+teaser: >-
   An interactive web component already!
 ---
 
@@ -18,7 +19,7 @@ projectile on a canvas. Here it is in action:
 
 <figure>
   <figcaption>
-    <a href="https://github.com/limulus/penumbra/blob/main/src/demo/projectile-cannon/index.ts">&lt;projectile-cannon&gt;</a>
+    <a href="https://github.com/limulus/penumbra/blob/main/src/demo/projectile-cannon/index.ts"><code>&lt;projectile-cannon&gt;</code></a>
   </figcaption>
   <projectile-cannon>
     <script>document.write('Loading…')</script>
