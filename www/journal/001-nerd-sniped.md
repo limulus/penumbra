@@ -79,7 +79,7 @@ web design things:
 [webc]: https://www.11ty.dev/docs/languages/webc/
 
 I’ve managed to work through these now, but I’ve run into issues with Eleventy’s dev server
-not updating when it should and mysterious issues with the `webc:for` attribute in bundling
+not updating when it should and mysterious issues with the `webc:keep` attribute in bundling
 mode. This has me wondering if my plan for using Eleventy’s dev server for development will
 work out. But that will have to be the next entry…
 
