@@ -25,7 +25,7 @@
     "build:dts": "tsc -p tsconfig.build.json --incremental false --declaration --declarationMap --emitDeclarationOnly --outDir dist/types",
     "build:esm": "tsc -p tsconfig.build.json --incremental false --outDir dist/esm",
     "build:cjs:pkg": "mkdirp dist/cjs && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
-    "build:www:spec": "esbuild src/spec/**/*.ts --bundle --minify --sourcemap --format=esm --outdir=dist/www/js/spec",
+    "build:www:spec": "esbuild src/spec/**/*.ts --bundle --minify --sourcemap --format=esm --outdir=dist/www/tests/runner/",
     "build:www:demo": "esbuild src/demo/*/index.ts src/demo/*/worker.ts --bundle --minify --sourcemap --format=esm --outbase=src/demo --outdir=dist/www/demo",
     "postbuild": "eleventy",
     "clean": "del *.tsbuildinfo coverage dist",
