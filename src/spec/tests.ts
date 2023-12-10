@@ -1,5 +1,8 @@
 import { Assertion } from 'chai'
 
+import '../lib/intersection.spec.js'
+import '../lib/sphere.spec.js'
+import '../lib/ray.spec.js'
 import '../lib/matrix.spec.js'
 import '../lib/canvas.spec.js'
 import '../lib/tuple.spec.js'
