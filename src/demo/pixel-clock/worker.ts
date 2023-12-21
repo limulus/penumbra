@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import './raf-polyfill.js'
+import '../raf-polyfill.js'
 
 import {
   PixelClockFrameMessage,
