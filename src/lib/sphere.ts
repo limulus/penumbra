@@ -4,6 +4,7 @@ import { Ray } from './ray.js'
 import { Tuple } from './tuple.js'
 
 const identityMatrix = Matrix.identity(4)
+const origin = Tuple.point(0, 0, 0)
 
 export class Sphere {
   #transform: Matrix = identityMatrix
@@ -28,7 +29,7 @@ export class Sphere {
     ray = ray.transform(this.transformInverse)
 
     // Vector from sphere origin to the ray origin
-    const sphereToRayVec = ray.origin.sub(Tuple.point(0, 0, 0))
+    const sphereToRayVec = ray.origin.sub(origin)
 
     // Supporting characters to determine the discriminant and intersection
     const a = ray.direction.dot(ray.direction)
