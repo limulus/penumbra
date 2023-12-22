@@ -1,5 +1,6 @@
 import { Assertion } from 'chai'
 
+import '../lib/ui/touch-pad.spec.js'
 import '../lib/intersection.spec.js'
 import '../lib/sphere.spec.js'
 import '../lib/ray.spec.js'
