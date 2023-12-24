@@ -14,7 +14,6 @@
     url('../assets/fonts/monaspace-neon.woff2') format('woff2-variations');
   font-weight: 200 800;
   font-display: swap;
-  font-style: oblique -11deg 0deg;
 }
 
 html {
@@ -29,6 +28,12 @@ body {
   margin: 0 auto;
   max-width: 45rem;
   padding: 0 2rem 2rem 2rem;
+}
+
+i,
+em {
+  font-style: normal;
+  font-variation-settings: 'slnt' -10;
 }
 
 a {
