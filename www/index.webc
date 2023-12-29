@@ -44,6 +44,6 @@ layout: penumbra-page
     font-weight: normal;
     font-size: 0.8em;
     font-style: italic;
-    color: #999;
+    color: #666;
   }
 </style>
