@@ -23,6 +23,8 @@
     <meta property="og:url" :content="site.url + page.url" />
     <meta webc:if="image" property="og:image" :content="site.url + page.url + image" />
     <meta webc:if="teaser" property="og:description" :content="teaser" />
+
+    <meta webc:if="teaser" name="description" :content="teaser" />
   </head>
   <body @raw="content"></body>
 </html>
