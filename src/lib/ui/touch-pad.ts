@@ -19,7 +19,11 @@ export class TouchPad extends EventTarget implements EventListenerObject {
         if (event.button !== 0) return
         this.element.ownerDocument!.addEventListener('mousemove', this)
         this.element.ownerDocument!.addEventListener('mouseup', this)
-      } else if (event instanceof TouchEvent && event.type === 'touchstart') {
+      } else if (
+        self.TouchEvent &&
+        event instanceof TouchEvent &&
+        event.type === 'touchstart'
+      ) {
         this.element.addEventListener('touchmove', this)
         this.element.addEventListener('touchend', this)
       }
