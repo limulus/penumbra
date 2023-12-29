@@ -41,9 +41,8 @@ layout: penumbra-page
 
   ol.journal time {
     display: block;
-    font-weight: normal;
     font-size: 0.8em;
-    font-style: italic;
+    --var-font-slnt: -10;
     color: #666;
   }
 </style>
