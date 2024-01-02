@@ -19,7 +19,7 @@ export class TwoDimensionalArray {
   }
 
   at(row: number, column: number) {
-    return this.values[this.index(row, column)]
+    return this.values[row * this.columns + column]
   }
 
   equals(other: TwoDimensionalArray) {
@@ -29,12 +29,8 @@ export class TwoDimensionalArray {
     return this.values.every((value, index) => equal(value, other.values[index]))
   }
 
-  private index(row: number, column: number) {
-    return row * this.columns + column
-  }
-
   set(row: number, column: number, value: number) {
-    this.values[this.index(row, column)] = value
+    this.values[row * this.columns + column] = value
   }
 
   toString() {
