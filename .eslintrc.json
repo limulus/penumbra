@@ -1,6 +1,6 @@
 {
   "extends": ["@limulus"],
-  "ignorePatterns": ["dist/**/*"],
+  "ignorePatterns": ["dist/**/*", "src/wasm"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.d.ts"],
