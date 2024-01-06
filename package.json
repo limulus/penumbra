@@ -28,8 +28,8 @@
     "build:www:spec": "esbuild src/spec/**/*.ts --bundle --minify --sourcemap --format=esm --outdir=dist/www/tests/runner/",
     "build:www:demo": "esbuild src/demo/*/index.ts src/demo/*/worker.ts --bundle --minify --sourcemap --format=esm --outbase=src/demo --outdir=dist/www/demo",
     "postbuild": "eleventy",
-    "clean": "del *.tsbuildinfo coverage dist src/wasm",
-    "predev": "npm run clean",
+    "clean": "del *.tsbuildinfo coverage dist",
+    "predev": "npm run prebuild",
     "dev": "concurrently -c auto 'npm:dev:*'",
     "dev:esbuild": "concurrently -c auto -P 'npm:build:www:* -- {@}' -- --watch --minify=false",
     "dev:eleventy": "eleventy --serve",
@@ -42,7 +42,8 @@
     "test": "echo 'No tests yet'",
     "tscc": "tsc --noEmit",
     "verify": "concurrently -c auto npm:lint npm:test npm:tscc npm:wwwc",
-    "wasm": "wasm-pack build --target web --out-dir ../src/wasm --out-name penumbra --no-pack wasm",
+    "wasm": "wasm-pack build --target web --out-dir ../dist/wasm --out-name penumbra --no-pack wasm",
+    "wasm:clean": "cd wasm && cargo clean",
     "wwwc": "eleventy --dryrun"
   },
   "repository": {
