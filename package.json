@@ -19,7 +19,7 @@
   ],
   "type": "module",
   "scripts": {
-    "prebuild": "npm run clean && npm run wasm",
+    "prebuild": "npm run clean && npm run wasm:build",
     "build": "concurrently -c auto 'npm:build:*'",
     "build:cjs": "tsc -p tsconfig.build.json --incremental false --module commonjs --outDir dist/cjs",
     "build:dts": "tsc -p tsconfig.build.json --incremental false --declaration --declarationMap --emitDeclarationOnly --outDir dist/types",
@@ -39,11 +39,13 @@
     "prepare": "concurrently -c auto 'npm:prepare:*'",
     "prepare:git": "is-ci || husky install",
     "prepare:wasm": "npm run prebuild",
-    "test": "echo 'No tests yet'",
+    "test": "npm run wasm:test",
     "tscc": "tsc --noEmit",
     "verify": "concurrently -c auto npm:lint npm:test npm:tscc npm:wwwc",
-    "wasm": "wasm-pack build --target web --out-dir ../dist/wasm --out-name penumbra --no-pack wasm",
+    "wasm:build": "wasm-pack build --target web --out-dir ../dist/wasm --out-name penumbra --no-pack wasm -- --no-default-features --features release",
     "wasm:clean": "cd wasm && cargo clean",
+    "wasm:test": "cd wasm && wasm-pack test --node",
+    "wasm:test:watch": "chokidar wasm/src --initial --command 'npm run wasm:test'",
     "wwwc": "eleventy --dryrun"
   },
   "repository": {
