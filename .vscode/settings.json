@@ -24,5 +24,6 @@
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
   "typescript.tsdk": "./node_modules/typescript/lib",
-  "rust-analyzer.cargo.target": "wasm32-unknown-unknown"
+  "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
+  "rust-analyzer.cargo.features": ["simd"]
 }

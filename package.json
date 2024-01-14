@@ -42,7 +42,7 @@
     "test": "npm run wasm:test",
     "tscc": "tsc --noEmit",
     "verify": "concurrently -c auto npm:lint npm:test npm:tscc npm:wwwc",
-    "wasm:build": "wasm-pack build --target web --out-dir ../dist/wasm --out-name penumbra --no-pack wasm -- --no-default-features --features release",
+    "wasm:build": "wasm-pack build --target web --out-dir ../dist/wasm --out-name penumbra-simd --no-pack wasm -- --no-default-features --features simd",
     "wasm:clean": "cd wasm && cargo clean",
     "wasm:test": "cd wasm && wasm-pack test --node",
     "wasm:test:watch": "chokidar wasm/src --initial --command 'npm run wasm:test'",
