@@ -33,7 +33,7 @@
     "dev": "concurrently -c auto 'npm:dev:*'",
     "dev:esbuild": "concurrently -c auto -P 'npm:build:www:* -- {@}' -- --watch --minify=false",
     "dev:eleventy": "eleventy --serve",
-    "dev:wasm": "chokidar wasm/src --initial --command 'npm run wasm'",
+    "dev:wasm": "chokidar wasm/src --initial --command 'npm run wasm:build'",
     "lint": "eslint *.cjs src",
     "prepack": "npm run build",
     "prepare": "concurrently -c auto 'npm:prepare:*'",
