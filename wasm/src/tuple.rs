@@ -1,15 +1,26 @@
 use std::arch::wasm32::*;
 use std::cmp::PartialEq;
+use std::mem::transmute;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 use crate::fuzzy::EPSILON;
 
 #[derive(Clone, Copy, Debug)]
-pub struct Tuple(v128);
+pub struct Tuple {
+    data: [f32; 4]
+}
 
 impl Tuple {
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Tuple {
-        Tuple(f32x4(x, y, z, w))
+        Tuple {
+            data: [x, y, z, w]
+        }
+    }
+
+    pub fn from_v128(data: v128) -> Tuple {
+        Tuple {
+            data: unsafe { transmute(data) }
+        }
     }
 
     pub fn point(x: f32, y: f32, z: f32) -> Tuple {
@@ -24,8 +35,9 @@ impl Tuple {
         Tuple::new(red, green, blue, alpha)
     }
 
-    pub fn to_rgba(self) -> Tuple {
-        Tuple(f32x4_nearest(f32x4_mul(self.0, f32x4_splat(255.0))))
+    #[inline]
+    pub fn v128(&self) -> v128 {
+        unsafe { transmute(self.data) }
     }
 
     pub fn is_point(self) -> bool {
@@ -37,24 +49,24 @@ impl Tuple {
     }
 
     pub fn x(self) -> f32 {
-        f32x4_extract_lane::<0>(self.0)
+        self.data[0]
     }
 
     pub fn y(self) -> f32 {
-        f32x4_extract_lane::<1>(self.0)
+        self.data[1]
     }
 
     pub fn z(self) -> f32 {
-        f32x4_extract_lane::<2>(self.0)
+        self.data[2]
     }
 
     pub fn w(self) -> f32 {
-        f32x4_extract_lane::<3>(self.0)
+        self.data[3]
     }
 
     fn yzx(self) -> Tuple {
-        Tuple(u8x16_swizzle(
-            self.0,
+        Tuple::from_v128(u8x16_swizzle(
+            self.v128(),
             u8x16(
                 4, 5, 6, 7,
                 8, 9, 10, 11,
@@ -65,8 +77,8 @@ impl Tuple {
     }
 
     fn zxy(self) -> Tuple {
-        Tuple(u8x16_swizzle(
-            self.0,
+        Tuple::from_v128(u8x16_swizzle(
+            self.v128(),
             u8x16(
                 8, 9, 10, 11,
                 0, 1, 2, 3,
@@ -95,13 +107,17 @@ impl Tuple {
     fn sum(self) -> f32 {
         self.x() + self.y() + self.z() + self.w()
     }
+
+    pub fn to_rgba(self) -> Tuple {
+        Tuple::from_v128(f32x4_nearest(f32x4_mul(self.v128(), f32x4_splat(255.0))))
+    }
 }
 
 impl Add<Tuple> for Tuple {
     type Output = Tuple;
 
     fn add(self, other: Tuple) -> Tuple {
-        Tuple(f32x4_add(self.0, other.0))
+        Tuple::from_v128(f32x4_add(self.v128(), other.v128()))
     }
 }
 
@@ -109,7 +125,7 @@ impl Div<f32> for Tuple {
     type Output = Tuple;
 
     fn div(self, other: f32) -> Tuple {
-        Tuple(f32x4_div(self.0, f32x4_splat(other)))
+        Tuple::from_v128(f32x4_div(self.v128(), f32x4_splat(other)))
     }
 }
 
@@ -117,7 +133,7 @@ impl Div<Tuple> for Tuple {
     type Output = Tuple;
 
     fn div(self, other: Tuple) -> Tuple {
-        Tuple(f32x4_div(self.0, other.0))
+        Tuple::from_v128(f32x4_div(self.v128(), other.v128()))
     }
 }
 
@@ -125,7 +141,7 @@ impl Mul<f32> for Tuple {
     type Output = Tuple;
 
     fn mul(self, other: f32) -> Tuple {
-        Tuple(f32x4_mul(self.0, f32x4_splat(other)))
+        Tuple::from_v128(f32x4_mul(self.v128(), f32x4_splat(other)))
     }
 }
 
@@ -133,7 +149,7 @@ impl Mul<Tuple> for Tuple {
     type Output = Tuple;
 
     fn mul(self, other: Tuple) -> Tuple {
-        Tuple(f32x4_mul(self.0, other.0))
+        Tuple::from_v128(f32x4_mul(self.v128(), other.v128()))
     }
 }
 
@@ -141,13 +157,13 @@ impl Neg for Tuple {
     type Output = Tuple;
 
     fn neg(self) -> Self::Output {
-        Tuple(f32x4_neg(self.0))
+        Tuple::from_v128(f32x4_neg(self.v128()))
     }
 }
 
 impl PartialEq<Tuple> for Tuple {
     fn eq(&self, other: &Tuple) -> bool {
-        let diff = f32x4_abs(f32x4_sub(self.0, other.0));
+        let diff = f32x4_abs(f32x4_sub(self.v128(), other.v128()));
         let ge_epsilon = f32x4_ge(diff, f32x4_splat(EPSILON));
         !v128_any_true(ge_epsilon)
     }
@@ -157,7 +173,7 @@ impl Sub<Tuple> for Tuple {
     type Output = Tuple;
 
     fn sub(self, other: Tuple) -> Tuple {
-        Tuple(f32x4_sub(self.0, other.0))
+        Tuple::from_v128(f32x4_sub(self.v128(), other.v128()))
     }
 }
 
