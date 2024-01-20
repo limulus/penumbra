@@ -3,7 +3,7 @@ use std::cmp::PartialEq;
 use std::mem::transmute;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
-use crate::fuzzy::EPSILON;
+use crate::fuzzy::fuzzy_eq_f32x4;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Tuple {
@@ -163,9 +163,7 @@ impl Neg for Tuple {
 
 impl PartialEq<Tuple> for Tuple {
     fn eq(&self, other: &Tuple) -> bool {
-        let diff = f32x4_abs(f32x4_sub(self.v128(), other.v128()));
-        let ge_epsilon = f32x4_ge(diff, f32x4_splat(EPSILON));
-        !v128_any_true(ge_epsilon)
+        fuzzy_eq_f32x4(self.v128(), other.v128())
     }
 }
 
@@ -181,7 +179,7 @@ impl Sub<Tuple> for Tuple {
 mod tests {
     use super::*;
     use wasm_bindgen_test::*;
-    use crate::fuzzy::fuzzy_eq;
+    use crate::fuzzy::fuzzy_eq_f32;
 
     #[wasm_bindgen_test]
     fn getters() {
@@ -334,14 +332,14 @@ mod tests {
         // Tuple::vector(1 / √14, 2 / √14, 3 / √14)
         assert_eq!(v.normalize(), Tuple::vector(0.26726, 0.53452, 0.80178));
         let v = Tuple::vector(1.0, 2.0, 3.0);
-        assert!(fuzzy_eq(v.normalize().magnitude(), 1.0));
+        assert!(fuzzy_eq_f32(v.normalize().magnitude(), 1.0));
     }
 
     #[wasm_bindgen_test]
     fn dot_returns_the_dot_product_of_two_tuples() {
         let a = Tuple::vector(1.0, 2.0, 3.0);
         let b = Tuple::vector(2.0, 3.0, 4.0);
-        assert!(fuzzy_eq(a.dot(b), 20.0));
+        assert!(fuzzy_eq_f32(a.dot(b), 20.0));
     }
 
     #[wasm_bindgen_test]
