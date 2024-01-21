@@ -4,6 +4,7 @@ use web_sys::ImageData;
 pub mod fuzzy;
 pub mod tuple;
 pub mod canvas;
+pub mod matrix;
 
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {
