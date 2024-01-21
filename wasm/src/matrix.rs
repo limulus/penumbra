@@ -27,10 +27,10 @@ impl Matrix4 {
   ) -> Matrix4 {
     Matrix4 {
       data: [
-        m00, m01, m02, m03,
-        m10, m11, m12, m13,
-        m20, m21, m22, m23,
-        m30, m31, m32, m33,
+        m00, m10, m20, m30,
+        m01, m11, m21, m31,
+        m02, m12, m22, m32,
+        m03, m13, m23, m33,
       ]
     }
   }
@@ -40,14 +40,14 @@ impl Matrix4 {
   }
 
   pub fn get(&self, row: usize, col: usize) -> f32 {
-    self.data[row * 4 + col]
+    self.data[col * 4 + row]
   }
 
   #[inline]
-  pub fn row_v128(&self, row: usize) -> v128 {
-    assert!(row < 4);
+  pub fn col_v128(&self, col: usize) -> v128 {
+    assert!(col < 4);
     unsafe {
-      *(self.data.as_ptr().add(row * 4) as *const v128)
+      *(self.data.as_ptr().add(col * 4) as *const v128)
     }
   }
 
@@ -64,7 +64,7 @@ impl Matrix4 {
 impl PartialEq for Matrix4 {
   fn eq(&self, other: &Self) -> bool {
     for i in 0..4 {
-      if !fuzzy_eq_f32x4(self.row_v128(i), other.row_v128(i)) {
+      if !fuzzy_eq_f32x4(self.col_v128(i), other.col_v128(i)) {
         return false;
       }
     }
@@ -84,8 +84,8 @@ impl Mul<Matrix4> for Matrix4 {
         sum = f32x4_add(
           sum,
           f32x4_mul(
-            f32x4_splat(self.get(i, j)),
-            other.row_v128(j),
+            f32x4_splat(other.get(j, i)),
+            self.col_v128(j),
           )
         );
       }
@@ -100,12 +100,17 @@ impl Mul<Tuple> for Matrix4 {
   type Output = Tuple;
 
   fn mul(self, other: Tuple) -> Tuple {
-    Tuple::new(
-      other.dot(Tuple::from_v128(self.row_v128(0))),
-      other.dot(Tuple::from_v128(self.row_v128(1))),
-      other.dot(Tuple::from_v128(self.row_v128(2))),
-      other.dot(Tuple::from_v128(self.row_v128(3))),
-    )
+    let mut sum = f32x4_splat(0.0);
+    for i in 0..4 {
+      sum = f32x4_add(
+        sum,
+        f32x4_mul(
+          f32x4_splat(other.get(i)),
+          self.col_v128(i),
+        )
+      );
+    }
+    Tuple::from_v128(sum)
   }
 }
 

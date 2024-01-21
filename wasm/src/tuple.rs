@@ -48,6 +48,10 @@ impl Tuple {
         self.w() == 0.0
     }
 
+    pub fn get(&self, index: usize) -> f32 {
+        self.data[index]
+    }
+
     pub fn x(self) -> f32 {
         self.data[0]
     }
