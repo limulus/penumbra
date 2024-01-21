@@ -5,6 +5,13 @@ use std::ops::Mul;
 use crate::fuzzy::fuzzy_eq_f32x4;
 use crate::tuple::Tuple;
 
+const IDENTITY: [f32; 16] = [
+  1.0, 0.0, 0.0, 0.0,
+  0.0, 1.0, 0.0, 0.0,
+  0.0, 0.0, 1.0, 0.0,
+  0.0, 0.0, 0.0, 1.0,
+];
+
 #[derive(Clone, Copy, Debug)]
 #[repr(C, align(16))]
 pub struct Matrix4 {
@@ -28,6 +35,10 @@ impl Matrix4 {
     }
   }
 
+  pub fn identity() -> Matrix4 {
+    Matrix4 { data: IDENTITY }
+  }
+
   pub fn get(&self, row: usize, col: usize) -> f32 {
     self.data[row * 4 + col]
   }
@@ -38,6 +49,15 @@ impl Matrix4 {
     unsafe {
       *(self.data.as_ptr().add(row * 4) as *const v128)
     }
+  }
+
+  pub fn transpose(&self) -> Matrix4 {
+    Self::new(
+      self.get(0, 0), self.get(1, 0), self.get(2, 0), self.get(3, 0),
+      self.get(0, 1), self.get(1, 1), self.get(2, 1), self.get(3, 1),
+      self.get(0, 2), self.get(1, 2), self.get(2, 2), self.get(3, 2),
+      self.get(0, 3), self.get(1, 3), self.get(2, 3), self.get(3, 3),
+    )
   }
 }
 
@@ -183,5 +203,53 @@ mod tests {
     let b = Tuple::new(1.0, 2.0, 3.0, 1.0);
 
     assert_eq!(a * b, Tuple::new(18.0, 24.0, 33.0, 1.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn multiplying_a_matrix_by_the_identity_matrix() {
+    let a = Matrix4::new(
+      0.0, 1.0, 2.0, 4.0,
+      1.0, 2.0, 4.0, 8.0,
+      2.0, 4.0, 8.0, 16.0,
+      4.0, 8.0, 16.0, 32.0,
+    );
+    let expected = Matrix4::new(
+      0.0, 1.0, 2.0, 4.0,
+      1.0, 2.0, 4.0, 8.0,
+      2.0, 4.0, 8.0, 16.0,
+      4.0, 8.0, 16.0, 32.0,
+    );
+
+    assert_eq!(a * Matrix4::identity(), expected);
+  }
+
+  #[wasm_bindgen_test]
+  pub fn multiplying_the_identity_matrix_by_a_tuple() {
+    let a = Tuple::new(1.0, 2.0, 3.0, 4.0);
+
+    assert_eq!(Matrix4::identity() * a, a);
+  }
+
+  #[wasm_bindgen_test]
+  pub fn transposing_a_matrix() {
+    let a = Matrix4::new(
+      0.0, 9.0, 3.0, 0.0,
+      9.0, 8.0, 0.0, 8.0,
+      1.0, 8.0, 5.0, 3.0,
+      0.0, 0.0, 5.0, 8.0,
+    );
+    let expected = Matrix4::new(
+      0.0, 9.0, 1.0, 0.0,
+      9.0, 8.0, 8.0, 0.0,
+      3.0, 0.0, 5.0, 5.0,
+      0.0, 8.0, 3.0, 8.0,
+    );
+
+    assert_eq!(a.transpose(), expected);
+  }
+
+  #[wasm_bindgen_test]
+  pub fn transposing_the_identity_matrix() {
+    assert_eq!(Matrix4::identity().transpose(), Matrix4::identity());
   }
 }
