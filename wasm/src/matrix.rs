@@ -39,6 +39,61 @@ impl Matrix4 {
     Matrix4 { data: IDENTITY }
   }
 
+  pub fn rotation_x(r: f32) -> Matrix4 {
+    let mut data: [f32; 16] = IDENTITY;
+    data[1 * 4 + 1] = r.cos();
+    data[2 * 4 + 1] = -r.sin();
+    data[1 * 4 + 2] = r.sin();
+    data[2 * 4 + 2] = r.cos();
+    Matrix4 { data }
+  }
+
+  pub fn rotation_y(r: f32) -> Matrix4 {
+    let mut data: [f32; 16] = IDENTITY;
+    data[0 * 4 + 0] = r.cos();
+    data[2 * 4 + 0] = r.sin();
+    data[0 * 4 + 2] = -r.sin();
+    data[2 * 4 + 2] = r.cos();
+    Matrix4 { data }
+  }
+
+  pub fn rotation_z(r: f32) -> Matrix4 {
+    let mut data: [f32; 16] = IDENTITY;
+    data[0 * 4 + 0] = r.cos();
+    data[1 * 4 + 0] = -r.sin();
+    data[0 * 4 + 1] = r.sin();
+    data[1 * 4 + 1] = r.cos();
+    Matrix4 { data }
+  }
+
+  pub fn scaling(x: f32, y: f32, z: f32) -> Matrix4 {
+    let mut data: [f32; 16] = [0.0; 16];
+    data[0 * 4 + 0] = x;
+    data[1 * 4 + 1] = y;
+    data[2 * 4 + 2] = z;
+    data[3 * 4 + 3] = 1.0;
+    Matrix4 { data }
+  }
+
+  pub fn shearing(xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> Matrix4 {
+    let mut data: [f32; 16] = IDENTITY;
+    data[1 * 4 + 0] = xy;
+    data[2 * 4 + 0] = xz;
+    data[0 * 4 + 1] = yx;
+    data[2 * 4 + 1] = yz;
+    data[0 * 4 + 2] = zx;
+    data[1 * 4 + 2] = zy;
+    Matrix4 { data }
+  }
+
+  pub fn translation(x: f32, y: f32, z: f32) -> Matrix4 {
+    let mut data: [f32; 16] = IDENTITY;
+    data[3 * 4 + 0] = x;
+    data[3 * 4 + 1] = y;
+    data[3 * 4 + 2] = z;
+    Matrix4 { data }
+  }
+
   pub fn get(&self, row: usize, col: usize) -> f32 {
     self.data[col * 4 + row]
   }
@@ -171,6 +226,68 @@ impl Mul<Tuple> for Matrix4 {
       );
     }
     Tuple::from_v128(sum)
+  }
+}
+
+#[derive(Clone, Debug)]
+pub struct Transform {
+  operations: Vec<Matrix4>,
+}
+
+impl Transform {
+  pub fn new() -> Transform {
+    Transform {
+      operations: Vec::new(),
+    }
+  }
+
+  pub fn translate(self, x: f32, y: f32, z: f32) -> Self {
+    let mut operations = self.operations;
+    operations.push(Matrix4::translation(x, y, z));
+    Self { operations }
+  }
+
+  pub fn scale(self, x: f32, y: f32, z: f32) -> Self {
+    let mut operations = self.operations;
+    operations.push(Matrix4::scaling(x, y, z));
+    Self { operations }
+  }
+
+  pub fn rotate_x(self, r: f32) -> Self {
+    let mut operations = self.operations;
+    operations.push(Matrix4::rotation_x(r));
+    Self { operations }
+  }
+
+  pub fn rotate_y(self, r: f32) -> Self {
+    let mut operations = self.operations;
+    operations.push(Matrix4::rotation_y(r));
+    Self { operations }
+  }
+
+  pub fn rotate_z(self, r: f32) -> Self {
+    let mut operations = self.operations;
+    operations.push(Matrix4::rotation_z(r));
+    Self { operations }
+  }
+
+  pub fn shear(self, xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> Self {
+    let mut operations = self.operations;
+    operations.push(Matrix4::shearing(xy, xz, yx, yz, zx, zy));
+    Self { operations }
+  }
+
+  pub fn build (self) -> Matrix4 {
+    if self.operations.is_empty() {
+      Matrix4::identity()
+    } else {
+      self.operations
+        .iter()
+        .cloned()
+        .rev()
+        .reduce(|a, b| a * b)
+        .unwrap()
+    }
   }
 }
 
@@ -664,5 +781,178 @@ mod tests {
     let c = a * b;
 
     assert_eq!(c * b.inverse().unwrap(), a);
+  }
+
+  #[wasm_bindgen_test]
+  pub fn multiplying_by_a_translation_matrix() {
+    let transform = Matrix4::translation(5.0, -3.0, 2.0);
+    let p = Tuple::point(-3.0, 4.0, 5.0);
+
+    assert_eq!(transform * p, Tuple::point(2.0, 1.0, 7.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn multiplying_by_the_inverse_of_a_translation_matrix() {
+    let transform = Matrix4::translation(5.0, -3.0, 2.0);
+    let inv = transform.inverse().unwrap();
+    let p = Tuple::point(-3.0, 4.0, 5.0);
+
+    assert_eq!(inv * p, Tuple::point(-8.0, 7.0, 3.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn translation_does_not_affect_vectors() {
+    let transform = Matrix4::translation(5.0, -3.0, 2.0);
+    let v = Tuple::vector(-3.0, 4.0, 5.0);
+
+    assert_eq!(transform * v, v);
+  }
+
+  #[wasm_bindgen_test]
+  pub fn a_scaling_matrix_applied_to_a_point() {
+    let transform = Matrix4::scaling(2.0, 3.0, 4.0);
+    let p = Tuple::point(-4.0, 6.0, 8.0);
+
+    assert_eq!(transform * p, Tuple::point(-8.0, 18.0, 32.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn a_scaling_matrix_applied_to_a_vector() {
+    let transform = Matrix4::scaling(2.0, 3.0, 4.0);
+    let v = Tuple::vector(-4.0, 6.0, 8.0);
+
+    assert_eq!(transform * v, Tuple::vector(-8.0, 18.0, 32.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn multiplying_by_the_inverse_of_a_scaling_matrix() {
+    let transform = Matrix4::scaling(2.0, 3.0, 4.0);
+    let inv = transform.inverse().unwrap();
+    let v = Tuple::vector(-4.0, 6.0, 8.0);
+
+    assert_eq!(inv * v, Tuple::vector(-2.0, 2.0, 2.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn reflection_is_scaling_by_a_negative_value() {
+    let transform = Matrix4::scaling(-1.0, 1.0, 1.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+
+    assert_eq!(transform * p, Tuple::point(-2.0, 3.0, 4.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn rotating_a_point_around_the_x_axis() {
+    let p = Tuple::point(0.0, 1.0, 0.0);
+    let half_quarter = Matrix4::rotation_x(std::f32::consts::PI / 4.0);
+    let full_quarter = Matrix4::rotation_x(std::f32::consts::PI / 2.0);
+
+    assert_eq!(half_quarter * p, Tuple::point(0.0, 2.0_f32.sqrt() / 2.0, 2.0_f32.sqrt() / 2.0));
+    assert_eq!(full_quarter * p, Tuple::point(0.0, 0.0, 1.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn the_inverse_of_an_x_rotation_rotates_in_the_opposite_direction() {
+    let p = Tuple::point(0.0, 1.0, 0.0);
+    let half_quarter = Matrix4::rotation_x(std::f32::consts::PI / 4.0);
+    let inv = half_quarter.inverse().unwrap();
+
+    assert_eq!(inv * p, Tuple::point(0.0, 2.0_f32.sqrt() / 2.0, -2.0_f32.sqrt() / 2.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn rotating_a_point_around_the_y_axis() {
+    let p = Tuple::point(0.0, 0.0, 1.0);
+    let half_quarter = Matrix4::rotation_y(std::f32::consts::PI / 4.0);
+    let full_quarter = Matrix4::rotation_y(std::f32::consts::PI / 2.0);
+
+    assert_eq!(half_quarter * p, Tuple::point(2.0_f32.sqrt() / 2.0, 0.0, 2.0_f32.sqrt() / 2.0));
+    assert_eq!(full_quarter * p, Tuple::point(1.0, 0.0, 0.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn rotating_a_point_around_the_z_axis() {
+    let p = Tuple::point(0.0, 1.0, 0.0);
+    let half_quarter = Matrix4::rotation_z(std::f32::consts::PI / 4.0);
+    let full_quarter = Matrix4::rotation_z(std::f32::consts::PI / 2.0);
+
+    assert_eq!(half_quarter * p, Tuple::point(-2.0_f32.sqrt() / 2.0, 2.0_f32.sqrt() / 2.0, 0.0));
+    assert_eq!(full_quarter * p, Tuple::point(-1.0, 0.0, 0.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn a_shearing_transformation_moves_x_in_proportion_to_y() {
+    let transform = Matrix4::shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+
+    assert_eq!(transform * p, Tuple::point(5.0, 3.0, 4.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn a_shearing_transformation_moves_x_in_proportion_to_z() {
+    let transform = Matrix4::shearing(0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+
+    assert_eq!(transform * p, Tuple::point(6.0, 3.0, 4.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn a_shearing_transformation_moves_y_in_proportion_to_x() {
+    let transform = Matrix4::shearing(0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+
+    assert_eq!(transform * p, Tuple::point(2.0, 5.0, 4.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn a_shearing_transformation_moves_y_in_proportion_to_z() {
+    let transform = Matrix4::shearing(0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+
+    assert_eq!(transform * p, Tuple::point(2.0, 7.0, 4.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn a_shearing_transformation_moves_z_in_proportion_to_x() {
+    let transform = Matrix4::shearing(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+
+    assert_eq!(transform * p, Tuple::point(2.0, 3.0, 6.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn a_shearing_transformation_moves_z_in_proportion_to_y() {
+    let transform = Matrix4::shearing(0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+
+    assert_eq!(transform * p, Tuple::point(2.0, 3.0, 7.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn individual_transformations_are_applied_in_sequence() {
+    let p = Tuple::point(1.0, 0.0, 1.0);
+    let a = Matrix4::rotation_x(std::f32::consts::PI / 2.0);
+    let b = Matrix4::scaling(5.0, 5.0, 5.0);
+    let c = Matrix4::translation(10.0, 5.0, 7.0);
+
+    let p2 = a * p;
+    assert_eq!(p2, Tuple::point(1.0, -1.0, 0.0));
+
+    let p3 = b * p2;
+    assert_eq!(p3, Tuple::point(5.0, -5.0, 0.0));
+
+    let p4 = c * p3;
+    assert_eq!(p4, Tuple::point(15.0, 0.0, 7.0));
+  }
+
+  #[wasm_bindgen_test]
+  pub fn chained_transformations_must_be_applied_in_reverse_order() {
+    let p = Tuple::point(1.0, 0.0, 1.0);
+    let t = Transform::new()
+      .rotate_x(std::f32::consts::PI / 2.0)
+      .scale(5.0, 5.0, 5.0)
+      .translate(10.0, 5.0, 7.0)
+      .build();
+    assert_eq!(t * p, Tuple::point(15.0, 0.0, 7.0));
   }
 }
