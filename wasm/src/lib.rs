@@ -5,6 +5,8 @@ pub mod fuzzy;
 pub mod tuple;
 pub mod canvas;
 pub mod matrix;
+pub mod ray;
+pub mod sphere;
 
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {
