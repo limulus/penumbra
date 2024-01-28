@@ -1,15 +1,22 @@
+use crate::intersection::*;
+use crate::matrix::*;
 use crate::ray::*;
 use crate::tuple::*;
 
-#[derive(Debug, Clone, Copy)]
-pub struct Sphere {}
+#[derive(Debug, Clone)]
+pub struct Sphere {
+  transform: Matrix4,
+}
 
 impl Sphere {
   pub fn new() -> Sphere {
-    Sphere {}
+    Sphere {
+      transform: Matrix4::identity(),
+    }
   }
 
-  pub fn intersect(&self, ray: &Ray) -> Vec<f32> {
+  pub fn intersect(&self, ray: &Ray) -> IntersectionCollection {
+    let ray = ray.transform(&self.transform.inverse().unwrap());
     let sphere_to_ray = ray.origin - Tuple::point(0.0, 0.0, 0.0);
 
     // Determine the discriminant.
@@ -19,13 +26,23 @@ impl Sphere {
     let discriminant = b * b - 4.0 * a * c;
 
     if discriminant < 0.0 {
-      vec![]
+      IntersectionCollection::new(vec![])
     } else {
-      vec![
-        (-b - discriminant.sqrt()) / (2.0 * a),
-        (-b + discriminant.sqrt()) / (2.0 * a),
-      ]
+      IntersectionCollection::new(vec![
+        Intersection::new((-b - discriminant.sqrt()) / (2.0 * a), self),
+        Intersection::new((-b + discriminant.sqrt()) / (2.0 * a), self),
+      ])
     }
+  }
+
+  pub fn set_transform(&mut self, transform: Transform) {
+    self.transform = transform.build();
+  }
+}
+
+impl PartialEq for Sphere {
+  fn eq(&self, other: &Self) -> bool {
+    std::ptr::eq(self, other)
   }
 }
 
@@ -35,6 +52,14 @@ mod tests {
   use wasm_bindgen_test::*;
 
   #[wasm_bindgen_test]
+  pub fn two_different_spheres_are_not_equal() {
+    let s1 = Sphere::new();
+    let s2 = Sphere::new();
+
+    assert_ne!(s1, s2);
+  }
+
+  #[wasm_bindgen_test]
   pub fn a_ray_intersects_a_sphere_at_two_points() {
     let r = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
     let s = Sphere::new();
@@ -42,8 +67,8 @@ mod tests {
     let xs = s.intersect(&r);
 
     assert_eq!(xs.len(), 2);
-    assert_eq!(xs[0], 4.0);
-    assert_eq!(xs[1], 6.0);
+    assert_eq!(xs[0].t, 4.0);
+    assert_eq!(xs[1].t, 6.0);
   }
 
   #[wasm_bindgen_test]
@@ -54,8 +79,8 @@ mod tests {
     let xs = s.intersect(&r);
 
     assert_eq!(xs.len(), 2);
-    assert_eq!(xs[0], 5.0);
-    assert_eq!(xs[1], 5.0);
+    assert_eq!(xs[0].t, 5.0);
+    assert_eq!(xs[1].t, 5.0);
   }
 
   #[wasm_bindgen_test]
@@ -76,8 +101,8 @@ mod tests {
     let xs = s.intersect(&r);
 
     assert_eq!(xs.len(), 2);
-    assert_eq!(xs[0], -1.0);
-    assert_eq!(xs[1], 1.0);
+    assert_eq!(xs[0].t, -1.0);
+    assert_eq!(xs[1].t, 1.0);
   }
 
   #[wasm_bindgen_test]
@@ -88,7 +113,60 @@ mod tests {
     let xs = s.intersect(&r);
 
     assert_eq!(xs.len(), 2);
-    assert_eq!(xs[0], -6.0);
-    assert_eq!(xs[1], -4.0);
+    assert_eq!(xs[0].t, -6.0);
+    assert_eq!(xs[1].t, -4.0);
+  }
+
+  #[wasm_bindgen_test]
+  pub fn intersect_sets_the_object_on_the_intersection() {
+    let r = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
+    let s = Sphere::new();
+
+    let xs = s.intersect(&r);
+
+    assert_eq!(xs.len(), 2);
+    assert_eq!(xs[0].t, 4.0);
+    assert_eq!(xs[1].t, 6.0);
+  }
+
+  #[wasm_bindgen_test]
+  pub fn a_spheres_default_transformation() {
+    let s = Sphere::new();
+
+    assert_eq!(s.transform, Matrix4::identity());
+  }
+
+  #[wasm_bindgen_test]
+  pub fn changing_a_spheres_transformation() {
+    let mut s = Sphere::new();
+    let t = Matrix4::translation(2.0, 3.0, 4.0);
+
+    s.set_transform(Transform::new().translate(2.0, 3.0, 4.0));
+
+    assert_eq!(s.transform, t);
+  }
+
+  #[wasm_bindgen_test]
+  pub fn intersecting_a_scaled_sphere_with_a_ray() {
+    let r = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
+    let mut s = Sphere::new();
+
+    s.set_transform(Transform::new().scale(2.0, 2.0, 2.0));
+    let xs = s.intersect(&r);
+
+    assert_eq!(xs.len(), 2);
+    assert_eq!(xs[0].t, 3.0);
+    assert_eq!(xs[1].t, 7.0);
+  }
+
+  #[wasm_bindgen_test]
+  pub fn intersecting_a_translated_sphere_with_a_ray() {
+    let r = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
+    let mut s = Sphere::new();
+
+    s.set_transform(Transform::new().translate(5.0, 0.0, 0.0));
+    let xs = s.intersect(&r);
+
+    assert_eq!(xs.len(), 0);
   }
 }

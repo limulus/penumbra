@@ -215,6 +215,14 @@ impl Mul<Tuple> for Matrix4 {
   type Output = Tuple;
 
   fn mul(self, other: Tuple) -> Tuple {
+    &self * other
+  }
+}
+
+impl Mul<Tuple> for &Matrix4 {
+  type Output = Tuple;
+
+  fn mul(self, other: Tuple) -> Tuple {
     let mut sum = f32x4_splat(0.0);
     for i in 0..4 {
       sum = f32x4_add(
