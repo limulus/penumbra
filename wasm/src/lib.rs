@@ -9,6 +9,9 @@ pub mod ray;
 pub mod sphere;
 pub mod intersection;
 
+mod demo;
+pub use demo::sphere_shadow::*;
+
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {
     #[cfg(feature = "console_error_panic_hook")]
