@@ -25,5 +25,6 @@
   "files.trimTrailingWhitespace": true,
   "typescript.tsdk": "./node_modules/typescript/lib",
   "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
-  "rust-analyzer.cargo.features": ["simd"]
+  "rust-analyzer.cargo.features": ["simd"],
+  "rust-analyzer.linkedProjects": ["./wasm/Cargo.toml"]
 }
