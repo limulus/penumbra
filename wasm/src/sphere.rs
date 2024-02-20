@@ -6,17 +6,19 @@ use crate::tuple::*;
 #[derive(Debug, Clone)]
 pub struct Sphere {
   transform: Matrix4,
+  transform_inverse: Matrix4,
 }
 
 impl Sphere {
   pub fn new() -> Sphere {
     Sphere {
       transform: Matrix4::identity(),
+      transform_inverse: Matrix4::identity(),
     }
   }
 
   pub fn intersect(&self, ray: &Ray) -> IntersectionCollection {
-    let ray = ray.transform(&self.transform.inverse().unwrap());
+    let ray = ray.transform(&self.transform_inverse);
     let sphere_to_ray = ray.origin - Tuple::point(0.0, 0.0, 0.0);
 
     // Determine the discriminant.
@@ -37,6 +39,7 @@ impl Sphere {
 
   pub fn set_transform(&mut self, transform: Transform) {
     self.transform = transform.build();
+    self.transform_inverse = self.transform.inverse().unwrap();
   }
 }
 
