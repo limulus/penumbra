@@ -4,6 +4,7 @@ const pluginWebc = require('@11ty/eleventy-plugin-webc')
 const hljs = require('highlight.js')
 const markdownIt = require('markdown-it')
 const markdownItFootnote = require('markdown-it-footnote')
+const markdownItTaskLists = require('markdown-it-task-lists')
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 module.exports = function (eleventyConfig) {
@@ -14,7 +15,7 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addGlobalData('site', { url: 'https://limulus.net/penumbra' })
 
-  eleventyConfig.addPassthroughCopy(`${input}/assets`)
+  eleventyConfig.addPassthroughCopy(`${input}/assets`, { expand: true })
   eleventyConfig.addPassthroughCopy(`${input}/**/*.{png,svg,jpg,jpeg}`)
 
   eleventyConfig.addPlugin(EleventyHtmlBasePlugin)
@@ -36,6 +37,7 @@ module.exports = function (eleventyConfig) {
     },
   })
   md.use(markdownItFootnote)
+  md.use(markdownItTaskLists)
   eleventyConfig.setLibrary('md', md)
 
   eleventyConfig.setServerOptions({
