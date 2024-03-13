@@ -122,7 +122,7 @@ can change the position of the light source by dragging from the element.
 
 <figure>
   <figcaption>
-    <a href="https://github.com/limulus/penumbra/blob/main/src/demo/sphere-shadow/">
+    <a href="https://github.com/limulus/penumbra/blob/main/src/www/sphere-shadow/">
       <code>&lt;sphere-shadow&gt;</code>
     </a>
   </figcaption>
@@ -133,7 +133,7 @@ can change the position of the light source by dragging from the element.
 </figure>
 
 <script type="module" async>
-  import { SphereShadow } from '../../demo/sphere-shadow/index.js'
+  import { SphereShadow } from '../../assets/js/sphere-shadow/index.js'
   customElements.define('sphere-shadow', SphereShadow)
 </script>
 

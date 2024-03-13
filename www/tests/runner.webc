@@ -4,16 +4,10 @@
     <meta charset="utf-8" />
     <title>Mocha</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link webc:keep rel="stylesheet" href="./mocha.css" />
+    <link webc:keep rel="stylesheet" href="../../assets/js/spec/index.css" />
   </head>
   <body>
     <div id="mocha"></div>
-    <script webc:keep type="module">
-      import './mocha.js'
-
-      mocha.setup('bdd')
-      await import('./tests.js')
-      mocha.run()
-    </script>
+    <script webc:keep type="module" src="../../assets/js/spec/index.js"></script>
   </body>
 </html>

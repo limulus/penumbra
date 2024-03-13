@@ -1,15 +1,15 @@
 import { Assertion } from 'chai'
 
-import '../lib/ui/touch-pad.spec.js'
-import '../lib/intersection.spec.js'
-import '../lib/sphere.spec.js'
-import '../lib/ray.spec.js'
-import '../lib/matrix.spec.js'
-import '../lib/canvas.spec.js'
-import '../lib/tuple.spec.js'
-import '../lib/util/equal.spec.js'
-import { TwoDimensionalArray } from '../lib/two-dimenisonal-array.js'
-import equal from '../lib/util/equal.js'
+import '../../lib/ui/touch-pad.spec.js'
+import '../../lib/intersection.spec.js'
+import '../../lib/sphere.spec.js'
+import '../../lib/ray.spec.js'
+import '../../lib/matrix.spec.js'
+import '../../lib/canvas.spec.js'
+import '../../lib/tuple.spec.js'
+import '../../lib/util/equal.spec.js'
+import { TwoDimensionalArray } from '../../lib/two-dimenisonal-array.js'
+import equal from '../../lib/util/equal.js'
 
 Assertion.overwriteMethod('equal', (_super) => {
   return function (this: typeof Assertion, ...args: unknown[]) {

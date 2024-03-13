@@ -180,7 +180,7 @@ have to for this exercise: add animated “hands” and perform the rendering in
 
 <figure>
   <figcaption>
-    <a href="https://github.com/limulus/penumbra/blob/main/src/demo/pixel-clock/">
+    <a href="https://github.com/limulus/penumbra/blob/main/src/www/pixel-clock/">
       <code>&lt;pixel-clock&gt;</code>
     </a>
   </figcaption>
@@ -191,7 +191,7 @@ have to for this exercise: add animated “hands” and perform the rendering in
 </figure>
 
 <script type="module" async>
-  import { PixelClock } from '../../demo/pixel-clock/index.js'
+  import { PixelClock } from '../../assets/js/pixel-clock/index.js'
   customElements.define('pixel-clock', PixelClock)
 </script>
 

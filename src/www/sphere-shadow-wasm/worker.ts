@@ -27,7 +27,7 @@ self.onmessage = (event) => {
 }
 
 async function handleInitMessage(message: SphereShadowInitMessage) {
-  await init('../../assets/wasm/penumbra-simd_bg.wasm')
+  await init('../../wasm/penumbra-simd_bg.wasm')
   renderer = new SphereShadowRenderer(message.width, message.height, 7)
   self.requestAnimationFrame(handleRequestAnimationFrame)
 }
