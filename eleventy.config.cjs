@@ -6,16 +6,12 @@ const markdownIt = require('markdown-it')
 const markdownItFootnote = require('markdown-it-footnote')
 const markdownItTaskLists = require('markdown-it-task-lists')
 
-const { bundle } = require('./esbuild.cjs')
-
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 module.exports = function (eleventyConfig) {
   const input = 'www'
   const output = 'dist/www'
   const layouts = '_includes/layouts'
   const components = `${input}/_includes/components/**/*.webc`
-
-  eleventyConfig.on('beforeBuild', bundle)
 
   eleventyConfig.addGlobalData('site', { url: 'https://limulus.net/penumbra' })
 
@@ -53,7 +49,7 @@ module.exports = function (eleventyConfig) {
         next()
       },
     ],
-    watch: ['src/**/*.ts'],
+    watch: ['dist/www/assets/**/*.{css,js}'],
   })
 
   return { dir: { input, output, layouts }, pathPrefix: '/penumbra/' }
