@@ -1,24 +1,17 @@
-import type { HLSVideoElement } from 'hls-video-element'
-import Hls from 'hls.js'
-import 'hls-video-element'
+import 'media-tracks'
 import 'media-chrome'
+import Hls from 'hls.js'
 
 const template = document.createElement('template')
 template.innerHTML = /* HTML */ `
   <media-controller style="aspect-ratio: 16/9; width: 100%">
-    <hls-video crossorigin preload="metadata" slot="media"></hls-video>
+    <video crossorigin preload="none" slot="media"></video>
     <media-settings-menu hidden anchor="auto">
       <media-settings-menu-item>
         Speed
         <media-playback-rate-menu slot="submenu" hidden>
           <div slot="title">Speed</div>
         </media-playback-rate-menu>
-      </media-settings-menu-item>
-      <media-settings-menu-item>
-        Quality
-        <media-rendition-menu slot="submenu" hidden>
-          <div slot="title">Quality</div>
-        </media-rendition-menu>
       </media-settings-menu-item>
       <media-settings-menu-item>
         Captions
@@ -68,9 +61,6 @@ template.innerHTML = /* HTML */ `
   </style>
 `
 
-Hls.DefaultConfig.debug = console
-Hls.DefaultConfig.preferManagedMediaSource = false
-
 class VideoOnDemand extends HTMLElement {
   constructor() {
     super()
@@ -81,26 +71,32 @@ class VideoOnDemand extends HTMLElement {
   connectedCallback() {
     const vodUrl = `https://vod.limulus.net/${this.getAttribute('vod')}`
 
-    const videoEl = this.shadowRoot!.querySelector<HLSVideoElement>('hls-video')!
+    const videoEl = this.shadowRoot!.querySelector<HTMLVideoElement>('video')!
     videoEl.setAttribute('poster', `${vodUrl}/poster.jpeg`)
 
-    const hlsSourceEl = document.createElement('source')
-    hlsSourceEl.setAttribute('type', 'application/vnd.apple.mpegurl')
-    hlsSourceEl.setAttribute('src', `${vodUrl}/index.m3u8`)
-    videoEl.appendChild(hlsSourceEl)
+    if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
+      this.shadowRoot!.querySelector('media-rendition-menu')!.parentElement!.remove()
+      videoEl.setAttribute('src', `${vodUrl}/index.m3u8`)
+    } else if (Hls.isSupported()) {
+      const hlsSourceEl = document.createElement('source')
+      hlsSourceEl.setAttribute('type', 'application/vnd.apple.mpegurl')
+      hlsSourceEl.setAttribute('src', `${vodUrl}/index.m3u8`)
+      videoEl.appendChild(hlsSourceEl)
 
-    videoEl.addEventListener('loadedmetadata', () => {
-      if (!videoEl.api) return
-      if (videoEl.api.levels.some((level) => level.videoCodec?.startsWith('hvc1'))) {
-        videoEl.api.levels.forEach((level, index) => {
-          if (level.videoCodec?.startsWith('avc1')) {
-            videoEl.api?.removeLevel(index)
-          }
-        })
-      }
-    })
+      const hls = new Hls()
+      hls.attachMedia(videoEl)
+      hls.loadSource(`${vodUrl}/index.m3u8`)
 
-    videoEl.setAttribute('src', `${vodUrl}/index.m3u8`)
+      videoEl.addEventListener('loadedmetadata', () => {
+        if (hls.levels.some((level) => level.videoCodec?.startsWith('hvc1'))) {
+          hls.levels.forEach((level, index) => {
+            if (level.videoCodec?.startsWith('avc1')) {
+              hls.removeLevel(index)
+            }
+          })
+        }
+      })
+    }
   }
 }
 
