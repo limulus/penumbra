@@ -96,6 +96,9 @@ for (const line of lines) {
 // Write the modified playlist file back to disk
 await writeFile(join(streamDir, 'index.m3u8'), lines.join('\n'))
 
+// Copy poster.jpeg to the stream directory using node:fs/promises
+await writeFile(join(streamDir, 'poster.jpeg'), await readFile(join(dir, 'poster.jpeg')))
+
 async function segmentMedia(file) {
   const path = join(dir, file)
   const variant = basename(file).replace(/\.[^/.]+$/, '')

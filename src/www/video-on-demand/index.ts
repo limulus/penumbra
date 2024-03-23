@@ -1,4 +1,3 @@
-import 'media-tracks'
 import 'media-chrome'
 import Hls from 'hls.js'
 
