@@ -109,6 +109,7 @@ async function segmentMedia(file) {
     '-s', // Create a single MPEG-4 file (do not split segments into multiple files)
     '-t', // Segment length in seconds
     '6',
+    '-start-segments-with-iframe',
     ...score(variant),
     '-i', // Index file name
     'index.m3u8',
