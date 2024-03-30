@@ -1,6 +1,9 @@
 import 'media-chrome'
 import Hls from 'hls.js'
 
+import { VODEvent } from './VODEvent'
+import { createHlsAndBindEvents } from './hls'
+
 const template = document.createElement('template')
 template.innerHTML = /* HTML */ `
   <media-controller style="aspect-ratio: 16/9; width: 100%">
@@ -60,42 +63,55 @@ template.innerHTML = /* HTML */ `
   </style>
 `
 
-class VideoOnDemand extends HTMLElement {
+export class VideoOnDemand extends HTMLElement {
+  #hls: Hls | null
+
   constructor() {
     super()
+    this.#hls = createHlsAndBindEvents(this)
     this.attachShadow({ mode: 'open' })
     this.shadowRoot!.appendChild(template.content.cloneNode(true))
   }
 
   connectedCallback() {
-    const vodUrl = `https://vod.limulus.net/${this.getAttribute('vod')}`
+    const vod = this.getAttribute('vod')
+    if (!vod) throw new Error('Attribute "vod" is required')
+    const vodUrl = `https://vod.limulus.net/${vod}`
 
     const videoEl = this.shadowRoot!.querySelector<HTMLVideoElement>('video')!
     videoEl.setAttribute('poster', `${vodUrl}/poster.jpeg`)
 
-    if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
-      this.shadowRoot!.querySelector('media-rendition-menu')!.parentElement!.remove()
-      videoEl.setAttribute('src', `${vodUrl}/index.m3u8`)
-    } else if (Hls.isSupported()) {
+    if (this.#hls) {
       const hlsSourceEl = document.createElement('source')
       hlsSourceEl.setAttribute('type', 'application/vnd.apple.mpegurl')
       hlsSourceEl.setAttribute('src', `${vodUrl}/index.m3u8`)
       videoEl.appendChild(hlsSourceEl)
 
-      const hls = new Hls()
-      hls.attachMedia(videoEl)
-      hls.loadSource(`${vodUrl}/index.m3u8`)
-
-      videoEl.addEventListener('loadedmetadata', () => {
-        if (hls.levels.some((level) => level.videoCodec?.startsWith('hvc1'))) {
-          hls.levels.forEach((level, index) => {
-            if (level.videoCodec?.startsWith('avc1')) {
-              hls.removeLevel(index)
-            }
-          })
-        }
-      })
+      this.#hls.attachMedia(videoEl)
+      this.#hls.loadSource(`${vodUrl}/index.m3u8`)
+    } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
+      videoEl.setAttribute('src', `${vodUrl}/index.m3u8`)
     }
+
+    videoEl.addEventListener('error', (event) => {
+      this.dispatchEvent(new VODEvent('error', vod, { event }))
+    })
+
+    let played = false
+    videoEl.addEventListener('play', (event) => {
+      if (played) return
+      played = true
+      this.dispatchEvent(new VODEvent('played', vod, { event }))
+    })
+
+    let viewed = false
+    videoEl.addEventListener('timeupdate', () => {
+      if (viewed) return
+      if (videoEl.duration && videoEl.currentTime / videoEl.duration > 0.85) {
+        viewed = true
+        this.dispatchEvent(new VODEvent('viewed', vod))
+      }
+    })
   }
 }
 

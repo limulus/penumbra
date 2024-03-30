@@ -11,6 +11,12 @@
       crossorigin
     />
 
+    <script type="module" webc:keep>
+      if (window.location.hostname.endsWith('limulus.net')) {
+        await import('/penumbra/assets/js/rum/index.js')
+      }
+    </script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" :href="getBundleFileUrl('css')" webc:keep />
 
