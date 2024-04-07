@@ -44,6 +44,8 @@ await run('variantplaylistcreator', [
   '-o',
   join(streamDir, 'index.m3u8'),
   ...variants
+    .sort(({ score: a }, { score: b }) => (parseFloat(a) <= parseFloat(b) ? -1 : 1))
+    .reverse() // Sort variants by score in descending order. This gets HEVC 1440p first.
     .map((v) => [v.url, v.plist, v.iframe && ['-iframe-url', v.iframe]].flat())
     .flat()
     .filter(Boolean),
@@ -104,13 +106,14 @@ async function segmentMedia(file) {
   const variant = basename(file).replace(/\.[^/.]+$/, '')
   const outdir = join(streamDir, variant)
   await mkdir(outdir, { recursive: true })
+  const score = determineScore(variant)
   await run('mediafilesegmenter', [
     '-r', // Create a fragmented MPEG-4 file
     '-s', // Create a single MPEG-4 file (do not split segments into multiple files)
     '-t', // Segment length in seconds
     '6',
     '-start-segments-with-iframe',
-    ...score(variant),
+    ...(score ? ['-score', score] : []),
     '-i', // Index file name
     'index.m3u8',
     '-f',
@@ -122,13 +125,14 @@ async function segmentMedia(file) {
   return {
     url: `${variant}/index.m3u8`,
     plist: `${variant}/${variant}.plist`,
+    score,
     ...(movFiles.includes(file) && { iframe: `${variant}/iframe_index.m3u8` }),
   }
 }
 
-function score(variant) {
+function determineScore(variant) {
   const [codec, resolution] = variant.split('-')
-  if (codec === 'aac') return []
+  if (codec === 'aac') return null
 
   let codecRank
   if (codec === 'avc') {
@@ -142,22 +146,22 @@ function score(variant) {
   let intraCodecRank
   switch (resolution) {
     case '1440p':
-      intraCodecRank = 1
+      intraCodecRank = 4
       break
     case '1080p':
-      intraCodecRank = 2
-      break
-    case '720p':
       intraCodecRank = 3
       break
+    case '720p':
+      intraCodecRank = 2
+      break
     case '540p':
-      intraCodecRank = 4
+      intraCodecRank = 1
       break
     default:
       throw new Error(`Unknown resolution: ${resolution}`)
   }
 
-  return ['-score', `${codecRank}.${intraCodecRank}`]
+  return `${codecRank}.${intraCodecRank}`
 }
 
 function run(command, args) {
