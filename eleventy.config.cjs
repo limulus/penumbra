@@ -1,4 +1,5 @@
 const { EleventyHtmlBasePlugin } = require('@11ty/eleventy')
+const { eleventyImagePlugin } = require('@11ty/eleventy-img')
 const pluginRss = require('@11ty/eleventy-plugin-rss')
 const pluginWebc = require('@11ty/eleventy-plugin-webc')
 const hljs = require('highlight.js')
@@ -11,7 +12,10 @@ module.exports = function (eleventyConfig) {
   const input = 'www'
   const output = 'dist/www'
   const layouts = '_includes/layouts'
-  const components = `${input}/_includes/components/**/*.webc`
+  const components = [
+    'npm:@11ty/eleventy-img/*.webc',
+    `${input}/_includes/components/**/*.webc`,
+  ]
 
   eleventyConfig.addGlobalData('site', { url: 'https://limulus.net/penumbra' })
 
@@ -21,6 +25,17 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(EleventyHtmlBasePlugin)
   eleventyConfig.addPlugin(pluginRss)
   eleventyConfig.addPlugin(pluginWebc, { components })
+
+  eleventyConfig.addPlugin(eleventyImagePlugin, {
+    formats: ['avif', 'jpeg'],
+    outputDir: `${output}/assets/images/`,
+    urlPath: `/assets/images/`,
+    defaultAttributes: {
+      loading: 'lazy',
+      decoding: 'async',
+      sizes: '100vw',
+    },
+  })
 
   const md = markdownIt({
     html: true,
