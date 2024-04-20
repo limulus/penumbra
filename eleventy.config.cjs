@@ -4,6 +4,8 @@ const pluginRss = require('@11ty/eleventy-plugin-rss')
 const pluginWebc = require('@11ty/eleventy-plugin-webc')
 const hljs = require('highlight.js')
 const markdownIt = require('markdown-it')
+const markdownItAnchor = require('markdown-it-anchor')
+const markdownItAttrs = require('markdown-it-attrs')
 const markdownItFootnote = require('markdown-it-footnote')
 const markdownItTaskLists = require('markdown-it-task-lists')
 
@@ -53,6 +55,8 @@ module.exports = function (eleventyConfig) {
   })
   md.use(markdownItFootnote)
   md.use(markdownItTaskLists)
+  md.use(markdownItAttrs)
+  md.use(markdownItAnchor)
   eleventyConfig.setLibrary('md', md)
 
   eleventyConfig.setServerOptions({

@@ -114,7 +114,7 @@ a better-than-tenuous idea of why this code works.
 
 [quadratic formula]: https://en.m.wikipedia.org/wiki/Quadratic_formula
 
-## The Demo: <code>&lt;sphere-shadow&gt;</code>
+## The Demo: <code>&lt;sphere-shadow&gt;</code> {#demo}
 
 The exercise at the end of the chapter is to render the shadow of a sphere by casting rays
 from a light source onto a “wall”. I’ve implemented that here, with the addition that you

@@ -89,6 +89,8 @@
     "husky": "^8.0.3",
     "is-ci": "^3.0.1",
     "markdown-it": "^13.0.2",
+    "markdown-it-anchor": "^8.6.7",
+    "markdown-it-attrs": "^4.1.6",
     "markdown-it-footnote": "^3.0.3",
     "markdown-it-task-lists": "^2.1.1",
     "mkdirp": "^3.0.1",

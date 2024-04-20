@@ -170,7 +170,7 @@ export class Matrix extends TwoDimensionalArray {
 }
 ```
 
-## The Demo: <code>&lt;pixel-clock&gt;</code>
+## The Demo: <code>&lt;pixel-clock&gt;</code> {#demo}
 
 The end-of-chapter exercise for chapter 5 is to use your matrix and canvas implementation to
 color in a pixel for every hour of a 12 hour analog clock. I did two things I really didn’t

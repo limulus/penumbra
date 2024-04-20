@@ -42,16 +42,19 @@ from the book, put it in a comment, and Copilot would generate the test code usi
 [tuple tests]: https://github.com/limulus/penumbra/blob/420867ab2c91f8bf42a4fa0e49cb4e927de9dbeb/src/lib/Tuple.spec.ts
 [Gherkin-inspired test suite functions]: https://github.com/limulus/penumbra/blob/420867ab2c91f8bf42a4fa0e49cb4e927de9dbeb/src/gherkin.ts
 
+## Looking Ahead
+
 One thing that pained me as I wrote the implementation of the [Tuple methods] was knowing how
 inefficient they will be running in a JavaScript runtime. Vector math is the usual use case
-for [SIMD instructions], but presumably JavaScript engines are not detecting that these
+for [SIMD] instructions, but presumably JavaScript engines are not detecting that these
 operations could be compiled to SIMD instructions. I did a bit of forward research though
-and discovered that WebAssembly has SIMD support! At some point I plan to look at
+and discovered that [WebAssembly] has SIMD support! At some point I plan to look at
 reimplementing Penumbra in [AssemblyScript] — but I first want a plain JavaScript baseline
 to compare against.
 
 [Tuple methods]: https://github.com/limulus/penumbra/blob/420867ab2c91f8bf42a4fa0e49cb4e927de9dbeb/src/lib/Tuple.ts
-[SIMD instructions]: https://en.wikipedia.org/wiki/SIMD
+[SIMD instructions]: https://en.wikipedia.org/wiki/Single_instruction,_multiple_data
+[webassembly]: https://webassembly.org/
 [assemblyscript]: https://www.assemblyscript.org/
 
 Onward to chapter 2!
