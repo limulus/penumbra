@@ -124,53 +124,204 @@ describe('TouchPad', () => {
         events.push(event as TouchPadMoveEvent)
       })
 
-      const rect = target.getBoundingClientRect()
+      const identifier = genId()
+
       target.dispatchEvent(
         new TouchEvent('touchstart', {
-          touches: [
-            new Touch({
-              target,
-              identifier: 0,
-              clientX: 0 + rect.left,
-              clientY: 0 + rect.top,
-            }),
+          touches: [createTouch(identifier, target, 0, 0)],
+          changedTouches: [createTouch(identifier, target, 0, 0)],
+        })
+      )
+      target.dispatchEvent(
+        new TouchEvent('touchmove', {
+          touches: [createTouch(identifier, target, 10, 10)],
+          changedTouches: [createTouch(identifier, target, 10, 10)],
+        })
+      )
+      target.dispatchEvent(
+        new TouchEvent('touchmove', {
+          touches: [createTouch(identifier, target, 20, 20)],
+          changedTouches: [createTouch(identifier, target, 20, 20)],
+        })
+      )
+      target.dispatchEvent(
+        new TouchEvent('touchend', {
+          touches: [createTouch(identifier, target, 20, 20)],
+          changedTouches: [createTouch(identifier, target, 20, 20)],
+        })
+      )
+
+      expect(events).to.have.lengthOf(3)
+      expect(events[0].detail).to.deep.equal({ x: 0, y: 0 })
+      expect(events[1].detail).to.deep.equal({ x: 10 / 100, y: 10 / 100 })
+      expect(events[2].detail).to.deep.equal({ x: 20 / 100, y: 20 / 100 })
+    })
+
+    it('should only respond to the touch that started on the element', function () {
+      if (!self.TouchEvent) {
+        return this.skip()
+      }
+
+      const events: TouchPadMoveEvent[] = []
+      touchPad.addEventListener('touchpadmove', (event) => {
+        events.push(event as TouchPadMoveEvent)
+      })
+
+      const touch1 = genId()
+      const touch2 = genId()
+
+      target.dispatchEvent(
+        new TouchEvent('touchstart', {
+          touches: [createTouch(touch1, target, 0, 0), createTouch(touch2, target, 5, 5)],
+          changedTouches: [
+            createTouch(touch1, target, 0, 0),
+            createTouch(touch2, target, 5, 5),
           ],
         })
       )
       target.dispatchEvent(
         new TouchEvent('touchmove', {
           touches: [
-            new Touch({
-              target,
-              identifier: 0,
-              clientX: 10 + rect.left,
-              clientY: 10 + rect.top,
-            }),
+            createTouch(touch1, target, 10, 10),
+            createTouch(touch2, target, 15, 15),
+          ],
+          changedTouches: [
+            createTouch(touch1, target, 10, 10),
+            createTouch(touch2, target, 15, 15),
           ],
         })
       )
       target.dispatchEvent(
         new TouchEvent('touchmove', {
           touches: [
-            new Touch({
-              target,
-              identifier: 0,
-              clientX: 20 + rect.left,
-              clientY: 20 + rect.top,
-            }),
+            createTouch(touch1, target, 20, 20),
+            createTouch(touch2, target, 15, 15),
           ],
+          changedTouches: [createTouch(touch1, target, 20, 20)],
+        })
+      )
+      target.dispatchEvent(
+        new TouchEvent('touchmove', {
+          touches: [
+            createTouch(touch1, target, 20, 20),
+            createTouch(touch2, target, 25, 25),
+          ],
+          changedTouches: [createTouch(touch2, target, 25, 25)],
         })
       )
       target.dispatchEvent(
         new TouchEvent('touchend', {
           touches: [
-            new Touch({
-              target,
-              identifier: 0,
-              clientX: 20 + rect.left,
-              clientY: 20 + rect.top,
-            }),
+            createTouch(touch1, target, 20, 20),
+            createTouch(touch2, target, 25, 25),
           ],
+          changedTouches: [
+            createTouch(touch1, target, 20, 20),
+            createTouch(touch2, target, 25, 25),
+          ],
+        })
+      )
+
+      expect(events).to.have.lengthOf(3)
+      expect(events[0].detail).to.deep.equal({ x: 0, y: 0 })
+      expect(events[1].detail).to.deep.equal({ x: 10 / 100, y: 10 / 100 })
+      expect(events[2].detail).to.deep.equal({ x: 20 / 100, y: 20 / 100 })
+    })
+
+    it('should not change which touch it is following when another touch is started', function () {
+      if (!self.TouchEvent) {
+        return this.skip()
+      }
+
+      const events: TouchPadMoveEvent[] = []
+      touchPad.addEventListener('touchpadmove', (event) => {
+        events.push(event as TouchPadMoveEvent)
+      })
+
+      const touch1 = genId()
+      const touch2 = genId()
+
+      target.dispatchEvent(
+        new TouchEvent('touchstart', {
+          touches: [createTouch(touch1, target, 0, 0)],
+          changedTouches: [createTouch(touch1, target, 0, 0)],
+        })
+      )
+      target.dispatchEvent(
+        new TouchEvent('touchmove', {
+          touches: [createTouch(touch1, target, 10, 10)],
+          changedTouches: [createTouch(touch1, target, 10, 10)],
+        })
+      )
+      target.dispatchEvent(
+        new TouchEvent('touchstart', {
+          touches: [createTouch(touch1, target, 10, 10), createTouch(touch2, target, 5, 5)],
+          changedTouches: [createTouch(touch2, target, 5, 5)],
+        })
+      )
+      target.dispatchEvent(
+        new TouchEvent('touchmove', {
+          touches: [
+            createTouch(touch1, target, 20, 20),
+            createTouch(touch2, target, 15, 15),
+          ],
+          changedTouches: [createTouch(touch1, target, 20, 20)],
+        })
+      )
+      target.dispatchEvent(
+        new TouchEvent('touchend', {
+          touches: [
+            createTouch(touch1, target, 20, 20),
+            createTouch(touch2, target, 15, 15),
+          ],
+          changedTouches: [createTouch(touch1, target, 20, 20)],
+        })
+      )
+
+      expect(events).to.have.lengthOf(3)
+      expect(events[0].detail).to.deep.equal({ x: 0, y: 0 })
+      expect(events[1].detail).to.deep.equal({ x: 10 / 100, y: 10 / 100 })
+      expect(events[2].detail).to.deep.equal({ x: 20 / 100, y: 20 / 100 })
+    })
+
+    it('should not stop following initial touch when another touch is ended', function () {
+      if (!self.TouchEvent) {
+        return this.skip()
+      }
+
+      const events: TouchPadMoveEvent[] = []
+      touchPad.addEventListener('touchpadmove', (event) => {
+        events.push(event as TouchPadMoveEvent)
+      })
+
+      const touch1 = genId()
+      const touch2 = genId()
+
+      target.dispatchEvent(
+        new TouchEvent('touchstart', {
+          touches: [createTouch(touch1, target, 0, 0), createTouch(touch2, target, 5, 5)],
+          changedTouches: [
+            createTouch(touch1, target, 0, 0),
+            createTouch(touch2, target, 5, 5),
+          ],
+        })
+      )
+      target.dispatchEvent(
+        new TouchEvent('touchmove', {
+          touches: [createTouch(touch1, target, 10, 10), createTouch(touch2, target, 5, 5)],
+          changedTouches: [createTouch(touch1, target, 10, 10)],
+        })
+      )
+      target.dispatchEvent(
+        new TouchEvent('touchend', {
+          touches: [createTouch(touch1, target, 10, 10), createTouch(touch2, target, 5, 5)],
+          changedTouches: [createTouch(touch2, target, 5, 5)],
+        })
+      )
+      target.dispatchEvent(
+        new TouchEvent('touchmove', {
+          touches: [createTouch(touch1, target, 20, 20)],
+          changedTouches: [createTouch(touch1, target, 20, 20)],
         })
       )
 
@@ -298,3 +449,15 @@ describe('TouchPad', () => {
     })
   })
 })
+
+const genId = () => Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
+
+const createTouch = (identifier: number, target: HTMLElement, x: number, y: number) => {
+  const rect = (target as HTMLElement).getBoundingClientRect()
+  return new Touch({
+    identifier,
+    target,
+    clientX: x + rect.left,
+    clientY: y + rect.top,
+  })
+}

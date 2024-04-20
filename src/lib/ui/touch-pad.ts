@@ -5,6 +5,7 @@
  */
 export class TouchPad extends EventTarget implements EventListenerObject {
   private readonly element: HTMLElement
+  private observedTouchId: number | null = null
 
   constructor(element: HTMLElement) {
     super()
@@ -22,35 +23,57 @@ export class TouchPad extends EventTarget implements EventListenerObject {
       } else if (
         self.TouchEvent &&
         event instanceof TouchEvent &&
-        event.type === 'touchstart'
+        event.type === 'touchstart' &&
+        this.observedTouchId === null
       ) {
+        this.observedTouchId = event.changedTouches[0].identifier
         this.element.addEventListener('touchmove', this)
         this.element.addEventListener('touchend', this)
       }
     }
 
     switch (event.type) {
-      case 'mousedown':
-      case 'mousemove':
       case 'touchstart':
       case 'touchmove':
-        this.#emitEvent(event)
+        this.#emitEventFromTouch(event as TouchEvent)
+        break
+      case 'mousedown':
+      case 'mousemove':
+        this.#emitEventFromMouse(event as MouseEvent)
+        break
+      case 'touchend':
+        if (this.#observedTouchFromEvent(event as TouchEvent)) {
+          this.element.removeEventListener('touchmove', this)
+          this.element.removeEventListener('touchend', this)
+          this.observedTouchId = null
+        }
         break
       case 'mouseup':
-      case 'touchend':
         this.element.ownerDocument!.removeEventListener('mousemove', this)
         this.element.ownerDocument!.removeEventListener('mouseup', this)
-        this.element.removeEventListener('touchmove', this)
-        this.element.removeEventListener('touchend', this)
         break
       default:
         throw new Error(`Unhandled event type: ${event.type}`)
     }
   }
 
-  #emitEvent(event: MouseEvent | TouchEvent) {
+  #emitEventFromMouse(event: MouseEvent) {
     event.preventDefault()
     this.dispatchEvent(new TouchPadMoveEvent(event, this.element))
+  }
+
+  #emitEventFromTouch(event: TouchEvent) {
+    event.preventDefault()
+    const touch = this.#observedTouchFromEvent(event)
+    if (touch) {
+      this.dispatchEvent(new TouchPadMoveEvent(event, this.element, touch))
+    }
+  }
+
+  #observedTouchFromEvent(event: TouchEvent): Touch | undefined {
+    return Array.from(event.changedTouches).find(
+      (touch) => touch.identifier === this.observedTouchId
+    )
   }
 
   /**
@@ -75,12 +98,12 @@ export class TouchPadMoveEvent extends CustomEvent<{ x: number; y: number }> {
   readonly target: HTMLElement
   readonly originalEvent: MouseEvent | TouchEvent
 
-  constructor(event: MouseEvent | TouchEvent, target: HTMLElement) {
+  constructor(event: MouseEvent | TouchEvent, target: HTMLElement, touch?: Touch) {
     let coords: { clientX: number; clientY: number }
-    if (event instanceof MouseEvent) {
+    if (touch) {
+      coords = touch
+    } else if (event instanceof MouseEvent) {
       coords = event
-    } else if (self.TouchEvent && event instanceof self.TouchEvent) {
-      coords = event.touches[0]
     } else {
       throw new TypeError('Expected MouseEvent or TouchEvent')
     }
