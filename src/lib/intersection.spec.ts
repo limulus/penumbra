@@ -1,4 +1,7 @@
+import '../test/setup.js'
+
 import { expect } from 'chai'
+import { describe, it } from 'vitest'
 
 import { Intersection, IntersectionCollection } from './intersection.js'
 import { Sphere } from './sphere.js'

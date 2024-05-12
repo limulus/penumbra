@@ -1,9 +1,12 @@
+import '../test/setup.js'
+
 import { expect } from 'chai'
 import { outdent } from 'outdent'
+import { describe, it } from 'vitest'
 
 import { Canvas } from './canvas.js'
 import { Tuple } from './tuple.js'
-import { Feature, Scenario, Then, And, Given, When } from '../www/spec/gherkin.js'
+import { Feature, Scenario, Then, And, Given, When } from '../test/gherkin.js'
 
 Feature('Canvas', () => {
   /*

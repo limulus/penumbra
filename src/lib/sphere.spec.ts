@@ -1,4 +1,7 @@
+import '../test/setup.js'
+
 import { expect } from 'chai'
+import { describe, it } from 'vitest'
 
 import { Matrix } from './matrix.js'
 import { Ray } from './ray.js'

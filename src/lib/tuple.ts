@@ -1,4 +1,4 @@
-import { TwoDimensionalArray } from './two-dimenisonal-array'
+import { TwoDimensionalArray } from './two-dimenisonal-array.js'
 
 export class Tuple extends TwoDimensionalArray {
   static color(red: number, green: number, blue: number) {

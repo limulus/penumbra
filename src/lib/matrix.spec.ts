@@ -1,4 +1,7 @@
+import '../test/setup.js'
+
 import { expect } from 'chai'
+import { describe, beforeEach, it } from 'vitest'
 
 import { Matrix } from './matrix.js'
 import { Tuple } from './tuple.js'
