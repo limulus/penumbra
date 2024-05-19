@@ -1,7 +1,7 @@
 {
   "name": "@limulus/penumbra",
   "version": "1.0.0",
-  "description": "Ray Tracer Challenge implementation using web technologies",
+  "description": "A Ray Tracer Challenge implementation using web technologies",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "exports": {

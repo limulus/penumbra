@@ -1,11 +1,15 @@
 # @limulus/penumbra
 
-[Ray Tracer Challenge](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/)
+A [Ray Tracer Challenge](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/)
 implementation using web technologies
 
-## Development Journal with Demos
+## Development Journal and Demos
 
-https://limulus.net/penumbra/
+I’m documenting my progress and creating interactive demos as I go on the [project’s
+website]. The site code is hosted in a [separate repository].
+
+[project’s website]: https://limulus.net/penumbra/
+[separate repository]: https://github.com/limulus/penumbra-www/
 
 ## Local Development
 
@@ -20,16 +24,6 @@ https://limulus.net/penumbra/
 npm install
 ```
 
-### Running Locally
-
-```sh
-npm install
-npm run dev
-```
-
-This will start a local server at http://localhost:8080/ that will automatically reload when
-any source files are changed.
-
 ### Running Tests
 
 Single run:
@@ -38,8 +32,8 @@ Single run:
 npm test
 ```
 
-Watch mode:
+Watch mode for Rust tests:
 
 ```sh
-npm run wasm:test:watch
+npm run test:wasm:watch
 ```
