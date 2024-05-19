@@ -30,6 +30,7 @@
     "build:esm": "tsc -p tsconfig.build.json --incremental false --outDir dist/esm",
     "build:wasm": "wasm-pack build --out-dir ../dist/wasm --out-name penumbra-simd --no-pack wasm -- --no-default-features --features simd",
     "postbuild:cjs": "echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+    "postbuild:wasm": "del dist/wasm/.gitignore",
     "clean": "concurrently -c auto 'npm:clean:*'",
     "clean:js": "del *.tsbuildinfo coverage dist",
     "clean:wasm": "cd wasm && cargo clean",
