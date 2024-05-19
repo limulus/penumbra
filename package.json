@@ -4,17 +4,22 @@
   "description": "Ray Tracer Challenge implementation using web technologies",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
-  "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js"
+    },
+    "./wasm/simd": {
+      "types": "./dist/wasm/penumbra-simd.d.ts",
+      "import": "./dist/wasm/penumbra-simd.js"
     }
   },
   "files": [
     "dist/cjs",
     "dist/esm",
     "dist/types",
+    "dist/wasm",
     "src"
   ],
   "type": "module",
@@ -23,7 +28,7 @@
     "build:cjs": "tsc -p tsconfig.build.json --incremental false --module commonjs --outDir dist/cjs",
     "build:dts": "tsc -p tsconfig.build.json --incremental false --declaration --declarationMap --emitDeclarationOnly --outDir dist/types",
     "build:esm": "tsc -p tsconfig.build.json --incremental false --outDir dist/esm",
-    "build:wasm": "wasm-pack build --target web --out-dir ../dist/wasm --out-name penumbra-simd --no-pack wasm -- --no-default-features --features simd",
+    "build:wasm": "wasm-pack build --out-dir ../dist/wasm --out-name penumbra-simd --no-pack wasm -- --no-default-features --features simd",
     "postbuild:cjs": "echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
     "clean": "concurrently -c auto 'npm:clean:*'",
     "clean:js": "del *.tsbuildinfo coverage dist",
