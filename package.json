@@ -36,6 +36,8 @@
     "clean:wasm": "cd wasm && cargo clean",
     "dev": "chokidar wasm/src --initial --command 'npm run build:wasm'",
     "lint": "eslint src",
+    "lint:rust:fmt": "cargo fmt --manifest-path wasm/Cargo.toml --check",
+    "lint:rust:clippy": "cargo clippy --manifest-path wasm/Cargo.toml --target wasm32-unknown-unknown",
     "prepack": "npm run build",
     "prepare": "is-ci || husky install",
     "test": "concurrently -c auto 'npm:test:browser' 'npm:test:wasm'",
@@ -43,7 +45,7 @@
     "test:wasm": "cd wasm && wasm-pack test --node",
     "test:wasm:watch": "chokidar wasm/src --initial --command 'npm run wasm:test'",
     "tscc": "tsc --noEmit",
-    "verify": "concurrently -c auto npm:lint npm:test npm:tscc"
+    "verify": "concurrently -c auto npm:lint npm:lint:rust:fmt npm:lint:rust:clippy npm:test npm:tscc"
   },
   "repository": {
     "type": "git",
@@ -81,7 +83,6 @@
     "semantic-release": "^22.0.5",
     "typescript": "^5.2.2",
     "vitest": "^1.5.0",
-    "wasm-pack": "^0.12.1",
     "webdriverio": "^8.36.1"
   }
 }

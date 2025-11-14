@@ -7,19 +7,17 @@ use crate::fuzzy::fuzzy_eq_f32x4;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Tuple {
-    data: [f32; 4]
+    data: [f32; 4],
 }
 
 impl Tuple {
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Tuple {
-        Tuple {
-            data: [x, y, z, w]
-        }
+        Tuple { data: [x, y, z, w] }
     }
 
     pub fn from_v128(data: v128) -> Tuple {
         Tuple {
-            data: unsafe { transmute(data) }
+            data: unsafe { transmute(data) },
         }
     }
 
@@ -71,24 +69,14 @@ impl Tuple {
     fn yzx(self) -> Tuple {
         Tuple::from_v128(u8x16_swizzle(
             self.v128(),
-            u8x16(
-                4, 5, 6, 7,
-                8, 9, 10, 11,
-                0, 1, 2, 3,
-                12, 13, 14, 15
-            )
+            u8x16(4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 12, 13, 14, 15),
         ))
     }
 
     fn zxy(self) -> Tuple {
         Tuple::from_v128(u8x16_swizzle(
             self.v128(),
-            u8x16(
-                8, 9, 10, 11,
-                0, 1, 2, 3,
-                4, 5, 6, 7,
-                12, 13, 14, 15
-            )
+            u8x16(8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 14, 15),
         ))
     }
 
@@ -182,8 +170,8 @@ impl Sub<Tuple> for Tuple {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use wasm_bindgen_test::*;
     use crate::fuzzy::fuzzy_eq_f32;
+    use wasm_bindgen_test::*;
 
     #[wasm_bindgen_test]
     fn getters() {
@@ -242,7 +230,7 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
-    fn eq_when_difference_is_less_than_epsilon(){
+    fn eq_when_difference_is_less_than_epsilon() {
         let a = Tuple::new(4.3, -4.2, 3.1, 1.0);
         let b = Tuple::new(4.300009, -4.200009, 3.100009, 1.0);
         assert_eq!(a, b);

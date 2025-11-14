@@ -46,7 +46,11 @@ impl SphereShadowRenderer {
     pub fn translate_light_relative_to_canvas_pos(&mut self, x: f32, y: f32) {
         self.light_transform = Transform::new()
             .translate(0.0, y, x)
-            .scale(1.0, self.sensor_size / self.canvas.height as f32, self.sensor_size / self.canvas.width as f32)
+            .scale(
+                1.0,
+                self.sensor_size / self.canvas.height as f32,
+                self.sensor_size / self.canvas.width as f32,
+            )
             .translate(0.0, -self.sensor_size / 2.0, -self.sensor_size / 2.0)
             .scale(1.0, 1.5, 1.5)
             .rotate_z(std::f32::consts::PI)
@@ -63,9 +67,11 @@ impl SphereShadowRenderer {
                 let ray = Ray::new(light_pos, (sensor_point - light_pos).normalize());
                 let intersections = self.sphere.intersect(&ray);
                 if intersections.len() > 0 {
-                    self.canvas.write_pixel(i, j, Tuple::color(0.0, 0.0, 0.0, 1.0));
+                    self.canvas
+                        .write_pixel(i, j, Tuple::color(0.0, 0.0, 0.0, 1.0));
                 } else {
-                    self.canvas.write_pixel(i, j, self.background.pixel_at(i, j));
+                    self.canvas
+                        .write_pixel(i, j, self.background.pixel_at(i, j));
                 }
             }
         }
@@ -89,7 +95,12 @@ fn precompute_background_gradient(width: usize, height: usize) -> Canvas {
     canvas
 }
 
-fn precompute_sensor_points(sensor_size: f32, sensor_transform: Matrix4, width: usize, height: usize) -> Vec<Tuple> {
+fn precompute_sensor_points(
+    sensor_size: f32,
+    sensor_transform: Matrix4,
+    width: usize,
+    height: usize,
+) -> Vec<Tuple> {
     let mut sensor_points = Vec::new();
     for i in 0..width {
         for j in 0..height {

@@ -16,7 +16,11 @@ website]. The site code is hosted in a [separate repository].
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) ^20.8.0
-- [Rust](https://www.rust-lang.org/) ^1.75.0
+- [Rust](https://www.rust-lang.org/) (stable toolchain - managed via rust-toolchain.toml)
+- [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) - Install via:
+  ```sh
+  cargo install wasm-pack
+  ```
 
 ### Installation
 
