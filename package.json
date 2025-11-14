@@ -81,7 +81,6 @@
     "semantic-release": "^22.0.5",
     "typescript": "^5.2.2",
     "vitest": "^1.5.0",
-    "wasm-pack": "^0.12.1",
     "webdriverio": "^8.36.1"
   }
 }
