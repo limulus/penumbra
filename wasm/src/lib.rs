@@ -1,12 +1,12 @@
 use wasm_bindgen::prelude::*;
 
-pub mod fuzzy;
-pub mod tuple;
 pub mod canvas;
+pub mod fuzzy;
+pub mod intersection;
 pub mod matrix;
 pub mod ray;
 pub mod sphere;
-pub mod intersection;
+pub mod tuple;
 
 mod demo;
 pub use demo::sphere_shadow::*;
@@ -17,9 +17,3 @@ pub fn run() -> Result<(), JsValue> {
     console_error_panic_hook::set_once();
     Ok(())
 }
-
-// When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
-// allocator.
-#[cfg(feature = "wee_alloc")]
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
