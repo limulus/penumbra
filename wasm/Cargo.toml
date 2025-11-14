@@ -32,12 +32,15 @@ wasm-bindgen-test = "0.3.43"
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(feature, values("wee_alloc"))'] }
 
 [lints.clippy]
-# Deny correctness issues (actual bugs)
-correctness = "deny"
-# Warn on suspicious code
-suspicious = "warn"
-# Performance improvements
-perf = "warn"
+# Deny correctness issues (actual bugs) - lower priority allows individual overrides
+correctness = { level = "deny", priority = -1 }
+# Warn on suspicious code - lower priority allows individual overrides
+suspicious = { level = "warn", priority = -1 }
+# Performance improvements - lower priority allows individual overrides
+perf = { level = "warn", priority = -1 }
+# Allow erasing_op - we use consistent array indexing patterns (e.g., row * 4 + col)
+# even when the multiplication results in 0 for code clarity
+erasing_op = "allow"
 
 [profile.release]
 # Optimize for small code size (important for WASM)
