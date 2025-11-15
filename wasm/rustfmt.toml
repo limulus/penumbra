@@ -1,5 +1,5 @@
 # Rust formatting configuration
 edition = "2021"
-max_width = 100
+max_width = 92
 tab_spaces = 4
 use_small_heuristics = "Default"
