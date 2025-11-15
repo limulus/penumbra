@@ -16,6 +16,7 @@ pub struct Matrix4 {
 }
 
 impl Matrix4 {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         m00: f32,
         m01: f32,
@@ -45,6 +46,7 @@ impl Matrix4 {
         Matrix4 { data: IDENTITY }
     }
 
+    #[allow(clippy::identity_op, clippy::erasing_op)]
     pub fn rotation_x(r: f32) -> Matrix4 {
         let mut data: [f32; 16] = IDENTITY;
         data[1 * 4 + 1] = r.cos();
@@ -54,6 +56,7 @@ impl Matrix4 {
         Matrix4 { data }
     }
 
+    #[allow(clippy::identity_op, clippy::erasing_op)]
     pub fn rotation_y(r: f32) -> Matrix4 {
         let mut data: [f32; 16] = IDENTITY;
         data[0 * 4 + 0] = r.cos();
@@ -63,6 +66,7 @@ impl Matrix4 {
         Matrix4 { data }
     }
 
+    #[allow(clippy::identity_op, clippy::erasing_op)]
     pub fn rotation_z(r: f32) -> Matrix4 {
         let mut data: [f32; 16] = IDENTITY;
         data[0 * 4 + 0] = r.cos();
@@ -72,6 +76,7 @@ impl Matrix4 {
         Matrix4 { data }
     }
 
+    #[allow(clippy::identity_op, clippy::erasing_op)]
     pub fn scaling(x: f32, y: f32, z: f32) -> Matrix4 {
         let mut data: [f32; 16] = [0.0; 16];
         data[0 * 4 + 0] = x;
@@ -81,6 +86,7 @@ impl Matrix4 {
         Matrix4 { data }
     }
 
+    #[allow(clippy::identity_op, clippy::erasing_op)]
     pub fn shearing(xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> Matrix4 {
         let mut data: [f32; 16] = IDENTITY;
         data[1 * 4 + 0] = xy;
@@ -92,6 +98,7 @@ impl Matrix4 {
         Matrix4 { data }
     }
 
+    #[allow(clippy::identity_op, clippy::erasing_op)]
     pub fn translation(x: f32, y: f32, z: f32) -> Matrix4 {
         let mut data: [f32; 16] = IDENTITY;
         data[3 * 4 + 0] = x;
@@ -350,6 +357,7 @@ struct Matrix3 {
 }
 
 impl Matrix3 {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         m00: f32,
         m01: f32,
