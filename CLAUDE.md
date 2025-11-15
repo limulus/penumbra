@@ -205,9 +205,68 @@ Progress and interactive demos are documented at:
 - Test failures: Run `npm test` or specific test commands
 - Build failures: Clean with `npm run clean` and rebuild
 
+### Git Commit Message Guidelines
+
+This project uses **semantic-release** for automated versioning and releases. Commit message prefixes determine whether a new version is published:
+
+#### Prefixes that TRIGGER releases:
+
+- **feat:** - New features or functionality (minor version bump)
+  - Use ONLY for changes to production code that add new capabilities
+  - Example: `feat: add color support to tuples`
+
+- **fix:** - Bug fixes in production code (patch version bump)
+  - Use ONLY for changes that fix bugs in production code
+  - Example: `fix: correct matrix multiplication order`
+
+#### Prefixes that DO NOT trigger releases:
+
+- **docs:** - Documentation changes only
+  - Example: `docs: update README with installation steps`
+
+- **chore:** - Maintenance tasks, dependency updates, build config
+  - Example: `chore: update wasm-pack to 0.12.0`
+
+- **test:** - Adding or modifying tests only
+  - Example: `test: add coverage for edge cases in sphere intersections`
+
+- **refactor:** - Code changes that neither fix bugs nor add features
+  - Example: `refactor: simplify matrix inverse calculation`
+
+- **ci:** - CI/CD configuration changes
+  - Example: `ci: add rust caching to GitHub Actions`
+
+- **perf:** - Performance improvements that don't change functionality
+  - Example: `perf: optimize tuple normalization`
+
+- **style:** - Code style/formatting changes
+  - Example: `style: fix clippy warnings`
+
+#### Important Guidelines:
+
+- **Be conservative with feat/fix**: Only use these when you are changing production code behavior or adding new production features
+- **Use chore for tooling**: Changes to tests, docs, build scripts, CI, etc. should use appropriate non-releasing prefixes
+- **Commitlint enforces format**: All commits must follow conventional commit format
+- **Run verification**: Always run `npm run verify` before committing
+
+#### Examples:
+
+```bash
+# Production code changes (WILL release):
+git commit -m "feat: implement ray-sphere intersection"
+git commit -m "fix: handle divide-by-zero in matrix inverse"
+
+# Non-production changes (will NOT release):
+git commit -m "docs: add CLAUDE.md with project documentation"
+git commit -m "test: add test cases for transformation matrices"
+git commit -m "chore: update TypeScript to 5.3.0"
+git commit -m "refactor: extract common matrix operations"
+```
+
 ### Making Changes
 
 - Follow conventional commits format (commitlint enforced)
 - Run `npm run verify` before committing
 - TypeScript files should maintain type safety
 - Rust code must pass clippy at deny level for correctness
+- Use appropriate commit prefixes (see Git Commit Message Guidelines above)
