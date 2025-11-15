@@ -21,7 +21,10 @@ pub struct IntersectionCollection<'a> {
 
 impl<'a> IntersectionCollection<'a> {
     pub fn new(mut xs: Vec<Intersection<'a>>) -> IntersectionCollection<'a> {
-        xs.sort_unstable_by(|a, b| a.t.partial_cmp(&b.t).unwrap());
+        xs.sort_unstable_by(|a, b| {
+            a.t.partial_cmp(&b.t)
+                .expect("intersection t values must not be NaN")
+        });
         IntersectionCollection { xs }
     }
 
