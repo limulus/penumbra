@@ -36,7 +36,12 @@ impl SphereShadowRenderer {
             background: precompute_background_gradient(width, height),
             light_pos: Tuple::point(-5.0, 0.0, 0.0),
             light_transform: Matrix4::identity(),
-            sensor_points: precompute_sensor_points(sensor_size, sensor_transform, width, height),
+            sensor_points: precompute_sensor_points(
+                sensor_size,
+                sensor_transform,
+                width,
+                height,
+            ),
             sensor_size,
             sphere,
         }
