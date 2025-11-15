@@ -332,7 +332,7 @@ impl Transform {
                 .cloned()
                 .rev()
                 .reduce(|a, b| a * b)
-                .unwrap()
+                .expect("Transform should have at least one operation")
         }
     }
 }

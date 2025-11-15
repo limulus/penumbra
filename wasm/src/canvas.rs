@@ -42,7 +42,7 @@ impl Canvas {
             self.width as u32,
             self.height as u32,
         )
-        .unwrap()
+        .expect("Canvas dimensions should be valid for ImageData creation")
     }
 }
 
