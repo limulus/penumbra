@@ -17,7 +17,7 @@ impl Tuple {
 
     pub fn from_v128(data: v128) -> Tuple {
         Tuple {
-            data: unsafe { transmute(data) },
+            data: unsafe { transmute::<v128, [f32; 4]>(data) },
         }
     }
 

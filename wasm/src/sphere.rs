@@ -9,6 +9,12 @@ pub struct Sphere {
     transform_inverse: Matrix4,
 }
 
+impl Default for Sphere {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Sphere {
     pub fn new() -> Sphere {
         Sphere {
@@ -17,7 +23,7 @@ impl Sphere {
         }
     }
 
-    pub fn intersect(&self, ray: &Ray) -> IntersectionCollection {
+    pub fn intersect(&self, ray: &Ray) -> IntersectionCollection<'_> {
         let ray = ray.transform(&self.transform_inverse);
         let sphere_to_ray = ray.origin - Tuple::point(0.0, 0.0, 0.0);
 
