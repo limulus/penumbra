@@ -29,6 +29,10 @@ impl<'a> IntersectionCollection<'a> {
         self.xs.len()
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.xs.is_empty()
+    }
+
     pub fn hit(&self) -> Option<&Intersection<'a>> {
         self.xs.iter().find(|i| i.t >= 0.0)
     }

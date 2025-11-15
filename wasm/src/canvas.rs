@@ -38,7 +38,7 @@ impl Canvas {
             ]);
         }
         ImageData::new_with_u8_clamped_array_and_sh(
-            wasm_bindgen::Clamped(&mut data),
+            wasm_bindgen::Clamped(&data),
             self.width as u32,
             self.height as u32,
         )

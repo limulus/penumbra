@@ -66,7 +66,7 @@ impl SphereShadowRenderer {
                 let sensor_point = self.sensor_points[i * self.canvas.height + j];
                 let ray = Ray::new(light_pos, (sensor_point - light_pos).normalize());
                 let intersections = self.sphere.intersect(&ray);
-                if intersections.len() > 0 {
+                if !intersections.is_empty() {
                     self.canvas
                         .write_pixel(i, j, Tuple::color(0.0, 0.0, 0.0, 1.0));
                 } else {

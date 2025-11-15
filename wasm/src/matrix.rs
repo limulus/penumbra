@@ -112,7 +112,7 @@ impl Matrix4 {
 
     pub fn cofactor(&self, row: usize, col: usize) -> f32 {
         let minor = self.minor(row, col);
-        if (row + col) % 2 == 0 {
+        if (row + col).is_multiple_of(2) {
             minor
         } else {
             -minor
@@ -247,6 +247,12 @@ pub struct Transform {
     operations: Vec<Matrix4>,
 }
 
+impl Default for Transform {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Transform {
     pub fn new() -> Transform {
         Transform {
@@ -366,7 +372,7 @@ impl Matrix3 {
 
     pub fn cofactor(&self, row: usize, col: usize) -> f32 {
         let minor = self.minor(row, col);
-        if (row + col) % 2 == 0 {
+        if (row + col).is_multiple_of(2) {
             minor
         } else {
             -minor
