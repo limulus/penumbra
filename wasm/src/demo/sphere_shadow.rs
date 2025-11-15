@@ -29,7 +29,9 @@ impl SphereShadowRenderer {
             .build();
 
         let mut sphere = Sphere::new();
-        sphere.set_transform(Transform::new().scale(2.0, 2.0, 2.0));
+        sphere
+            .set_transform(Transform::new().scale(2.0, 2.0, 2.0))
+            .expect("Hardcoded sphere transform should always be invertible");
 
         SphereShadowRenderer {
             canvas: Canvas::new(width, height),

@@ -43,9 +43,11 @@ impl Sphere {
         }
     }
 
-    pub fn set_transform(&mut self, transform: Transform) {
+    pub fn set_transform(&mut self, transform: Transform) -> Result<(), &'static str> {
         self.transform = transform.build();
-        self.transform_inverse = self.transform.inverse().unwrap();
+        self.transform_inverse =
+            self.transform.inverse().ok_or("Matrix is not invertible")?;
+        Ok(())
     }
 }
 
@@ -150,7 +152,8 @@ mod tests {
         let mut s = Sphere::new();
         let t = Matrix4::translation(2.0, 3.0, 4.0);
 
-        s.set_transform(Transform::new().translate(2.0, 3.0, 4.0));
+        s.set_transform(Transform::new().translate(2.0, 3.0, 4.0))
+            .unwrap();
 
         assert_eq!(s.transform, t);
     }
@@ -160,7 +163,8 @@ mod tests {
         let r = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
         let mut s = Sphere::new();
 
-        s.set_transform(Transform::new().scale(2.0, 2.0, 2.0));
+        s.set_transform(Transform::new().scale(2.0, 2.0, 2.0))
+            .unwrap();
         let xs = s.intersect(&r);
 
         assert_eq!(xs.len(), 2);
@@ -173,7 +177,8 @@ mod tests {
         let r = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
         let mut s = Sphere::new();
 
-        s.set_transform(Transform::new().translate(5.0, 0.0, 0.0));
+        s.set_transform(Transform::new().translate(5.0, 0.0, 0.0))
+            .unwrap();
         let xs = s.intersect(&r);
 
         assert_eq!(xs.len(), 0);
