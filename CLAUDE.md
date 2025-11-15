@@ -183,10 +183,15 @@ The release profile is optimized for WebAssembly:
 
 ### Clippy Configuration
 
+Global lints configured in Cargo.toml with priority = -1 to allow individual overrides:
+
 - **Correctness** (deny): Actual bugs are denied
 - **Suspicious** (warn): Suspicious patterns trigger warnings
 - **Performance** (warn): Performance improvements suggested
-- **erasing_op** (allow): Allows `row * 4 + col` patterns for clarity
+
+Individual functions use explicit `#[allow]` attributes for intentional patterns:
+- `too_many_arguments`: Matrix constructors intentionally take many parameters for clarity
+- `identity_op` and `erasing_op`: Used in matrix indexing to show the `row*cols+col` pattern (e.g., `0*4+0`) for readability
 
 ## Testing Strategy
 
