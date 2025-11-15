@@ -3,6 +3,7 @@ use std::cmp::PartialEq;
 use std::ops::Mul;
 
 use crate::fuzzy::{fuzzy_eq_f32, fuzzy_eq_f32x4};
+use crate::simd::v128_to_f32x4;
 use crate::tuple::Tuple;
 
 const IDENTITY: [f32; 16] = [
@@ -114,7 +115,25 @@ impl Matrix4 {
     #[inline]
     pub fn col_v128(&self, col: usize) -> v128 {
         assert!(col < 4);
-        unsafe { *(self.data.as_ptr().add(col * 4) as *const v128) }
+        f32x4(
+            self.data[col * 4],
+            self.data[col * 4 + 1],
+            self.data[col * 4 + 2],
+            self.data[col * 4 + 3],
+        )
+    }
+
+    /// Helper to safely store a v128 column into the matrix data
+    /// Uses the simd conversion helper to convert v128 to [f32; 4], then writes individual values.
+    /// This is safer than v128_store because array indexing is bounds-checked.
+    #[inline]
+    fn store_column(data: &mut [f32; 16], column: usize, value: v128) {
+        let values = v128_to_f32x4(value);
+        let base = column * 4;
+        data[base] = values[0];
+        data[base + 1] = values[1];
+        data[base + 2] = values[2];
+        data[base + 3] = values[3];
     }
 
     pub fn cofactor(&self, row: usize, col: usize) -> f32 {
@@ -212,7 +231,7 @@ impl Mul<Matrix4> for Matrix4 {
     type Output = Self;
 
     fn mul(self, other: Self) -> Self {
-        let data: [f32; 16] = [0.0; 16];
+        let mut data: [f32; 16] = [0.0; 16];
 
         for i in 0..4 {
             let mut sum = f32x4_splat(0.0);
@@ -222,7 +241,7 @@ impl Mul<Matrix4> for Matrix4 {
                     f32x4_mul(f32x4_splat(other.get(j, i)), self.col_v128(j)),
                 );
             }
-            unsafe { v128_store((data.as_ptr().add(i * 4)) as *mut v128, sum) }
+            Self::store_column(&mut data, i, sum);
         }
 
         Matrix4 { data }

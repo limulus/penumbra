@@ -1,9 +1,9 @@
 use std::arch::wasm32::*;
 use std::cmp::PartialEq;
-use std::mem::transmute;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 use crate::fuzzy::fuzzy_eq_f32x4;
+use crate::simd::{f32x4_to_v128, v128_to_f32x4};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Tuple {
@@ -15,9 +15,10 @@ impl Tuple {
         Tuple { data: [x, y, z, w] }
     }
 
+    /// Create a Tuple from a v128 SIMD vector
     pub fn from_v128(data: v128) -> Tuple {
         Tuple {
-            data: unsafe { transmute::<v128, [f32; 4]>(data) },
+            data: v128_to_f32x4(data),
         }
     }
 
@@ -33,9 +34,10 @@ impl Tuple {
         Tuple::new(red, green, blue, alpha)
     }
 
+    /// Convert this Tuple to a v128 SIMD vector
     #[inline]
     pub fn v128(&self) -> v128 {
-        unsafe { transmute(self.data) }
+        f32x4_to_v128(self.data)
     }
 
     pub fn is_point(self) -> bool {

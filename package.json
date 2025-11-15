@@ -44,6 +44,7 @@
     "test:browser": "vitest run",
     "test:wasm": "cd wasm && wasm-pack test --node",
     "test:wasm:watch": "chokidar wasm/src --initial --command 'npm run wasm:test'",
+    "bench:wasm": "node benchmarks/wasm-bench.mjs",
     "tscc": "tsc --noEmit",
     "verify": "concurrently -c auto npm:lint npm:lint:rust:fmt npm:lint:rust:clippy npm:test npm:tscc"
   },
