@@ -71,6 +71,20 @@ Both implementations follow the same API contract and are tested independently.
 
 ## Development Workflow
 
+### Prerequisites
+
+Before starting development, ensure you have the following installed:
+
+- **Node.js** ^20.8.0 - [Download](https://nodejs.org/)
+- **Rust** (stable toolchain) - Managed via rust-toolchain.toml
+  - Install: [https://rustup.rs/](https://rustup.rs/)
+- **wasm-pack** - Build tool for Rust WebAssembly
+  - Install via cargo:
+    ```bash
+    cargo install wasm-pack
+    ```
+  - Or see [installation guide](https://rustwasm.github.io/wasm-pack/installer/)
+
 ### Setup
 
 ```bash
