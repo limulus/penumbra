@@ -8,6 +8,7 @@ use crate::tuple::Tuple;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
+#[derive(Default)]
 pub struct BenchOps;
 
 #[wasm_bindgen]
