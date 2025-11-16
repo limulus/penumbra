@@ -100,6 +100,10 @@ impl Tuple {
     pub fn to_rgba(self) -> Tuple {
         Tuple::from_f32x4((self.f32x4() * f32x4::splat(255.0)).round())
     }
+
+    pub fn repair_vector_after_translation(self) -> Tuple {
+        Tuple::vector(self.x(), self.y(), self.z())
+    }
 }
 
 impl Add<Tuple> for Tuple {
@@ -168,6 +172,7 @@ impl Sub<Tuple> for Tuple {
 mod tests {
     use super::*;
     use crate::fuzzy::fuzzy_eq_f32;
+    use crate::matrix::Matrix4;
     use wasm_bindgen_test::*;
 
     #[wasm_bindgen_test]
@@ -364,5 +369,15 @@ mod tests {
         let c1 = Tuple::color(1.0, 0.2, 0.4, 0.5);
         let c2 = Tuple::color(0.9, 1.0, 0.1, 0.2);
         assert_eq!(c1 * c2, Tuple::color(0.9, 0.2, 0.04, 0.1));
+    }
+
+    #[wasm_bindgen_test]
+    fn repairing_a_translated_vector() {
+        let v = Tuple::vector(-2.0, 1.0, 4.0);
+        let m = Matrix4::translation(5.0, -3.0, 2.0).transpose();
+        let v2 = m * v;
+        assert_ne!(v2.w(), 0.0);
+        let repaired = v2.repair_vector_after_translation();
+        assert_eq!(repaired.w(), 0.0);
     }
 }
