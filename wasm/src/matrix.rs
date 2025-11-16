@@ -2,8 +2,8 @@ use std::cmp::PartialEq;
 use std::ops::Mul;
 
 use crate::fuzzy::{fuzzy_eq_f32, fuzzy_eq_f32x4};
-use crate::simd::f32x4;
 use crate::tuple::Tuple;
+use wide::f32x4;
 
 const IDENTITY: [f32; 16] = [
     1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,

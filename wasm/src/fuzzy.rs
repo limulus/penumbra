@@ -1,5 +1,4 @@
-use crate::simd::f32x4;
-use wide::CmpGe;
+use wide::{f32x4, CmpGe};
 
 pub const EPSILON: f32 = 0.00001;
 

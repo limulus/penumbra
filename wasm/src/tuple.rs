@@ -2,7 +2,7 @@ use std::cmp::PartialEq;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 use crate::fuzzy::fuzzy_eq_f32x4;
-use crate::simd::f32x4;
+use wide::f32x4;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Tuple {

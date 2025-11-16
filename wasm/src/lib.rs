@@ -6,7 +6,6 @@ pub mod fuzzy;
 pub mod intersection;
 pub mod matrix;
 pub mod ray;
-pub mod simd;
 pub mod sphere;
 pub mod tuple;
 
