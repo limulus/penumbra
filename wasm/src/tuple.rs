@@ -1,9 +1,8 @@
-use std::arch::wasm32::*;
 use std::cmp::PartialEq;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 use crate::fuzzy::fuzzy_eq_f32x4;
-use crate::simd::{f32x4_to_v128, v128_to_f32x4};
+use crate::simd::f32x4;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Tuple {
@@ -15,10 +14,10 @@ impl Tuple {
         Tuple { data: [x, y, z, w] }
     }
 
-    /// Create a Tuple from a v128 SIMD vector
-    pub fn from_v128(data: v128) -> Tuple {
+    /// Create a Tuple from an f32x4 SIMD vector
+    pub fn from_f32x4(data: f32x4) -> Tuple {
         Tuple {
-            data: v128_to_f32x4(data),
+            data: data.to_array(),
         }
     }
 
@@ -34,10 +33,10 @@ impl Tuple {
         Tuple::new(red, green, blue, alpha)
     }
 
-    /// Convert this Tuple to a v128 SIMD vector
+    /// Convert this Tuple to an f32x4 SIMD vector
     #[inline]
-    pub fn v128(&self) -> v128 {
-        f32x4_to_v128(self.data)
+    pub fn f32x4(&self) -> f32x4 {
+        f32x4::from(self.data)
     }
 
     pub fn is_point(self) -> bool {
@@ -69,17 +68,13 @@ impl Tuple {
     }
 
     fn yzx(self) -> Tuple {
-        Tuple::from_v128(u8x16_swizzle(
-            self.v128(),
-            u8x16(4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 12, 13, 14, 15),
-        ))
+        // Swizzle: [x, y, z, w] -> [y, z, x, w]
+        Tuple::new(self.y(), self.z(), self.x(), self.w())
     }
 
     fn zxy(self) -> Tuple {
-        Tuple::from_v128(u8x16_swizzle(
-            self.v128(),
-            u8x16(8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 14, 15),
-        ))
+        // Swizzle: [x, y, z, w] -> [z, x, y, w]
+        Tuple::new(self.z(), self.x(), self.y(), self.w())
     }
 
     pub fn cross(self, other: Tuple) -> Tuple {
@@ -103,7 +98,7 @@ impl Tuple {
     }
 
     pub fn to_rgba(self) -> Tuple {
-        Tuple::from_v128(f32x4_nearest(f32x4_mul(self.v128(), f32x4_splat(255.0))))
+        Tuple::from_f32x4((self.f32x4() * f32x4::splat(255.0)).round())
     }
 }
 
@@ -111,7 +106,7 @@ impl Add<Tuple> for Tuple {
     type Output = Tuple;
 
     fn add(self, other: Tuple) -> Tuple {
-        Tuple::from_v128(f32x4_add(self.v128(), other.v128()))
+        Tuple::from_f32x4(self.f32x4() + other.f32x4())
     }
 }
 
@@ -119,7 +114,7 @@ impl Div<f32> for Tuple {
     type Output = Tuple;
 
     fn div(self, other: f32) -> Tuple {
-        Tuple::from_v128(f32x4_div(self.v128(), f32x4_splat(other)))
+        Tuple::from_f32x4(self.f32x4() / f32x4::splat(other))
     }
 }
 
@@ -127,7 +122,7 @@ impl Div<Tuple> for Tuple {
     type Output = Tuple;
 
     fn div(self, other: Tuple) -> Tuple {
-        Tuple::from_v128(f32x4_div(self.v128(), other.v128()))
+        Tuple::from_f32x4(self.f32x4() / other.f32x4())
     }
 }
 
@@ -135,7 +130,7 @@ impl Mul<f32> for Tuple {
     type Output = Tuple;
 
     fn mul(self, other: f32) -> Tuple {
-        Tuple::from_v128(f32x4_mul(self.v128(), f32x4_splat(other)))
+        Tuple::from_f32x4(self.f32x4() * f32x4::splat(other))
     }
 }
 
@@ -143,7 +138,7 @@ impl Mul<Tuple> for Tuple {
     type Output = Tuple;
 
     fn mul(self, other: Tuple) -> Tuple {
-        Tuple::from_v128(f32x4_mul(self.v128(), other.v128()))
+        Tuple::from_f32x4(self.f32x4() * other.f32x4())
     }
 }
 
@@ -151,13 +146,13 @@ impl Neg for Tuple {
     type Output = Tuple;
 
     fn neg(self) -> Self::Output {
-        Tuple::from_v128(f32x4_neg(self.v128()))
+        Tuple::from_f32x4(-self.f32x4())
     }
 }
 
 impl PartialEq<Tuple> for Tuple {
     fn eq(&self, other: &Tuple) -> bool {
-        fuzzy_eq_f32x4(self.v128(), other.v128())
+        fuzzy_eq_f32x4(self.f32x4(), other.f32x4())
     }
 }
 
@@ -165,7 +160,7 @@ impl Sub<Tuple> for Tuple {
     type Output = Tuple;
 
     fn sub(self, other: Tuple) -> Tuple {
-        Tuple::from_v128(f32x4_sub(self.v128(), other.v128()))
+        Tuple::from_f32x4(self.f32x4() - other.f32x4())
     }
 }
 
