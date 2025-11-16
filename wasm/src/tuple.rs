@@ -104,6 +104,10 @@ impl Tuple {
     pub fn repair_vector_after_translation(self) -> Tuple {
         Tuple::vector(self.x(), self.y(), self.z())
     }
+
+    pub fn reflect(self, normal: Tuple) -> Tuple {
+        self - normal * 2.0 * self.dot(normal)
+    }
 }
 
 impl Add<Tuple> for Tuple {
@@ -379,5 +383,22 @@ mod tests {
         assert_ne!(v2.w(), 0.0);
         let repaired = v2.repair_vector_after_translation();
         assert_eq!(repaired.w(), 0.0);
+    }
+
+    #[wasm_bindgen_test]
+    fn reflecting_a_vector_approaching_at_45_degrees() {
+        let v = Tuple::vector(1.0, -1.0, 0.0);
+        let n = Tuple::vector(0.0, 1.0, 0.0);
+        let r = v.reflect(n);
+        assert_eq!(r, Tuple::vector(1.0, 1.0, 0.0));
+    }
+
+    #[wasm_bindgen_test]
+    fn reflecting_a_vector_off_a_slanted_surface() {
+        let v = Tuple::vector(0.0, -1.0, 0.0);
+        let n = Tuple::vector(2f32.sqrt() / 2.0, 2f32.sqrt() / 2.0, 0.0);
+        let r = v.reflect(n);
+        print!("{:?}", v);
+        assert_eq!(r, Tuple::vector(1.0, 0.0, 0.0));
     }
 }
