@@ -1,10 +1,9 @@
-use std::arch::wasm32::*;
 use std::cmp::PartialEq;
 use std::ops::Mul;
 
 use crate::fuzzy::{fuzzy_eq_f32, fuzzy_eq_f32x4};
-use crate::simd::v128_to_f32x4;
 use crate::tuple::Tuple;
+use wide::f32x4;
 
 const IDENTITY: [f32; 16] = [
     1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
@@ -114,22 +113,20 @@ impl Matrix4 {
     }
 
     #[inline]
-    pub fn col_v128(&self, col: usize) -> v128 {
+    pub fn col_f32x4(&self, col: usize) -> f32x4 {
         assert!(col < 4);
-        f32x4(
+        f32x4::new([
             self.data[col * 4],
             self.data[col * 4 + 1],
             self.data[col * 4 + 2],
             self.data[col * 4 + 3],
-        )
+        ])
     }
 
-    /// Helper to safely store a v128 column into the matrix data
-    /// Uses the simd conversion helper to convert v128 to [f32; 4], then writes individual values.
-    /// This is safer than v128_store because array indexing is bounds-checked.
+    /// Helper to safely store an f32x4 column into the matrix data
     #[inline]
-    fn store_column(data: &mut [f32; 16], column: usize, value: v128) {
-        let values = v128_to_f32x4(value);
+    fn store_column(data: &mut [f32; 16], column: usize, value: f32x4) {
+        let values = value.to_array();
         let base = column * 4;
         data[base] = values[0];
         data[base + 1] = values[1];
@@ -220,7 +217,7 @@ impl Matrix4 {
 impl PartialEq for Matrix4 {
     fn eq(&self, other: &Self) -> bool {
         for i in 0..4 {
-            if !fuzzy_eq_f32x4(self.col_v128(i), other.col_v128(i)) {
+            if !fuzzy_eq_f32x4(self.col_f32x4(i), other.col_f32x4(i)) {
                 return false;
             }
         }
@@ -235,12 +232,9 @@ impl Mul<Matrix4> for Matrix4 {
         let mut data: [f32; 16] = [0.0; 16];
 
         for i in 0..4 {
-            let mut sum = f32x4_splat(0.0);
+            let mut sum = f32x4::splat(0.0);
             for j in 0..4 {
-                sum = f32x4_add(
-                    sum,
-                    f32x4_mul(f32x4_splat(other.get(j, i)), self.col_v128(j)),
-                );
+                sum += f32x4::splat(other.get(j, i)) * self.col_f32x4(j);
             }
             Self::store_column(&mut data, i, sum);
         }
@@ -261,11 +255,11 @@ impl Mul<Tuple> for &Matrix4 {
     type Output = Tuple;
 
     fn mul(self, other: Tuple) -> Tuple {
-        let mut sum = f32x4_splat(0.0);
+        let mut sum = f32x4::splat(0.0);
         for i in 0..4 {
-            sum = f32x4_add(sum, f32x4_mul(f32x4_splat(other.get(i)), self.col_v128(i)));
+            sum += f32x4::splat(other.get(i)) * self.col_f32x4(i);
         }
-        Tuple::from_v128(sum)
+        Tuple::from_f32x4(sum)
     }
 }
 
