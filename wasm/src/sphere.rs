@@ -49,6 +49,13 @@ impl Sphere {
             self.transform.inverse().ok_or("Matrix is not invertible")?;
         Ok(())
     }
+
+    pub fn normal_at(&self, world_point: Tuple) -> Tuple {
+        let object_point = self.transform_inverse * world_point;
+        let object_normal = object_point - Tuple::point(0.0, 0.0, 0.0);
+        let world_normal = Matrix4::transpose(&self.transform_inverse) * object_normal;
+        world_normal.repair_vector_after_translation().normalize()
+    }
 }
 
 impl PartialEq for Sphere {
@@ -182,5 +189,73 @@ mod tests {
         let xs = s.intersect(&r);
 
         assert_eq!(xs.len(), 0);
+    }
+
+    #[wasm_bindgen_test]
+    pub fn normal_on_a_sphere_at_a_point_on_the_x_axis() {
+        let s = Sphere::new();
+        let n = s.normal_at(Tuple::point(1.0, 0.0, 0.0));
+        assert_eq!(n, Tuple::vector(1.0, 0.0, 0.0));
+    }
+
+    #[wasm_bindgen_test]
+    pub fn normal_on_a_sphere_at_a_point_on_the_y_axis() {
+        let s = Sphere::new();
+        let n = s.normal_at(Tuple::point(0.0, 1.0, 0.0));
+        assert_eq!(n, Tuple::vector(0.0, 1.0, 0.0));
+    }
+
+    #[wasm_bindgen_test]
+    pub fn normal_on_a_sphere_at_a_point_on_the_z_axis() {
+        let s = Sphere::new();
+        let n = s.normal_at(Tuple::point(0.0, 0.0, 1.0));
+        assert_eq!(n, Tuple::vector(0.0, 0.0, 1.0));
+    }
+
+    #[wasm_bindgen_test]
+    pub fn normal_on_a_sphere_at_a_nonaxial_point() {
+        let s = Sphere::new();
+        let n = s.normal_at(Tuple::point(
+            3f32.sqrt() / 3.0,
+            3f32.sqrt() / 3.0,
+            3f32.sqrt() / 3.0,
+        ));
+        assert_eq!(
+            n,
+            Tuple::vector(3f32.sqrt() / 3.0, 3f32.sqrt() / 3.0, 3f32.sqrt() / 3.0)
+        );
+    }
+
+    #[wasm_bindgen_test]
+    pub fn the_normal_is_a_normalized_vector() {
+        let s = Sphere::new();
+        let n = s.normal_at(Tuple::point(
+            3f32.sqrt() / 3.0,
+            3f32.sqrt() / 3.0,
+            3f32.sqrt() / 3.0,
+        ));
+        assert_eq!(n, n.normalize());
+    }
+
+    #[wasm_bindgen_test]
+    pub fn computing_the_normal_on_a_translated_sphere() {
+        let mut s = Sphere::new();
+        s.set_transform(Transform::new().translate(0.0, 1.0, 0.0))
+            .unwrap();
+        let n = s.normal_at(Tuple::point(0.0, 1.70711, -0.70711));
+        assert_eq!(n, Tuple::vector(0.0, 0.70711, -0.70711));
+    }
+
+    #[wasm_bindgen_test]
+    pub fn computing_the_normal_on_a_transformed_sphere() {
+        let mut s = Sphere::new();
+        s.set_transform(
+            Transform::new()
+                .rotate_z(std::f32::consts::PI / 5.0)
+                .scale(1.0, 0.5, 1.0),
+        )
+        .unwrap();
+        let n = s.normal_at(Tuple::point(0.0, 2f32.sqrt() / 2.0, -(2f32.sqrt()) / 2.0));
+        assert_eq!(n, Tuple::vector(0.0, 0.97014, -0.24254));
     }
 }
