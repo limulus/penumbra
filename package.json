@@ -13,6 +13,10 @@
     "./wasm/simd": {
       "types": "./dist/wasm/penumbra-simd.d.ts",
       "import": "./dist/wasm/penumbra-simd.js"
+    },
+    "./wasm/scalar": {
+      "types": "./dist/wasm/penumbra-scalar.d.ts",
+      "import": "./dist/wasm/penumbra-scalar.js"
     }
   },
   "files": [
@@ -24,16 +28,15 @@
   ],
   "type": "module",
   "scripts": {
-    "build": "concurrently -c auto 'npm:build:*(!wasm:*)'",
+    "build": "concurrently -c auto 'npm:build:cjs' 'npm:build:dts' 'npm:build:esm' 'npm:build:wasm'",
     "build:cjs": "tsc -p tsconfig.build.json --incremental false --module commonjs --outDir dist/cjs",
     "build:dts": "tsc -p tsconfig.build.json --incremental false --declaration --declarationMap --emitDeclarationOnly --outDir dist/types",
     "build:esm": "tsc -p tsconfig.build.json --incremental false --outDir dist/esm",
     "build:wasm": "npm run build:wasm:simd && npm run build:wasm:scalar",
     "build:wasm:simd": "RUSTFLAGS='-C target-feature=+simd128' wasm-pack build --out-dir ../dist/wasm --out-name penumbra-simd --no-pack wasm -- --no-default-features --features simd",
-    "build:wasm:scalar": "wasm-pack build --out-dir ../dist/wasm-scalar --out-name penumbra-scalar --no-pack wasm -- --no-default-features --features simd",
+    "build:wasm:scalar": "wasm-pack build --out-dir ../dist/wasm --out-name penumbra-scalar --no-pack wasm -- --no-default-features --features simd",
     "postbuild:cjs": "echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
-    "postbuild:wasm:simd": "del dist/wasm/.gitignore",
-    "postbuild:wasm:scalar": "del dist/wasm-scalar/.gitignore",
+    "postbuild:wasm": "del dist/wasm/.gitignore",
     "clean": "concurrently -c auto 'npm:clean:*'",
     "clean:js": "del *.tsbuildinfo coverage dist",
     "clean:wasm": "cd wasm && cargo clean",

@@ -22,12 +22,11 @@ import { fileURLToPath } from 'node:url'
 
 // Get the directory of this file
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const wasmSimdDir = path.join(__dirname, '../dist/wasm')
-const wasmScalarDir = path.join(__dirname, '../dist/wasm-scalar')
+const wasmDir = path.join(__dirname, '../dist/wasm')
 
 // Check if both WASM builds exist
-const simdFile = path.join(wasmSimdDir, 'penumbra-simd.js')
-const scalarFile = path.join(wasmScalarDir, 'penumbra-scalar.js')
+const simdFile = path.join(wasmDir, 'penumbra-simd.js')
+const scalarFile = path.join(wasmDir, 'penumbra-scalar.js')
 
 if (!fs.existsSync(simdFile)) {
   console.error(
@@ -152,8 +151,8 @@ async function main() {
   console.log('')
 
   // Get WASM file sizes
-  const simdWasmPath = path.join(wasmSimdDir, 'penumbra-simd_bg.wasm')
-  const scalarWasmPath = path.join(wasmScalarDir, 'penumbra-scalar_bg.wasm')
+  const simdWasmPath = path.join(wasmDir, 'penumbra-simd_bg.wasm')
+  const scalarWasmPath = path.join(wasmDir, 'penumbra-scalar_bg.wasm')
   const simdSize = fs.statSync(simdWasmPath).size
   const scalarSize = fs.statSync(scalarWasmPath).size
 
