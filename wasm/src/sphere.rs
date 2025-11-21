@@ -1,10 +1,12 @@
 use crate::intersection::*;
+use crate::material::*;
 use crate::matrix::*;
 use crate::ray::*;
 use crate::tuple::*;
 
 #[derive(Debug, Clone)]
 pub struct Sphere {
+    pub material: Material,
     transform: Matrix4,
     transform_inverse: Matrix4,
 }
@@ -18,6 +20,7 @@ impl Default for Sphere {
 impl Sphere {
     pub fn new() -> Sphere {
         Sphere {
+            material: Material::default(),
             transform: Matrix4::identity(),
             transform_inverse: Matrix4::identity(),
         }
@@ -257,5 +260,21 @@ mod tests {
         .unwrap();
         let n = s.normal_at(Tuple::point(0.0, 2f32.sqrt() / 2.0, -(2f32.sqrt()) / 2.0));
         assert_eq!(n, Tuple::vector(0.0, 0.97014, -0.24254));
+    }
+
+    #[wasm_bindgen_test]
+    pub fn sphere_has_a_default_material() {
+        let s = Sphere::new();
+        let m = Material::default();
+        assert_eq!(s.material, m);
+    }
+
+    #[wasm_bindgen_test]
+    pub fn sphere_may_be_assigned_a_material() {
+        let mut s = Sphere::new();
+        let mut m = Material::default();
+        m.ambient = 1.0;
+        s.material = m;
+        assert_eq!(s.material, m);
     }
 }
