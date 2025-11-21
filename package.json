@@ -64,26 +64,25 @@
   "homepage": "https://limulus.net/penumbra/",
   "dependencies": {
     "outdent": "^0.8.0",
-    "tslib": "^2.6.2"
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^18.2.0",
-    "@commitlint/config-conventional": "^18.1.0",
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
     "@limulus/eslint-config": "^5.0.0",
     "@types/chai": "^4.3.14",
     "@vitest/browser": "^1.6.0",
     "@vitest/coverage-istanbul": "^1.6.0",
     "chai": "^5.1.0",
     "chokidar-cli": "^3.0.0",
-    "concurrently": "^8.2.2",
-    "del-cli": "^5.1.0",
+    "concurrently": "^9.2.1",
+    "del-cli": "^7.0.0",
     "eslint": "^8.52.0",
     "husky": "^8.0.3",
-    "is-ci": "^3.0.1",
+    "is-ci": "^4.1.0",
     "mkdirp": "^3.0.1",
-    "semantic-release": "^22.0.5",
-    "typescript": "^5.2.2",
-    "vitest": "^1.5.0",
-    "webdriverio": "^8.36.1"
+    "semantic-release": "^25.0.2",
+    "typescript": "^5.9.3",
+    "vitest": "^1.5.0"
   }
 }
