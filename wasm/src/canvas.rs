@@ -10,7 +10,7 @@ pub struct Canvas {
 
 impl Canvas {
     pub fn new(width: usize, height: usize) -> Canvas {
-        let pixels = vec![Tuple::color(0.0, 0.0, 0.0, 1.0); width * height];
+        let pixels: Vec<Tuple> = vec![Tuple::color(0.0, 0.0, 0.0, 1.0); width * height];
         Canvas {
             width,
             height,
@@ -34,7 +34,7 @@ impl Canvas {
                 rgba.x() as u8,
                 rgba.y() as u8,
                 rgba.z() as u8,
-                rgba.w() as u8,
+                255 as u8,
             ]);
         }
         ImageData::new_with_u8_clamped_array_and_sh(
