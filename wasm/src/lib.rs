@@ -12,6 +12,7 @@ pub mod sphere;
 pub mod tuple;
 
 mod demo;
+pub use demo::phong_sphere::*;
 pub use demo::sphere_shadow::*;
 
 #[wasm_bindgen(start)]
