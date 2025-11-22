@@ -29,16 +29,12 @@ const simdFile = path.join(wasmDir, 'penumbra-simd.js')
 const scalarFile = path.join(wasmDir, 'penumbra-scalar.js')
 
 if (!fs.existsSync(simdFile)) {
-  console.error(
-    `Error: SIMD WASM not built. Run 'npm run build:wasm:simd' first.`,
-  )
+  console.error(`Error: SIMD WASM not built. Run 'npm run build:wasm:simd' first.`)
   process.exit(1)
 }
 
 if (!fs.existsSync(scalarFile)) {
-  console.error(
-    `Error: Scalar WASM not built. Run 'npm run build:wasm:scalar' first.`,
-  )
+  console.error(`Error: Scalar WASM not built. Run 'npm run build:wasm:scalar' first.`)
   process.exit(1)
 }
 
@@ -103,17 +99,25 @@ function compareBenchmark(name, simdFn, scalarFn, iterations = BENCH_ITERATIONS)
 
   console.log(`${name}:`)
   console.log(
-    `  SIMD:   ${simdStats.avg.toFixed(2)}ms (${simdPerOp.toFixed(0)}ns/op) ±${((simdStats.stdDev / simdStats.avg) * 100).toFixed(1)}%`,
+    `  SIMD:   ${simdStats.avg.toFixed(2)}ms (${simdPerOp.toFixed(0)}ns/op) ±${(
+      (simdStats.stdDev / simdStats.avg) *
+      100
+    ).toFixed(1)}%`
   )
   console.log(
-    `  Scalar: ${scalarStats.avg.toFixed(2)}ms (${scalarPerOp.toFixed(0)}ns/op) ±${((scalarStats.stdDev / scalarStats.avg) * 100).toFixed(1)}%`,
+    `  Scalar: ${scalarStats.avg.toFixed(2)}ms (${scalarPerOp.toFixed(0)}ns/op) ±${(
+      (scalarStats.stdDev / scalarStats.avg) *
+      100
+    ).toFixed(1)}%`
   )
 
   if (speedup > 1.05) {
     console.log(`  ⚡ Speedup: ${speedup.toFixed(2)}x (${speedupPercent}% faster)`)
   } else if (speedup < 0.95) {
     console.log(
-      `  ⚠️  Slowdown: ${(1 / speedup).toFixed(2)}x (${Math.abs(speedupPercent).toFixed(1)}% slower)`,
+      `  ⚠️  Slowdown: ${(1 / speedup).toFixed(2)}x (${Math.abs(speedupPercent).toFixed(
+        1
+      )}% slower)`
     )
   } else {
     console.log(`  ≈  Similar performance (${speedupPercent}% difference)`)
@@ -160,7 +164,10 @@ async function main() {
   console.log(`  SIMD:   ${(simdSize / 1024).toFixed(2)} KB`)
   console.log(`  Scalar: ${(scalarSize / 1024).toFixed(2)} KB`)
   console.log(
-    `  Size diff: ${((simdSize - scalarSize) / 1024).toFixed(2)} KB (${(((simdSize - scalarSize) / scalarSize) * 100).toFixed(1)}%)`,
+    `  Size diff: ${((simdSize - scalarSize) / 1024).toFixed(2)} KB (${(
+      ((simdSize - scalarSize) / scalarSize) *
+      100
+    ).toFixed(1)}%)`
   )
   console.log('')
   console.log('='.repeat(60))
@@ -173,48 +180,48 @@ async function main() {
     compareBenchmark(
       'Matrix 4x4 Multiplication',
       (n) => simdBench.matrix_multiply_bench(n),
-      (n) => scalarBench.matrix_multiply_bench(n),
-    ),
+      (n) => scalarBench.matrix_multiply_bench(n)
+    )
   )
 
   results.push(
     compareBenchmark(
       'Matrix Chain (4x multiply)',
       (n) => simdBench.matrix_chain_multiply_bench(n),
-      (n) => scalarBench.matrix_chain_multiply_bench(n),
-    ),
+      (n) => scalarBench.matrix_chain_multiply_bench(n)
+    )
   )
 
   results.push(
     compareBenchmark(
       'Matrix × Point',
       (n) => simdBench.matrix_point_multiply_bench(n),
-      (n) => scalarBench.matrix_point_multiply_bench(n),
-    ),
+      (n) => scalarBench.matrix_point_multiply_bench(n)
+    )
   )
 
   results.push(
     compareBenchmark(
       'Matrix × Vector',
       (n) => simdBench.matrix_vector_multiply_bench(n),
-      (n) => scalarBench.matrix_vector_multiply_bench(n),
-    ),
+      (n) => scalarBench.matrix_vector_multiply_bench(n)
+    )
   )
 
   results.push(
     compareBenchmark(
       'Matrix Transpose',
       (n) => simdBench.matrix_transpose_bench(n),
-      (n) => scalarBench.matrix_transpose_bench(n),
-    ),
+      (n) => scalarBench.matrix_transpose_bench(n)
+    )
   )
 
   results.push(
     compareBenchmark(
       'Matrix Determinant',
       (n) => simdBench.matrix_determinant_bench(n),
-      (n) => scalarBench.matrix_determinant_bench(n),
-    ),
+      (n) => scalarBench.matrix_determinant_bench(n)
+    )
   )
 
   // Tuple operations
@@ -224,53 +231,60 @@ async function main() {
     compareBenchmark(
       'Tuple Addition',
       (n) => simdBench.tuple_add_bench(n),
-      (n) => scalarBench.tuple_add_bench(n),
-    ),
+      (n) => scalarBench.tuple_add_bench(n)
+    )
   )
 
   results.push(
     compareBenchmark(
       'Tuple Subtraction',
       (n) => simdBench.tuple_subtract_bench(n),
-      (n) => scalarBench.tuple_subtract_bench(n),
-    ),
+      (n) => scalarBench.tuple_subtract_bench(n)
+    )
   )
 
   results.push(
     compareBenchmark(
       'Tuple Scalar Multiply',
       (n) => simdBench.tuple_scalar_multiply_bench(n),
-      (n) => scalarBench.tuple_scalar_multiply_bench(n),
-    ),
+      (n) => scalarBench.tuple_scalar_multiply_bench(n)
+    )
   )
 
   results.push(
     compareBenchmark(
       'Tuple Dot Product',
       (n) => simdBench.tuple_dot_product_bench(n),
-      (n) => scalarBench.tuple_dot_product_bench(n),
-    ),
+      (n) => scalarBench.tuple_dot_product_bench(n)
+    )
   )
 
   results.push(
     compareBenchmark(
       'Tuple Cross Product',
       (n) => simdBench.tuple_cross_product_bench(n),
-      (n) => scalarBench.tuple_cross_product_bench(n),
-    ),
+      (n) => scalarBench.tuple_cross_product_bench(n)
+    )
   )
 
   // Summary
   printHeader('Summary')
 
-  const avgSpeedup =
-    results.reduce((sum, r) => sum + r.speedup, 0) / results.length
+  const avgSpeedup = results.reduce((sum, r) => sum + r.speedup, 0) / results.length
   const maxSpeedup = Math.max(...results.map((r) => r.speedup))
   const minSpeedup = Math.min(...results.map((r) => r.speedup))
 
   console.log(`Average speedup: ${avgSpeedup.toFixed(2)}x`)
-  console.log(`Best speedup: ${maxSpeedup.toFixed(2)}x (${results.find((r) => r.speedup === maxSpeedup).name})`)
-  console.log(`Worst speedup: ${minSpeedup.toFixed(2)}x (${results.find((r) => r.speedup === minSpeedup).name})`)
+  console.log(
+    `Best speedup: ${maxSpeedup.toFixed(2)}x (${
+      results.find((r) => r.speedup === maxSpeedup).name
+    })`
+  )
+  console.log(
+    `Worst speedup: ${minSpeedup.toFixed(2)}x (${
+      results.find((r) => r.speedup === minSpeedup).name
+    })`
+  )
   console.log('')
 
   const fasterCount = results.filter((r) => r.speedup > 1.05).length
