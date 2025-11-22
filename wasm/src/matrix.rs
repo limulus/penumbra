@@ -126,8 +126,8 @@ impl Matrix4 {
     /// Helper to safely store an f32x4 column into the matrix data
     #[inline]
     fn store_column(data: &mut [f32; 16], column: usize, value: f32x4) {
-        let values = value.to_array();
         let base = column * 4;
+        let values = value.as_array();
         data[base] = values[0];
         data[base + 1] = values[1];
         data[base + 2] = values[2];

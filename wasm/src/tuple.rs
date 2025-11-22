@@ -4,31 +4,39 @@ use std::ops::{Add, Div, Mul, Neg, Sub};
 use crate::fuzzy::fuzzy_eq_f32x4;
 use wide::f32x4;
 
+#[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
+use core::arch::wasm32;
+
 #[derive(Clone, Copy, Debug)]
 pub struct Tuple {
-    data: [f32; 4],
+    data: f32x4,
 }
 
 impl Tuple {
+    #[inline]
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Tuple {
-        Tuple { data: [x, y, z, w] }
-    }
-
-    /// Create a Tuple from an f32x4 SIMD vector
-    pub fn from_f32x4(data: f32x4) -> Tuple {
         Tuple {
-            data: data.to_array(),
+            data: f32x4::from([x, y, z, w]),
         }
     }
 
+    /// Create a Tuple from an f32x4 SIMD vector
+    #[inline]
+    pub fn from_f32x4(data: f32x4) -> Tuple {
+        Tuple { data }
+    }
+
+    #[inline]
     pub fn point(x: f32, y: f32, z: f32) -> Tuple {
         Tuple::new(x, y, z, 1.0)
     }
 
+    #[inline]
     pub fn vector(x: f32, y: f32, z: f32) -> Tuple {
         Tuple::new(x, y, z, 0.0)
     }
 
+    #[inline]
     pub fn color(red: f32, green: f32, blue: f32, alpha: f32) -> Tuple {
         Tuple::new(red, green, blue, alpha)
     }
@@ -36,69 +44,108 @@ impl Tuple {
     /// Convert this Tuple to an f32x4 SIMD vector
     #[inline]
     pub fn f32x4(&self) -> f32x4 {
-        f32x4::from(self.data)
+        self.data
     }
 
+    #[inline]
     pub fn is_point(self) -> bool {
         self.w() == 1.0
     }
 
+    #[inline]
     pub fn is_vector(self) -> bool {
         self.w() == 0.0
     }
 
-    pub fn get(&self, index: usize) -> f32 {
-        self.data[index]
+    #[inline]
+    pub fn as_array(&self) -> &[f32; 4] {
+        self.data.as_array()
     }
 
+    #[inline]
+    pub fn get(self, index: usize) -> f32 {
+        self.data.as_array()[index]
+    }
+
+    #[inline]
     pub fn x(self) -> f32 {
-        self.data[0]
+        self.data.as_array()[0]
     }
 
+    #[inline]
     pub fn y(self) -> f32 {
-        self.data[1]
+        self.data.as_array()[1]
     }
 
+    #[inline]
     pub fn z(self) -> f32 {
-        self.data[2]
+        self.data.as_array()[2]
     }
 
+    #[inline]
     pub fn w(self) -> f32 {
-        self.data[3]
+        self.data.as_array()[3]
     }
 
+    #[inline]
     fn yzx(self) -> Tuple {
         // Swizzle: [x, y, z, w] -> [y, z, x, w]
-        Tuple::new(self.y(), self.z(), self.x(), self.w())
+        let values = self.data.as_array();
+        Tuple {
+            data: f32x4::from([values[1], values[2], values[0], values[3]]),
+        }
     }
 
+    #[inline]
     fn zxy(self) -> Tuple {
         // Swizzle: [x, y, z, w] -> [z, x, y, w]
-        Tuple::new(self.z(), self.x(), self.y(), self.w())
+        let values = self.data.as_array();
+        Tuple {
+            data: f32x4::from([values[2], values[0], values[1], values[3]]),
+        }
     }
 
+    #[inline]
     pub fn cross(self, other: Tuple) -> Tuple {
         self.yzx() * other.zxy() - self.zxy() * other.yzx()
     }
 
+    #[inline]
     pub fn dot(self, other: Tuple) -> f32 {
         (self * other).sum()
     }
 
+    #[inline]
     pub fn magnitude(self) -> f32 {
         (self * self).sum().sqrt()
     }
 
+    #[inline]
     pub fn normalize(self) -> Tuple {
         self / self.magnitude()
     }
 
     fn sum(self) -> f32 {
-        self.x() + self.y() + self.z() + self.w()
+        #[cfg(not(all(target_arch = "wasm32", target_feature = "simd128")))]
+        {
+            self.data.reduce_add()
+        }
+
+        #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
+        {
+            let v: wasm32::v128 = unsafe { std::mem::transmute(self.data) };
+            let sum1 = wasm32::f32x4_add(v, wasm32::i32x4_shuffle::<2, 3, 0, 1>(v, v));
+            let sum2 =
+                wasm32::f32x4_add(sum1, wasm32::i32x4_shuffle::<1, 0, 2, 3>(sum1, sum1));
+            wasm32::f32x4_extract_lane::<0>(sum2)
+        }
     }
 
+    #[inline]
     pub fn to_rgba(self) -> Tuple {
-        Tuple::from_f32x4((self.f32x4() * f32x4::splat(255.0)).round())
+        Tuple {
+            data: (self.data * f32x4::splat(255.0)).round(),
+        }
     }
 
     pub fn repair_vector_after_translation(self) -> Tuple {
@@ -113,62 +160,80 @@ impl Tuple {
 impl Add<Tuple> for Tuple {
     type Output = Tuple;
 
+    #[inline]
     fn add(self, other: Tuple) -> Tuple {
-        Tuple::from_f32x4(self.f32x4() + other.f32x4())
+        Tuple {
+            data: self.data + other.data,
+        }
     }
 }
 
 impl Div<f32> for Tuple {
     type Output = Tuple;
 
+    #[inline]
     fn div(self, other: f32) -> Tuple {
-        Tuple::from_f32x4(self.f32x4() / f32x4::splat(other))
+        Tuple {
+            data: self.data / f32x4::splat(other),
+        }
     }
 }
 
 impl Div<Tuple> for Tuple {
     type Output = Tuple;
 
+    #[inline]
     fn div(self, other: Tuple) -> Tuple {
-        Tuple::from_f32x4(self.f32x4() / other.f32x4())
+        Tuple {
+            data: self.data / other.data,
+        }
     }
 }
 
 impl Mul<f32> for Tuple {
     type Output = Tuple;
 
+    #[inline]
     fn mul(self, other: f32) -> Tuple {
-        Tuple::from_f32x4(self.f32x4() * f32x4::splat(other))
+        Tuple {
+            data: self.data * f32x4::splat(other),
+        }
     }
 }
 
 impl Mul<Tuple> for Tuple {
     type Output = Tuple;
 
+    #[inline]
     fn mul(self, other: Tuple) -> Tuple {
-        Tuple::from_f32x4(self.f32x4() * other.f32x4())
+        Tuple {
+            data: self.data * other.data,
+        }
     }
 }
 
 impl Neg for Tuple {
     type Output = Tuple;
 
+    #[inline]
     fn neg(self) -> Self::Output {
-        Tuple::from_f32x4(-self.f32x4())
+        Tuple { data: -self.data }
     }
 }
 
 impl PartialEq<Tuple> for Tuple {
+    #[inline]
     fn eq(&self, other: &Tuple) -> bool {
-        fuzzy_eq_f32x4(self.f32x4(), other.f32x4())
+        fuzzy_eq_f32x4(self.data, other.data)
     }
 }
 
 impl Sub<Tuple> for Tuple {
     type Output = Tuple;
 
+    #[inline]
     fn sub(self, other: Tuple) -> Tuple {
-        Tuple::from_f32x4(self.f32x4() - other.f32x4())
+        Tuple::from_f32x4(self.data - other.data)
     }
 }
 
