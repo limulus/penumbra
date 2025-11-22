@@ -2,52 +2,40 @@
 
 ## Project Overview
 
-Penumbra is an implementation of [The Ray Tracer Challenge](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/) using modern web technologies. It combines TypeScript and Rust/WebAssembly to create a high-performance ray tracer that runs in browsers and Node.js environments.
+Penumbra is an implementation of [The Ray Tracer Challenge](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/) using Rust and WebAssembly. It provides a high-performance, SIMD-optimized ray tracer that runs in browsers and Node.js environments.
 
 ## Tech Stack
 
-- **TypeScript**: Primary language for high-level ray tracing logic
-- **Rust/WebAssembly**: Performance-critical computations (SIMD-optimized)
-- **Vitest**: Testing framework for TypeScript code
+- **Rust**: Primary language for ray tracing implementation
+- **WebAssembly**: Compilation target for browser/Node.js execution
 - **wasm-pack**: Build tool for Rust WebAssembly modules
-- **Node.js**: Runtime environment (^20.8.0 required)
+- **Node.js**: Runtime environment for npm scripts and benchmarks
 
 ## Project Structure
 
 ```
 penumbra/
-├── src/                    # TypeScript source code
-│   ├── lib/               # Core ray tracing library
-│   │   ├── tuple.ts       # 3D points and vectors
-│   │   ├── matrix.ts      # Matrix operations and transformations
-│   │   ├── ray.ts         # Ray definitions and operations
-│   │   ├── sphere.ts      # Sphere primitives
-│   │   ├── intersection.ts # Ray-object intersection handling
-│   │   ├── canvas.ts      # Image canvas representation
-│   │   └── util/          # Utility functions
-│   ├── test/              # Test utilities
-│   └── index.ts           # Main entry point
+├── src/                    # Rust source code
+│   ├── lib.rs             # Library entry point
+│   ├── tuple.rs           # 3D points and vectors
+│   ├── matrix.rs          # Matrix operations and transformations
+│   ├── ray.rs             # Ray definitions and operations
+│   ├── sphere.rs          # Sphere primitives
+│   ├── intersection.rs    # Ray-object intersection handling
+│   ├── canvas.rs          # Image canvas representation
+│   ├── material.rs        # Material properties
+│   ├── light.rs           # Light sources
+│   └── demo/              # Demo implementations
 │
-├── wasm/                   # Rust/WebAssembly source code
-│   ├── src/
-│   │   ├── lib.rs         # Library entry point
-│   │   ├── tuple.rs       # WASM tuple implementation
-│   │   ├── matrix.rs      # WASM matrix operations
-│   │   ├── ray.rs         # WASM ray operations
-│   │   ├── sphere.rs      # WASM sphere implementation
-│   │   ├── intersection.rs # WASM intersection handling
-│   │   ├── canvas.rs      # WASM canvas operations
-│   │   └── demo/          # Demo implementations
-│   └── Cargo.toml         # Rust package configuration
+├── benchmarks/            # Performance benchmark scripts
 │
-├── dist/                   # Build output (generated)
-│   ├── cjs/               # CommonJS build
-│   ├── esm/               # ES Modules build
-│   ├── types/             # TypeScript type definitions
-│   └── wasm/              # Compiled WebAssembly modules
+├── dist/                  # Build output (generated)
+│   └── wasm/             # Compiled WebAssembly modules
 │
-└── .github/workflows/     # CI/CD configuration
-
+├── Cargo.toml            # Rust package configuration
+├── Cargo.lock            # Rust dependency lock file
+├── rustfmt.toml          # Rust formatting configuration
+└── .github/workflows/    # CI/CD configuration
 ```
 
 ## Key Components
@@ -60,14 +48,8 @@ penumbra/
 - **Spheres**: Basic geometric primitive for ray intersection
 - **Intersections**: Track where rays intersect with objects
 - **Canvas**: Pixel buffer for rendering images
-
-### Dual Implementation
-
-The project maintains parallel implementations:
-- **TypeScript** (src/lib/): Portable, readable reference implementation
-- **Rust** (wasm/src/): High-performance SIMD-optimized WebAssembly version
-
-Both implementations follow the same API contract and are tested independently.
+- **Materials**: Surface properties for lighting calculations
+- **Lights**: Point light sources for scene illumination
 
 ## Development Workflow
 
@@ -75,7 +57,7 @@ Both implementations follow the same API contract and are tested independently.
 
 Before starting development, ensure you have the following installed:
 
-- **Node.js** ^20.8.0 - [Download](https://nodejs.org/)
+- **Node.js** - [Download](https://nodejs.org/)
 - **Rust** (stable toolchain) - Managed via rust-toolchain.toml
   - Install: [https://rustup.rs/](https://rustup.rs/)
 - **wasm-pack** - Build tool for Rust WebAssembly
@@ -96,14 +78,12 @@ This will install dependencies and set up git hooks via husky.
 ### Building
 
 ```bash
-# Build everything (TypeScript + WASM)
+# Build everything (WASM SIMD + scalar)
 npm run build
 
 # Build specific targets
-npm run build:cjs      # CommonJS build
-npm run build:esm      # ES Modules build
-npm run build:dts      # TypeScript declarations
-npm run build:wasm     # Rust/WebAssembly build
+npm run build:wasm:simd    # SIMD-optimized WebAssembly
+npm run build:wasm:scalar  # Scalar (non-SIMD) WebAssembly
 ```
 
 ### Testing
@@ -113,10 +93,10 @@ npm run build:wasm     # Rust/WebAssembly build
 npm test
 
 # Run specific test suites
-npm run test:browser   # Vitest browser tests
-npm run test:wasm      # Rust tests via wasm-pack
+npm run test:wasm:simd    # SIMD tests
+npm run test:wasm:scalar  # Scalar tests
 
-# Watch mode for Rust tests
+# Watch mode for tests
 npm run test:wasm:watch
 ```
 
@@ -126,10 +106,7 @@ npm run test:wasm:watch
 # Run all lints and tests
 npm run verify
 
-# Lint TypeScript
-npm run lint
-
-# Lint Rust
+# Run individual lints
 npm run lint:rust:fmt     # Check formatting
 npm run lint:rust:clippy  # Run clippy lints
 ```
@@ -139,27 +116,32 @@ npm run lint:rust:clippy  # Run clippy lints
 ```bash
 # Watch Rust files and rebuild WASM on changes
 npm run dev
+```
 
-# Type-check TypeScript without emitting
-npm run tscc
+### Benchmarks
+
+```bash
+# Run WASM performance benchmarks
+npm run bench:wasm
+
+# Compare SIMD vs scalar performance
+npm run bench:compare
 ```
 
 ## Module Exports
 
-The package provides multiple export paths:
+The package provides WebAssembly exports:
 
-- **Main export** (`@limulus/penumbra`): TypeScript implementation
-  - CJS: `dist/cjs/index.js`
-  - ESM: `dist/esm/index.js`
-  - Types: `dist/types/index.d.ts`
-
-- **WASM export** (`@limulus/penumbra/wasm/simd`): WebAssembly SIMD-optimized version
+- **SIMD export** (`@limulus/penumbra/wasm/simd`): WebAssembly SIMD-optimized version
   - Import: `dist/wasm/penumbra-simd.js`
   - Types: `dist/wasm/penumbra-simd.d.ts`
 
+- **Scalar export** (`@limulus/penumbra/wasm/scalar`): Non-SIMD WebAssembly version
+  - Import: `dist/wasm/penumbra-scalar.js`
+  - Types: `dist/wasm/penumbra-scalar.d.ts`
+
 ## Code Quality Tools
 
-- **ESLint**: TypeScript linting with `@limulus/eslint-config`
 - **Clippy**: Rust linting with strict correctness checks (deny level)
 - **Rustfmt**: Rust code formatting
 - **Commitlint**: Conventional commit message enforcement
@@ -195,9 +177,8 @@ Individual functions use explicit `#[allow]` attributes for intentional patterns
 
 ## Testing Strategy
 
-- **Vitest**: Browser-based testing for TypeScript with coverage via Istanbul
 - **wasm-pack test**: Node-based testing for Rust WebAssembly modules
-- Both test suites run in CI and are required for merging
+- Both SIMD and scalar test suites run in CI and are required for merging
 
 ## Documentation
 
@@ -209,19 +190,17 @@ Progress and interactive demos are documented at:
 
 ### Adding a New Ray Tracing Feature
 
-1. Implement in TypeScript first (src/lib/)
-2. Write tests using Vitest (*.spec.ts)
-3. Add Rust implementation (wasm/src/)
-4. Write Rust tests using #[cfg(test)]
-5. Export from src/index.ts if public API
-6. Update WASM bindings if needed
-7. Run `npm run verify` to ensure all checks pass
+1. Implement in Rust (src/)
+2. Write tests using #[cfg(test)]
+3. Export from src/lib.rs if public API
+4. Update WASM bindings if needed (wasm-bindgen)
+5. Run `npm run verify` to ensure all checks pass
 
 ### Debugging Issues
 
-- TypeScript errors: Check `npm run tscc`
-- Rust errors: Check `cargo clippy --manifest-path wasm/Cargo.toml`
-- Test failures: Run `npm test` or specific test commands
+- Rust errors: Check `cargo clippy --target wasm32-unknown-unknown`
+- Format issues: Check `cargo fmt --check`
+- Test failures: Run `npm test`
 - Build failures: Clean with `npm run clean` and rebuild
 
 ### Git Commit Message Guidelines
@@ -278,7 +257,7 @@ git commit -m "fix: handle divide-by-zero in matrix inverse"
 # Non-production changes (will NOT release):
 git commit -m "docs: add CLAUDE.md with project documentation"
 git commit -m "test: add test cases for transformation matrices"
-git commit -m "chore: update TypeScript to 5.3.0"
+git commit -m "chore: update dependencies"
 git commit -m "refactor: extract common matrix operations"
 ```
 
@@ -286,6 +265,5 @@ git commit -m "refactor: extract common matrix operations"
 
 - Follow conventional commits format (commitlint enforced)
 - Run `npm run verify` before committing
-- TypeScript files should maintain type safety
 - Rust code must pass clippy at deny level for correctness
 - Use appropriate commit prefixes (see Git Commit Message Guidelines above)

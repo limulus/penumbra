@@ -1,15 +1,8 @@
 {
   "name": "@limulus/penumbra",
   "version": "1.0.0",
-  "description": "A Ray Tracer Challenge implementation using web technologies",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
+  "description": "A Ray Tracer Challenge implementation using Rust and WebAssembly",
   "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
-    },
     "./wasm/simd": {
       "types": "./dist/wasm/penumbra-simd.d.ts",
       "import": "./dist/wasm/penumbra-simd.js"
@@ -20,42 +13,32 @@
     }
   },
   "files": [
-    "dist/cjs",
-    "dist/esm",
-    "dist/types",
-    "dist/wasm",
-    "src"
+    "dist/wasm"
   ],
   "type": "module",
   "scripts": {
-    "build": "concurrently -c auto 'npm:build:cjs' 'npm:build:dts' 'npm:build:esm' 'npm:build:wasm'",
-    "build:cjs": "tsc -p tsconfig.build.json --incremental false --module commonjs --outDir dist/cjs",
-    "build:dts": "tsc -p tsconfig.build.json --incremental false --declaration --declarationMap --emitDeclarationOnly --outDir dist/types",
-    "build:esm": "tsc -p tsconfig.build.json --incremental false --outDir dist/esm",
+    "build": "npm run build:wasm",
     "build:wasm": "npm run build:wasm:simd && npm run build:wasm:scalar",
-    "build:wasm:simd": "RUSTFLAGS='-C target-feature=+simd128' wasm-pack build --out-dir ../dist/wasm --out-name penumbra-simd --no-pack wasm -- --no-default-features",
-    "build:wasm:scalar": "wasm-pack build --out-dir ../dist/wasm --out-name penumbra-scalar --no-pack wasm -- --no-default-features",
-    "postbuild:cjs": "echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+    "build:wasm:simd": "RUSTFLAGS='-C target-feature=+simd128' wasm-pack build --out-dir dist/wasm --out-name penumbra-simd --no-pack -- --no-default-features",
+    "build:wasm:scalar": "wasm-pack build --out-dir dist/wasm --out-name penumbra-scalar --no-pack -- --no-default-features",
     "postbuild:wasm": "del dist/wasm/.gitignore",
     "clean": "concurrently -c auto 'npm:clean:*'",
-    "clean:js": "del *.tsbuildinfo coverage dist",
-    "clean:wasm": "cd wasm && cargo clean",
-    "dev": "chokidar wasm/src --initial --command 'npm run build:wasm'",
-    "lint": "eslint src",
-    "lint:rust:fmt": "cargo fmt --manifest-path wasm/Cargo.toml --check",
-    "lint:rust:clippy": "cargo clippy --manifest-path wasm/Cargo.toml --target wasm32-unknown-unknown",
+    "clean:dist": "del dist",
+    "clean:rust": "cargo clean",
+    "dev": "chokidar src --initial --command 'npm run build:wasm'",
+    "lint": "npm run lint:rust:fmt && npm run lint:rust:clippy",
+    "lint:rust:fmt": "cargo fmt --check",
+    "lint:rust:clippy": "cargo clippy --target wasm32-unknown-unknown",
     "prepack": "npm run build",
     "prepare": "is-ci || husky install",
-    "test": "concurrently -c auto 'npm:test:browser' 'npm:test:wasm'",
-    "test:browser": "vitest run",
+    "test": "npm run test:wasm",
     "test:wasm": "npm run test:wasm:simd && npm run test:wasm:scalar",
-    "test:wasm:simd": "cd wasm && RUSTFLAGS='-C target-feature=+simd128' wasm-pack test --node -- --no-default-features",
-    "test:wasm:scalar": "cd wasm && wasm-pack test --node -- --no-default-features",
-    "test:wasm:watch": "chokidar wasm/src --initial --command 'npm run test:wasm'",
+    "test:wasm:simd": "RUSTFLAGS='-C target-feature=+simd128' wasm-pack test --node -- --no-default-features",
+    "test:wasm:scalar": "wasm-pack test --node -- --no-default-features",
+    "test:wasm:watch": "chokidar src --initial --command 'npm run test:wasm'",
     "bench:wasm": "node benchmarks/wasm-bench.mjs",
     "bench:compare": "node benchmarks/compare.mjs",
-    "tscc": "tsc --noEmit",
-    "verify": "concurrently -c auto npm:lint npm:lint:rust:fmt npm:lint:rust:clippy npm:test npm:tscc"
+    "verify": "concurrently -c auto npm:lint npm:test"
   },
   "repository": {
     "type": "git",
@@ -71,28 +54,14 @@
     "url": "https://github.com/limulus/penumbra/issues"
   },
   "homepage": "https://limulus.net/penumbra/",
-  "dependencies": {
-    "outdent": "^0.8.0",
-    "tslib": "^2.8.1"
-  },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
-    "@limulus/eslint-config": "^5.0.0",
-    "@types/chai": "^4.3.14",
-    "@vitest/browser": "^1.6.0",
-    "@vitest/coverage-istanbul": "^1.6.0",
-    "chai": "^5.1.0",
     "chokidar-cli": "^3.0.0",
     "concurrently": "^9.2.1",
     "del-cli": "^7.0.0",
-    "eslint": "^8.52.0",
     "husky": "^8.0.3",
     "is-ci": "^4.1.0",
-    "mkdirp": "^3.0.1",
-    "semantic-release": "^24.2.9",
-    "typescript": "^5.9.3",
-    "vitest": "^1.5.0",
-    "webdriverio": "^9.20.1"
+    "semantic-release": "^24.2.9"
   }
 }
