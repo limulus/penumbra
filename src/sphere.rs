@@ -1,11 +1,14 @@
+use std::sync::atomic::{AtomicU64, Ordering::Relaxed};
+
 use crate::intersection::*;
 use crate::material::*;
 use crate::matrix::*;
 use crate::ray::*;
 use crate::tuple::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Sphere {
+    id: u64,
     pub material: Material,
     transform: Matrix4,
     transform_inverse: Matrix4,
@@ -19,11 +22,19 @@ impl Default for Sphere {
 
 impl Sphere {
     pub fn new() -> Sphere {
+        static NEXT_ID: AtomicU64 = AtomicU64::new(0);
+
         Sphere {
+            id: NEXT_ID.fetch_add(1, Relaxed),
             material: Material::default(),
             transform: Matrix4::identity(),
             transform_inverse: Matrix4::identity(),
         }
+    }
+
+    #[must_use]
+    pub fn same_object(&self, other: Sphere) -> bool {
+        self.id == other.id
     }
 
     pub fn intersect(&self, ray: &Ray) -> IntersectionCollection<'_> {
@@ -63,7 +74,9 @@ impl Sphere {
 
 impl PartialEq for Sphere {
     fn eq(&self, other: &Self) -> bool {
-        std::ptr::eq(self, other)
+        self.material == other.material
+            && self.transform == other.transform
+            && self.transform_inverse == other.transform_inverse
     }
 }
 
@@ -73,11 +86,21 @@ mod tests {
     use wasm_bindgen_test::*;
 
     #[wasm_bindgen_test]
-    pub fn two_different_spheres_are_not_equal() {
+    pub fn two_equal_spheres_have_different_ids() {
         let s1 = Sphere::new();
         let s2 = Sphere::new();
 
-        assert_ne!(s1, s2);
+        assert_eq!(s1, s2);
+        assert_ne!(s1.id, s2.id);
+    }
+
+    #[wasm_bindgen_test]
+    pub fn same_object_checks_id() {
+        let s1 = Sphere::new();
+        let s2 = Sphere::new();
+
+        assert_eq!(s1.same_object(s1), true);
+        assert_eq!(s1.same_object(s2), false);
     }
 
     #[wasm_bindgen_test]
