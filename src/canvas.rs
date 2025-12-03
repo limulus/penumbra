@@ -10,7 +10,7 @@ pub struct Canvas {
 
 impl Canvas {
     pub fn new(width: usize, height: usize) -> Canvas {
-        let pixels: Vec<Tuple> = vec![Tuple::color(0.0, 0.0, 0.0, 1.0); width * height];
+        let pixels: Vec<Tuple> = vec![Tuple::color(0.0, 0.0, 0.0); width * height];
         Canvas {
             width,
             height,
@@ -57,14 +57,14 @@ mod tests {
         assert_eq!(c.width, 10);
         assert_eq!(c.height, 20);
         for pixel in c.pixels {
-            assert_eq!(pixel, Tuple::color(0.0, 0.0, 0.0, 1.0));
+            assert_eq!(pixel, Tuple::color(0.0, 0.0, 0.0));
         }
     }
 
     #[wasm_bindgen_test]
     fn write_pixel_to_canvas() {
         let mut c = Canvas::new(10, 20);
-        let red = Tuple::color(1.0, 0.0, 0.0, 1.0);
+        let red = Tuple::color(1.0, 0.0, 0.0);
         c.write_pixel(2, 3, red);
         assert_eq!(c.pixel_at(2, 3), red);
     }

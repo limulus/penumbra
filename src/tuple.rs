@@ -37,8 +37,8 @@ impl Tuple {
     }
 
     #[inline]
-    pub fn color(red: f32, green: f32, blue: f32, alpha: f32) -> Tuple {
-        Tuple::new(red, green, blue, alpha)
+    pub fn color(red: f32, green: f32, blue: f32) -> Tuple {
+        Tuple::new(red, green, blue, 1.0)
     }
 
     /// Convert this Tuple to an f32x4 SIMD vector
@@ -154,6 +154,11 @@ impl Tuple {
 
     pub fn reflect(self, normal: Tuple) -> Tuple {
         self - normal * 2.0 * self.dot(normal)
+    }
+
+    pub fn rgb_eq(self, other: Tuple) -> bool {
+        let mask = f32x4::from([1.0, 1.0, 1.0, 0.0]);
+        fuzzy_eq_f32x4(self.data * mask, other.data * mask)
     }
 }
 
@@ -415,29 +420,29 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn adding_colors() {
-        let c1 = Tuple::color(0.9, 0.6, 0.75, 0.2);
-        let c2 = Tuple::color(0.7, 0.1, 0.25, 0.3);
-        assert_eq!(c1 + c2, Tuple::color(1.6, 0.7, 1.0, 0.5));
+        let c1 = Tuple::color(0.9, 0.6, 0.75);
+        let c2 = Tuple::color(0.7, 0.1, 0.25);
+        assert!((c1 + c2).rgb_eq(Tuple::color(1.6, 0.7, 1.0)));
     }
 
     #[wasm_bindgen_test]
     fn subtracting_colors() {
-        let c1 = Tuple::color(0.9, 0.6, 0.75, 0.2);
-        let c2 = Tuple::color(0.7, 0.1, 0.25, 0.2);
-        assert_eq!(c1 - c2, Tuple::color(0.2, 0.5, 0.5, 0.0));
+        let c1 = Tuple::color(0.9, 0.6, 0.75);
+        let c2 = Tuple::color(0.7, 0.1, 0.25);
+        assert!((c1 - c2).rgb_eq(Tuple::color(0.2, 0.5, 0.5)));
     }
 
     #[wasm_bindgen_test]
     fn multiplying_a_color_by_a_scalar() {
-        let c = Tuple::color(0.2, 0.3, 0.4, 0.5);
-        assert_eq!(c * 2.0, Tuple::color(0.4, 0.6, 0.8, 1.0));
+        let c = Tuple::color(0.2, 0.3, 0.4);
+        assert!((c * 2.0).rgb_eq(Tuple::color(0.4, 0.6, 0.8)));
     }
 
     #[wasm_bindgen_test]
     fn multiplying_colors() {
-        let c1 = Tuple::color(1.0, 0.2, 0.4, 0.5);
-        let c2 = Tuple::color(0.9, 1.0, 0.1, 0.2);
-        assert_eq!(c1 * c2, Tuple::color(0.9, 0.2, 0.04, 0.1));
+        let c1 = Tuple::color(1.0, 0.2, 0.4);
+        let c2 = Tuple::color(0.9, 1.0, 0.1);
+        assert!((c1 * c2).rgb_eq(Tuple::color(0.9, 0.2, 0.04)));
     }
 
     #[wasm_bindgen_test]
@@ -465,5 +470,19 @@ mod tests {
         let r = v.reflect(n);
         print!("{:?}", v);
         assert_eq!(r, Tuple::vector(1.0, 0.0, 0.0));
+    }
+
+    #[wasm_bindgen_test]
+    fn rgb_eq_ignores_w_component() {
+        let a = Tuple::color(0.1, 0.2, 0.3);
+        let b = Tuple::new(0.1, 0.2, 0.3, 0.9);
+        assert!(a.rgb_eq(b));
+    }
+
+    #[wasm_bindgen_test]
+    fn rgb_ne_different_rgb() {
+        let a = Tuple::color(0.1, 0.2, 0.3);
+        let b = Tuple::color(0.1, 0.25, 0.3);
+        assert!(!a.rgb_eq(b));
     }
 }

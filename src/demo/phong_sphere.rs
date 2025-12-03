@@ -36,7 +36,7 @@ impl PhongSphereRenderer {
             .expect("Hardcoded sphere transform should always be invertible");
 
         let mut material = Material::default();
-        material.color = Tuple::color(1.0, 0.2, 1.0, 1.0);
+        material.color = Tuple::color(1.0, 0.2, 1.0);
         sphere.material = material;
 
         PhongSphereRenderer {
@@ -76,7 +76,7 @@ impl PhongSphereRenderer {
         let eye = Tuple::point(-5.0, 0.0, 0.0);
         let light = Light::new(
             self.light_transform * self.light_pos,
-            Tuple::color(1.0, 1.0, 1.0, 1.0),
+            Tuple::color(1.0, 1.0, 1.0),
         );
         for i in 0..self.canvas.width {
             for j in 0..self.canvas.height {
@@ -110,7 +110,7 @@ fn precompute_background_gradient(width: usize, height: usize) -> Canvas {
         let y_ratio = (height - y) as f32 / height as f32 / 1.3333;
         for x in 0..width {
             let x_ratio = (width - x) as f32 / width as f32 / 1.3333;
-            canvas.write_pixel(x, y, Tuple::color(x_ratio, y_ratio, 0.6666, 1.0));
+            canvas.write_pixel(x, y, Tuple::color(x_ratio, y_ratio, 0.6666));
         }
     }
     canvas

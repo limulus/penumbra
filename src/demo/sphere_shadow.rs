@@ -74,8 +74,7 @@ impl SphereShadowRenderer {
                 let ray = Ray::new(light_pos, (sensor_point - light_pos).normalize());
                 let intersections = self.sphere.intersect(&ray);
                 if !intersections.is_empty() {
-                    self.canvas
-                        .write_pixel(i, j, Tuple::color(0.0, 0.0, 0.0, 1.0));
+                    self.canvas.write_pixel(i, j, Tuple::color(0.0, 0.0, 0.0));
                 } else {
                     self.canvas
                         .write_pixel(i, j, self.background.pixel_at(i, j));
@@ -96,7 +95,7 @@ fn precompute_background_gradient(width: usize, height: usize) -> Canvas {
         let y_ratio = (height - y) as f32 / height as f32 / 1.3333;
         for x in 0..width {
             let x_ratio = (width - x) as f32 / width as f32 / 1.3333;
-            canvas.write_pixel(x, y, Tuple::color(x_ratio, y_ratio, 0.6666, 1.0));
+            canvas.write_pixel(x, y, Tuple::color(x_ratio, y_ratio, 0.6666));
         }
     }
     canvas
