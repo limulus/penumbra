@@ -9,8 +9,8 @@ pub struct Light {
 impl Light {
     pub fn new(position: Tuple, intensity: Tuple) -> Light {
         Light {
-            position: position,
-            intensity: intensity,
+            position,
+            intensity,
         }
     }
 }

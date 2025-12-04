@@ -63,10 +63,12 @@ impl Default for World {
             Tuple::color(1.0, 1.0, 1.0),
         );
         let mut s1 = Sphere::default();
-        let mut material = Material::default();
-        material.color = Tuple::color(0.8, 1.0, 0.6);
-        material.diffuse = 0.7;
-        material.specular = 0.2;
+        let material = Material {
+            color: Tuple::color(0.8, 1.0, 0.6),
+            diffuse: 0.7,
+            specular: 0.2,
+            ..Default::default()
+        };
         s1.material = material;
         let mut s2 = Sphere::new();
         s2.set_transform(Transform::new().scale(0.5, 0.5, 0.5))

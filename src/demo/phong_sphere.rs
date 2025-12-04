@@ -35,8 +35,10 @@ impl PhongSphereRenderer {
             .set_transform(Transform::new().scale(2.0, 2.0, 2.0))
             .expect("Hardcoded sphere transform should always be invertible");
 
-        let mut material = Material::default();
-        material.color = Tuple::color(1.0, 0.2, 1.0);
+        let material = Material {
+            color: Tuple::color(1.0, 0.2, 1.0),
+            ..Default::default()
+        };
         sphere.material = material;
 
         PhongSphereRenderer {

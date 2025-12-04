@@ -34,7 +34,7 @@ impl Canvas {
                 rgba.x() as u8,
                 rgba.y() as u8,
                 rgba.z() as u8,
-                255 as u8,
+                255_u8,
             ]);
         }
         ImageData::new_with_u8_clamped_array_and_sh(
