@@ -10,6 +10,7 @@ pub mod matrix;
 pub mod ray;
 pub mod sphere;
 pub mod tuple;
+pub mod world;
 
 mod demo;
 pub use demo::phong_sphere::*;

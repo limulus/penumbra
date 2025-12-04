@@ -1,6 +1,8 @@
 use std::ops::Index;
 
+use crate::ray::*;
 use crate::sphere::*;
+use crate::tuple::*;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Intersection<'a> {
@@ -12,6 +14,34 @@ impl<'a> Intersection<'a> {
     pub fn new(t: f32, object: &'a Sphere) -> Intersection<'a> {
         Intersection { t, object }
     }
+
+    pub fn prepare_computations(&self, r: Ray) -> IntersectionComputations {
+        let eyev = -r.direction;
+        let mut normalv = (*self.object).normal_at(r.position(self.t));
+
+        let inside = normalv.dot(eyev) < 0.0;
+        if inside {
+            normalv = -normalv;
+        }
+
+        IntersectionComputations {
+            t: self.t,
+            object: *self.object,
+            point: r.position(self.t),
+            eyev,
+            normalv,
+            inside,
+        }
+    }
+}
+
+pub struct IntersectionComputations {
+    pub t: f32,
+    pub object: Sphere,
+    pub point: Tuple,
+    pub eyev: Tuple,
+    pub normalv: Tuple,
+    pub inside: bool,
 }
 
 #[derive(Debug)]
@@ -51,7 +81,7 @@ impl<'a> Index<usize> for IntersectionCollection<'a> {
 
 impl PartialEq for Intersection<'_> {
     fn eq(&self, other: &Self) -> bool {
-        std::ptr::eq(self.object, other.object)
+        self.object.same_object(*other.object)
             || (self.t == other.t && self.object == other.object)
     }
 }
@@ -59,8 +89,6 @@ impl PartialEq for Intersection<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ray::*;
-    use crate::tuple::*;
     use wasm_bindgen_test::*;
 
     #[wasm_bindgen_test]
@@ -145,5 +173,45 @@ mod tests {
         let i = xs.hit();
 
         assert_eq!(i, Some(&i4));
+    }
+
+    #[wasm_bindgen_test]
+    pub fn precomputing_the_state_of_an_intersection() {
+        let r = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
+        let shape = Sphere::default();
+        let i = Intersection::new(4.0, &shape);
+
+        let comps = i.prepare_computations(r);
+
+        assert_eq!(comps.t, i.t);
+        assert!(comps.object.same_object(*i.object));
+        assert_eq!(comps.point, Tuple::point(0.0, 0.0, -1.0));
+        assert_eq!(comps.eyev, Tuple::vector(0.0, 0.0, -1.0));
+        assert_eq!(comps.normalv, Tuple::vector(0.0, 0.0, -1.0));
+    }
+
+    #[wasm_bindgen_test]
+    pub fn the_hit_when_an_intersection_occurs_on_the_outside() {
+        let r = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
+        let shape = Sphere::default();
+        let i = Intersection::new(4.0, &shape);
+
+        let comps = i.prepare_computations(r);
+
+        assert_eq!(comps.inside, false);
+    }
+
+    #[wasm_bindgen_test]
+    pub fn the_hit_when_an_intersection_occurs_on_the_inside() {
+        let r = Ray::new(Tuple::point(0.0, 0.0, 0.0), Tuple::vector(0.0, 0.0, 1.0));
+        let shape = Sphere::default();
+        let i = Intersection::new(1.0, &shape);
+
+        let comps = i.prepare_computations(r);
+
+        assert_eq!(comps.point, Tuple::point(0.0, 0.0, 1.0));
+        assert_eq!(comps.eyev, Tuple::vector(0.0, 0.0, -1.0));
+        assert_eq!(comps.inside, true);
+        assert_eq!(comps.normalv, Tuple::vector(0.0, 0.0, -1.0));
     }
 }
