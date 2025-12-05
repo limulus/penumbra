@@ -1,6 +1,7 @@
 use wasm_bindgen::prelude::*;
 
 pub mod bench;
+pub mod camera;
 pub mod canvas;
 pub mod fuzzy;
 pub mod intersection;
@@ -9,6 +10,7 @@ pub mod material;
 pub mod matrix;
 pub mod ray;
 pub mod sphere;
+pub mod transform;
 pub mod tuple;
 pub mod world;
 

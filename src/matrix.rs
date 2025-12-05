@@ -47,6 +47,26 @@ impl Matrix4 {
         Matrix4 { data: IDENTITY }
     }
 
+    pub fn from_rows(row1: Tuple, row2: Tuple, row3: Tuple, row4: Tuple) -> Matrix4 {
+        let r1 = row1.as_array();
+        let r2 = row2.as_array();
+        let r3 = row3.as_array();
+        let r4 = row4.as_array();
+
+        Matrix4 {
+            data: [
+                // Column 0: first element of each row
+                r1[0], r2[0], r3[0], r4[0],
+                // Column 1: second element of each row
+                r1[1], r2[1], r3[1], r4[1],
+                // Column 2: third element of each row
+                r1[2], r2[2], r3[2], r4[2],
+                // Column 3: fourth element of each row
+                r1[3], r2[3], r3[3], r4[3],
+            ],
+        }
+    }
+
     #[allow(clippy::identity_op, clippy::erasing_op)]
     pub fn rotation_x(r: f32) -> Matrix4 {
         let mut data: [f32; 16] = IDENTITY;
@@ -260,74 +280,6 @@ impl Mul<Tuple> for &Matrix4 {
             sum += f32x4::splat(other.get(i)) * self.col_f32x4(i);
         }
         Tuple::from_f32x4(sum)
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct Transform {
-    operations: Vec<Matrix4>,
-}
-
-impl Default for Transform {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Transform {
-    pub fn new() -> Transform {
-        Transform {
-            operations: Vec::new(),
-        }
-    }
-
-    pub fn translate(self, x: f32, y: f32, z: f32) -> Self {
-        let mut operations = self.operations;
-        operations.push(Matrix4::translation(x, y, z));
-        Self { operations }
-    }
-
-    pub fn scale(self, x: f32, y: f32, z: f32) -> Self {
-        let mut operations = self.operations;
-        operations.push(Matrix4::scaling(x, y, z));
-        Self { operations }
-    }
-
-    pub fn rotate_x(self, r: f32) -> Self {
-        let mut operations = self.operations;
-        operations.push(Matrix4::rotation_x(r));
-        Self { operations }
-    }
-
-    pub fn rotate_y(self, r: f32) -> Self {
-        let mut operations = self.operations;
-        operations.push(Matrix4::rotation_y(r));
-        Self { operations }
-    }
-
-    pub fn rotate_z(self, r: f32) -> Self {
-        let mut operations = self.operations;
-        operations.push(Matrix4::rotation_z(r));
-        Self { operations }
-    }
-
-    pub fn shear(self, xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> Self {
-        let mut operations = self.operations;
-        operations.push(Matrix4::shearing(xy, xz, yx, yz, zx, zy));
-        Self { operations }
-    }
-
-    pub fn build(self) -> Matrix4 {
-        if self.operations.is_empty() {
-            Matrix4::identity()
-        } else {
-            self.operations
-                .iter()
-                .cloned()
-                .rev()
-                .reduce(|a, b| a * b)
-                .expect("Transform should have at least one operation")
-        }
     }
 }
 
@@ -898,16 +850,5 @@ mod tests {
 
         let p4 = c * p3;
         assert_eq!(p4, Tuple::point(15.0, 0.0, 7.0));
-    }
-
-    #[wasm_bindgen_test]
-    pub fn chained_transformations_must_be_applied_in_reverse_order() {
-        let p = Tuple::point(1.0, 0.0, 1.0);
-        let t = Transform::new()
-            .rotate_x(std::f32::consts::PI / 2.0)
-            .scale(5.0, 5.0, 5.0)
-            .translate(10.0, 5.0, 7.0)
-            .build();
-        assert_eq!(t * p, Tuple::point(15.0, 0.0, 7.0));
     }
 }

@@ -148,7 +148,7 @@ impl Tuple {
         }
     }
 
-    pub fn repair_vector_after_translation(self) -> Tuple {
+    pub fn repair_vector(self) -> Tuple {
         Tuple::vector(self.x(), self.y(), self.z())
     }
 
@@ -451,7 +451,7 @@ mod tests {
         let m = Matrix4::translation(5.0, -3.0, 2.0).transpose();
         let v2 = m * v;
         assert_ne!(v2.w(), 0.0);
-        let repaired = v2.repair_vector_after_translation();
+        let repaired = v2.repair_vector();
         assert_eq!(repaired.w(), 0.0);
     }
 

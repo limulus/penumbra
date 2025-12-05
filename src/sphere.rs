@@ -4,6 +4,7 @@ use crate::intersection::*;
 use crate::material::*;
 use crate::matrix::*;
 use crate::ray::*;
+use crate::transform::*;
 use crate::tuple::*;
 
 #[derive(Debug, Clone, Copy)]
@@ -68,7 +69,7 @@ impl Sphere {
         let object_point = self.transform_inverse * world_point;
         let object_normal = object_point - Tuple::point(0.0, 0.0, 0.0);
         let world_normal = Matrix4::transpose(&self.transform_inverse) * object_normal;
-        world_normal.repair_vector_after_translation().normalize()
+        world_normal.repair_vector().normalize()
     }
 }
 

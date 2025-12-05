@@ -5,6 +5,7 @@ use crate::canvas::*;
 use crate::matrix::*;
 use crate::ray::*;
 use crate::sphere::*;
+use crate::transform::*;
 use crate::tuple::*;
 
 #[wasm_bindgen]
