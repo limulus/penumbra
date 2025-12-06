@@ -130,6 +130,11 @@ async function main() {
 
   await benchmark('Tuple Cross Product', (n) => bench.tuple_cross_product_bench(n))
 
+  // Rendering operations
+  printHeader('Rendering Operations')
+
+  await benchmark('World Color At Ray', (n) => bench.world_color_at_bench(n), 10000)
+
   // Cleanup
   bench.free()
 

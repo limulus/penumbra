@@ -267,6 +267,18 @@ async function main() {
     )
   )
 
+  // Rendering operations
+  printHeader('Rendering Operations')
+
+  results.push(
+    compareBenchmark(
+      'World Color At Ray',
+      (n) => simdBench.world_color_at_bench(n),
+      (n) => scalarBench.world_color_at_bench(n),
+      10000
+    )
+  )
+
   // Summary
   printHeader('Summary')
 

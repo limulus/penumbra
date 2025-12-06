@@ -3,8 +3,14 @@
 //! These functions are designed to be called from Node.js via wasm-bindgen
 //! and measured using performance.now() for accurate WASM performance profiling.
 
+use crate::light::Light;
+use crate::material::Material;
 use crate::matrix::Matrix4;
+use crate::ray::Ray;
+use crate::sphere::Sphere;
+use crate::transform::Transform;
 use crate::tuple::Tuple;
+use crate::world::World;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -197,6 +203,67 @@ impl BenchOps {
         let mut result = 0.0;
         for _ in 0..iterations {
             result = matrix.determinant();
+        }
+        result
+    }
+
+    /// Benchmark world color_at calculation (core rendering operation)
+    ///
+    /// Creates a small test world with 3 spheres and calculates the color at a ray's intersection.
+    /// This benchmarks the complete rendering pipeline: ray-sphere intersection, hit determination,
+    /// and Phong lighting calculation.
+    /// Returns the final result to prevent compiler optimization.
+    #[wasm_bindgen]
+    pub fn world_color_at_bench(&self, iterations: u32) -> f32 {
+        // Create a world with 3 spheres and a light
+        let mut world = World::new();
+        world.light = Some(Light::new(
+            Tuple::point(-10.0, 10.0, -10.0),
+            Tuple::color(1.0, 1.0, 1.0),
+        ));
+
+        // Sphere 1: Default material, scaled
+        let mut s1 = Sphere::new();
+        s1.set_transform(Transform::new().scale(2.0, 2.0, 2.0))
+            .unwrap();
+        world.objects.push(s1);
+
+        // Sphere 2: Custom material, translated
+        let mut s2 = Sphere::new();
+        s2.set_transform(Transform::new().translate(1.0, 0.0, 0.0))
+            .unwrap();
+        s2.material = Material {
+            color: Tuple::color(0.8, 0.1, 0.1),
+            diffuse: 0.7,
+            specular: 0.3,
+            ..Default::default()
+        };
+        world.objects.push(s2);
+
+        // Sphere 3: Another custom material, different position
+        let mut s3 = Sphere::new();
+        s3.set_transform(
+            Transform::new()
+                .translate(-1.0, 0.5, 0.5)
+                .scale(0.5, 0.5, 0.5),
+        )
+        .unwrap();
+        s3.material = Material {
+            color: Tuple::color(0.1, 0.1, 0.8),
+            ambient: 0.2,
+            diffuse: 0.8,
+            specular: 0.5,
+            shininess: 100.0,
+        };
+        world.objects.push(s3);
+
+        // Create a ray that will intersect the world
+        let ray = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
+
+        let mut result = 0.0;
+        for _ in 0..iterations {
+            let color = world.color_at(ray);
+            result = color.get(0);
         }
         result
     }
