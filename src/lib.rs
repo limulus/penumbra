@@ -9,6 +9,7 @@ pub mod light;
 pub mod material;
 pub mod matrix;
 pub mod ray;
+pub mod scene;
 pub mod sphere;
 pub mod transform;
 pub mod tuple;
@@ -17,6 +18,8 @@ pub mod world;
 mod demo;
 pub use demo::phong_sphere::*;
 pub use demo::sphere_shadow::*;
+pub use scene::*;
+pub use transform::Transform;
 
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Penumbra Ray Tracer Demo</title>
+  </head>
+  <body>
+    <div>
+      <h1>Penumbra Ray Tracer</h1>
+
+      <form id="render-form">
+        <div class="controls">
+          <div class="control-group">
+            <label>
+              Width:
+              <input type="number" id="width" value="1280" min="100" max="1920" />
+            </label>
+            <label>
+              Height:
+              <input
+                type="number"
+                id="height"
+                value="720"
+                min="100"
+                max="1080"
+              />
+            </label>
+          </div>
+
+          <div class="control-group">
+            <label>
+              FOV:
+              <input type="range" id="fov" min="30" max="120" value="60" />
+              <span id="fov-value">60°</span>
+            </label>
+          </div>
+
+          <button type="submit">Render</button>
+        </div>
+      </form>
+
+      <div class="render-info">
+        <span id="render-time">Drag to orbit camera</span>
+      </div>
+
+      <touch-pad>
+        <canvas id="canvas"></canvas>
+      </touch-pad>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

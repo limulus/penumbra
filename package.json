@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "A Ray Tracer Challenge implementation using Rust and WebAssembly",
   "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
     "./wasm/simd": {
       "types": "./dist/wasm/penumbra-simd.d.ts",
       "import": "./dist/wasm/penumbra-simd.js"
@@ -13,12 +17,19 @@
     }
   },
   "files": [
-    "dist/wasm"
+    "dist/wasm",
+    "dist/index.js",
+    "dist/index.d.ts",
+    "dist/index.d.ts.map",
+    "dist/scene.js",
+    "dist/scene.d.ts",
+    "dist/scene.d.ts.map"
   ],
   "type": "module",
   "scripts": {
-    "build": "npm run build:wasm",
+    "build": "npm run build:wasm && npm run build:ts",
     "build:wasm": "npm run build:wasm:simd && npm run build:wasm:scalar",
+    "build:ts": "tsc",
     "build:wasm:simd": "RUSTFLAGS='-C target-feature=+simd128' wasm-pack build --out-dir dist/wasm --out-name penumbra-simd --no-pack -- --no-default-features",
     "build:wasm:scalar": "wasm-pack build --out-dir dist/wasm --out-name penumbra-scalar --no-pack -- --no-default-features",
     "postbuild:wasm": "del dist/wasm/.gitignore",
@@ -38,7 +49,10 @@
     "test:wasm:watch": "chokidar src --initial --command 'npm run test:wasm'",
     "bench:wasm": "node benchmarks/wasm-bench.mjs",
     "bench:compare": "node benchmarks/compare.mjs",
-    "verify": "concurrently -c auto npm:lint npm:test"
+    "verify": "concurrently -c auto npm:lint npm:test",
+    "demo": "npm run build:wasm:simd && npm run demo:dev",
+    "demo:dev": "cd demo && npm run dev",
+    "demo:build": "cd demo && npm run build"
   },
   "repository": {
     "type": "git",
@@ -62,6 +76,7 @@
     "del-cli": "^7.0.0",
     "husky": "^8.0.3",
     "is-ci": "^4.1.0",
-    "semantic-release": "^24.2.9"
+    "semantic-release": "^24.2.9",
+    "typescript": "^5.9.3"
   }
 }

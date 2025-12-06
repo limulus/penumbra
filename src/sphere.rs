@@ -33,6 +33,10 @@ impl Sphere {
         }
     }
 
+    pub fn id(&self) -> u64 {
+        self.id
+    }
+
     #[must_use]
     pub fn same_object(&self, other: Sphere) -> bool {
         self.id == other.id

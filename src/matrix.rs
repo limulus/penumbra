@@ -47,6 +47,11 @@ impl Matrix4 {
         Matrix4 { data: IDENTITY }
     }
 
+    /// Creates a Matrix4 from a 16-element array in column-major order.
+    pub fn from_array(data: [f32; 16]) -> Matrix4 {
+        Matrix4 { data }
+    }
+
     pub fn from_rows(row1: Tuple, row2: Tuple, row3: Tuple, row4: Tuple) -> Matrix4 {
         let r1 = row1.as_array();
         let r2 = row2.as_array();

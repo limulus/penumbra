@@ -7,6 +7,7 @@ Penumbra is an implementation of [The Ray Tracer Challenge](https://pragprog.com
 ## Tech Stack
 
 - **Rust**: Primary language for ray tracing implementation
+- **TypeScript**: High-level API wrapper (Scene class)
 - **WebAssembly**: Compilation target for browser/Node.js execution
 - **wasm-pack**: Build tool for Rust WebAssembly modules
 - **Node.js**: Runtime environment for npm scripts and benchmarks
@@ -15,8 +16,10 @@ Penumbra is an implementation of [The Ray Tracer Challenge](https://pragprog.com
 
 ```
 penumbra/
-├── src/                    # Rust source code
-│   ├── lib.rs             # Library entry point
+├── src/                    # Source code
+│   ├── index.ts           # TypeScript main export
+│   ├── scene.ts           # TypeScript Scene class (high-level API)
+│   ├── lib.rs             # Rust library entry point
 │   ├── tuple.rs           # 3D points and vectors
 │   ├── matrix.rs          # Matrix operations and transformations
 │   ├── ray.rs             # Ray definitions and operations
@@ -25,22 +28,37 @@ penumbra/
 │   ├── canvas.rs          # Image canvas representation
 │   ├── material.rs        # Material properties
 │   ├── light.rs           # Light sources
+│   ├── scene.rs           # Scene buffer management (Rust)
 │   └── demo/              # Demo implementations
 │
 ├── benchmarks/            # Performance benchmark scripts
 │
 ├── dist/                  # Build output (generated)
-│   └── wasm/             # Compiled WebAssembly modules
+│   ├── wasm/             # Compiled WebAssembly modules
+│   ├── index.js          # Compiled TypeScript main export
+│   ├── index.d.ts        # TypeScript type definitions
+│   ├── scene.js          # Compiled Scene class
+│   └── scene.d.ts        # Scene type definitions
 │
 ├── Cargo.toml            # Rust package configuration
 ├── Cargo.lock            # Rust dependency lock file
+├── tsconfig.json         # TypeScript configuration
 ├── rustfmt.toml          # Rust formatting configuration
 └── .github/workflows/    # CI/CD configuration
 ```
 
 ## Key Components
 
-### Ray Tracing Primitives
+### High-Level API
+
+- **Scene**: TypeScript class providing ergonomic API for building ray-traced scenes
+  - Uses `SharedArrayBuffer` for zero-copy buffer sharing with Web Workers
+  - Manages camera, lights, and spheres through a simple object-based interface
+  - 3D points and RGB colors use array syntax: `[x, y, z]` or `[r, g, b]`
+- **Transform**: Fluent API for creating transformation matrices (scale, translate, rotate, shear)
+- **renderFromBuffer**: WASM function that renders a scene from its buffer representation
+
+### Ray Tracing Primitives (Rust)
 
 - **Tuples**: Fundamental 3D data structure representing both points (w=1) and vectors (w=0)
 - **Matrices**: 4x4 transformation matrices for translations, rotations, scaling, and shearing
@@ -78,12 +96,14 @@ This will install dependencies and set up git hooks via husky.
 ### Building
 
 ```bash
-# Build everything (WASM SIMD + scalar)
+# Build everything (WASM + TypeScript)
 npm run build
 
 # Build specific targets
+npm run build:wasm         # Both WASM variants (SIMD + scalar)
 npm run build:wasm:simd    # SIMD-optimized WebAssembly
 npm run build:wasm:scalar  # Scalar (non-SIMD) WebAssembly
+npm run build:ts           # TypeScript compilation only
 ```
 
 ### Testing
@@ -130,18 +150,28 @@ npm run bench:compare
 
 ## Module Exports
 
-The package provides WebAssembly exports:
+The package provides multiple export paths:
 
-- **SIMD export** (`@limulus/penumbra/wasm/simd`): WebAssembly SIMD-optimized version
+- **Main export** (`@limulus/penumbra`): High-level API for most use cases
+  - Exports: `Scene`, `Transform`, `renderFromBuffer`
+  - Import: `dist/index.js`
+  - Types: `dist/index.d.ts`
+  - Example: `import { Scene, Transform, renderFromBuffer } from '@limulus/penumbra'`
+
+- **SIMD export** (`@limulus/penumbra/wasm/simd`): Direct WASM access (optimized for Web Workers)
+  - Exports: `Transform`, `renderFromBuffer`, and low-level buffer functions
   - Import: `dist/wasm/penumbra-simd.js`
   - Types: `dist/wasm/penumbra-simd.d.ts`
+  - Example: `import { renderFromBuffer } from '@limulus/penumbra/wasm/simd'`
 
 - **Scalar export** (`@limulus/penumbra/wasm/scalar`): Non-SIMD WebAssembly version
+  - Same exports as SIMD, but without SIMD optimizations
   - Import: `dist/wasm/penumbra-scalar.js`
   - Types: `dist/wasm/penumbra-scalar.d.ts`
 
 ## Code Quality Tools
 
+- **TypeScript**: Strict mode enabled with full type checking
 - **Clippy**: Rust linting with strict correctness checks (deny level)
 - **Rustfmt**: Rust code formatting
 - **Commitlint**: Conventional commit message enforcement
@@ -188,16 +218,30 @@ Progress and interactive demos are documented at:
 
 ## Common Tasks for Claude
 
+### Working with the Scene API
+
+The Scene class (TypeScript) is the primary public API. When adding features:
+
+1. **For user-facing features**: Add methods to `src/scene.ts`
+   - Use array syntax for 3D points: `[x, y, z]`
+   - Use array syntax for RGB colors: `[r, g, b]`
+   - Keep object-based parameters for other options (e.g., `material: { ambient, diffuse, ... }`)
+2. **For buffer manipulation**: Add Rust functions to `src/scene.rs`
+   - Export with `#[wasm_bindgen]` for use by TypeScript
+3. **Build and verify**: Run `npm run build` then `npm run verify`
+
 ### Adding a New Ray Tracing Feature
 
 1. Implement in Rust (src/)
 2. Write tests using #[cfg(test)]
 3. Export from src/lib.rs if public API
 4. Update WASM bindings if needed (wasm-bindgen)
-5. Run `npm run verify` to ensure all checks pass
+5. If user-facing, add to Scene class (src/scene.ts)
+6. Run `npm run verify` to ensure all checks pass
 
 ### Debugging Issues
 
+- TypeScript errors: Check `npm run build:ts` or use IDE diagnostics
 - Rust errors: Check `cargo clippy --target wasm32-unknown-unknown`
 - Format issues: Check `cargo fmt --check`
 - Test failures: Run `npm test`

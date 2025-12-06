@@ -1,6 +1,9 @@
+use wasm_bindgen::prelude::*;
+
 use crate::matrix::Matrix4;
 use crate::tuple::Tuple;
 
+#[wasm_bindgen]
 #[derive(Clone, Debug)]
 pub struct Transform {
     operations: Vec<Matrix4>,
@@ -12,49 +15,60 @@ impl Default for Transform {
     }
 }
 
+#[wasm_bindgen]
 impl Transform {
+    #[wasm_bindgen(constructor)]
     pub fn new() -> Transform {
         Transform {
             operations: Vec::new(),
         }
     }
 
-    pub fn translate(self, x: f32, y: f32, z: f32) -> Self {
+    pub fn translate(self, x: f32, y: f32, z: f32) -> Transform {
         let mut operations = self.operations;
         operations.push(Matrix4::translation(x, y, z));
-        Self { operations }
+        Transform { operations }
     }
 
-    pub fn scale(self, x: f32, y: f32, z: f32) -> Self {
+    pub fn scale(self, x: f32, y: f32, z: f32) -> Transform {
         let mut operations = self.operations;
         operations.push(Matrix4::scaling(x, y, z));
-        Self { operations }
+        Transform { operations }
     }
 
-    pub fn rotate_x(self, r: f32) -> Self {
+    #[wasm_bindgen(js_name = rotateX)]
+    pub fn rotate_x(self, r: f32) -> Transform {
         let mut operations = self.operations;
         operations.push(Matrix4::rotation_x(r));
-        Self { operations }
+        Transform { operations }
     }
 
-    pub fn rotate_y(self, r: f32) -> Self {
+    #[wasm_bindgen(js_name = rotateY)]
+    pub fn rotate_y(self, r: f32) -> Transform {
         let mut operations = self.operations;
         operations.push(Matrix4::rotation_y(r));
-        Self { operations }
+        Transform { operations }
     }
 
-    pub fn rotate_z(self, r: f32) -> Self {
+    #[wasm_bindgen(js_name = rotateZ)]
+    pub fn rotate_z(self, r: f32) -> Transform {
         let mut operations = self.operations;
         operations.push(Matrix4::rotation_z(r));
-        Self { operations }
+        Transform { operations }
     }
 
-    pub fn shear(self, xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> Self {
+    pub fn shear(self, xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> Transform {
         let mut operations = self.operations;
         operations.push(Matrix4::shearing(xy, xz, yx, yz, zx, zy));
-        Self { operations }
+        Transform { operations }
     }
+}
 
+// Methods not exposed to JavaScript
+impl Transform {
+    /// Builds the final transformation matrix by composing all operations in reverse order.
+    ///
+    /// This is internal to Rust and not exposed to JavaScript.
     pub fn build(self) -> Matrix4 {
         if self.operations.is_empty() {
             Matrix4::identity()
@@ -65,6 +79,15 @@ impl Transform {
                 .rev()
                 .reduce(|a, b| a * b)
                 .expect("Transform should have at least one operation")
+        }
+    }
+
+    /// Creates a Transform from a pre-computed matrix.
+    ///
+    /// This is useful when deserializing transforms from a buffer.
+    pub fn from_matrix(matrix: Matrix4) -> Transform {
+        Transform {
+            operations: vec![matrix],
         }
     }
 }
