@@ -12,8 +12,6 @@ Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: require-corp
 ```
 
-Node.js environments have no additional requirements.
-
 ## Usage
 
 The `Scene` class provides an ergonomic API for building ray-traced scenes:
