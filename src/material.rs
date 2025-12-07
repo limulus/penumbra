@@ -40,6 +40,7 @@ impl Material {
         point: Tuple,
         eyev: Tuple,
         normalv: Tuple,
+        in_shadow: bool,
     ) -> Tuple {
         // Combined color of this material and the light’s color/intensity
         let effective_color = self.color * light.intensity;
@@ -52,7 +53,7 @@ impl Material {
 
         let cos_between_lightv_and_normalv = lightv.dot(normalv);
         let light_is_behind_surface = cos_between_lightv_and_normalv < 0.0;
-        let (diffuse, specular) = if light_is_behind_surface {
+        let (diffuse, specular) = if light_is_behind_surface || in_shadow {
             (Tuple::color(0.0, 0.0, 0.0), Tuple::color(0.0, 0.0, 0.0))
         } else {
             // Diffuse contribution
@@ -123,7 +124,7 @@ mod tests {
         let eyev = Tuple::vector(0.0, 0.0, -1.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
         let light = Light::new(Tuple::point(0.0, 0.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
-        let result = m.lighting(light, position, eyev, normalv);
+        let result = m.lighting(light, position, eyev, normalv, false);
         assert!(result.rgb_eq(Tuple::color(1.9, 1.9, 1.9)));
     }
 
@@ -133,7 +134,7 @@ mod tests {
         let eyev = Tuple::vector(0.0, 2f32.sqrt() / 2.0, -2f32.sqrt() / 2.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
         let light = Light::new(Tuple::point(0.0, 0.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
-        let result = m.lighting(light, position, eyev, normalv);
+        let result = m.lighting(light, position, eyev, normalv, false);
         assert!(result.rgb_eq(Tuple::color(1.0, 1.0, 1.0)));
     }
 
@@ -143,7 +144,7 @@ mod tests {
         let eyev = Tuple::vector(0.0, 0.0, -1.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
         let light = Light::new(Tuple::point(0.0, 10.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
-        let result = m.lighting(light, position, eyev, normalv);
+        let result = m.lighting(light, position, eyev, normalv, false);
         assert!(result.rgb_eq(Tuple::color(0.7364, 0.7364, 0.7364)));
     }
 
@@ -153,7 +154,7 @@ mod tests {
         let eyev = Tuple::vector(0.0, -2f32.sqrt() / 2.0, -2f32.sqrt() / 2.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
         let light = Light::new(Tuple::point(0.0, 10.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
-        let result = m.lighting(light, position, eyev, normalv);
+        let result = m.lighting(light, position, eyev, normalv, false);
         assert!(result.rgb_eq(Tuple::color(1.63638, 1.63638, 1.63638)));
     }
 
@@ -163,7 +164,18 @@ mod tests {
         let eyev = Tuple::vector(0.0, 0.0, -1.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
         let light = Light::new(Tuple::point(0.0, 0.0, 10.0), Tuple::color(1.0, 1.0, 1.0));
-        let result = m.lighting(light, position, eyev, normalv);
+        let result = m.lighting(light, position, eyev, normalv, false);
+        assert!(result.rgb_eq(Tuple::color(0.1, 0.1, 0.1)));
+    }
+
+    #[wasm_bindgen_test]
+    pub fn lighting_with_surface_in_shadow() {
+        let (m, position) = background();
+        let eyev = Tuple::vector(0.0, 0.0, -1.0);
+        let normalv = Tuple::vector(0.0, 0.0, -1.0);
+        let light = Light::new(Tuple::point(0.0, 0.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
+        let in_shadow = true;
+        let result = m.lighting(light, position, eyev, normalv, in_shadow);
         assert!(result.rgb_eq(Tuple::color(0.1, 0.1, 0.1)));
     }
 }

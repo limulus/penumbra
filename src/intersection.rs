@@ -4,6 +4,8 @@ use crate::ray::*;
 use crate::sphere::*;
 use crate::tuple::*;
 
+const SHADOW_SURFACE_OFFSET: f32 = 0.005;
+
 #[derive(Clone, Copy, Debug)]
 pub struct Intersection<'a> {
     pub t: f32,
@@ -24,10 +26,14 @@ impl<'a> Intersection<'a> {
             normalv = -normalv;
         }
 
+        let point = r.position(self.t);
+        let over_point = point + normalv * SHADOW_SURFACE_OFFSET;
+
         IntersectionComputations {
             t: self.t,
             object: *self.object,
-            point: r.position(self.t),
+            point,
+            over_point,
             eyev,
             normalv,
             inside,
@@ -39,6 +45,7 @@ pub struct IntersectionComputations {
     pub t: f32,
     pub object: Sphere,
     pub point: Tuple,
+    pub over_point: Tuple,
     pub eyev: Tuple,
     pub normalv: Tuple,
     pub inside: bool,
@@ -89,6 +96,7 @@ impl PartialEq for Intersection<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::transform::*;
     use wasm_bindgen_test::*;
 
     #[wasm_bindgen_test]
@@ -213,5 +221,20 @@ mod tests {
         assert_eq!(comps.eyev, Tuple::vector(0.0, 0.0, -1.0));
         assert_eq!(comps.inside, true);
         assert_eq!(comps.normalv, Tuple::vector(0.0, 0.0, -1.0));
+    }
+
+    #[wasm_bindgen_test]
+    fn the_hit_should_offset_the_point() {
+        let r = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
+        let mut shape = Sphere::default();
+        shape
+            .set_transform(Transform::new().translate(0.0, 0.0, 1.0))
+            .unwrap();
+        let i = Intersection::new(5.0, &shape);
+
+        let comps = i.prepare_computations(r);
+
+        assert!(comps.over_point.z() < SHADOW_SURFACE_OFFSET / 2.0);
+        assert!(comps.point.z() > comps.over_point.z());
     }
 }

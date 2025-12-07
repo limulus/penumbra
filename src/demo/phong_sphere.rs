@@ -91,7 +91,10 @@ impl PhongSphereRenderer {
                     let point = ray.position(hit.t);
                     let normalv = self.sphere.normal_at(point);
                     let eyev = -ray.direction;
-                    let color = hit.object.material.lighting(light, point, eyev, normalv);
+                    let color = hit
+                        .object
+                        .material
+                        .lighting(light, point, eyev, normalv, false);
                     self.canvas.write_pixel(i, j, color);
                 } else {
                     self.canvas
